@@ -1,7 +1,7 @@
-name: mobile_build_cli
+name: buildcraft
 description: Flutter build CLI - cross-platform build system replacing PowerShell scripts
-version: 0.0.1
-repository: https://github.com/venhdev/mobile-build-cli.git
+version: 0.0.2
+repository: https://github.com/venhdev/buildcraft.git
 
 environment:
   sdk: ^3.9.2
@@ -15,12 +15,6 @@ dependencies:
   
   # Cross-platform path utilities
   path: ^1.9.1
-  
-  # Interactive terminal prompts
-  interact: ^2.2.0
-  
-  # Terminal colors and styling
-  ansicolor: ^2.0.3
 
 dev_dependencies:
   lints: ^6.0.0

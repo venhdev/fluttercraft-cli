@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mobile_build_cli/src/core/version_manager.dart';
+import 'package:buildcraft/src/core/version_manager.dart';
 
 void main() {
   group('SemanticVersion', () {

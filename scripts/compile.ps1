@@ -1,4 +1,4 @@
-# Mobile Build CLI - Compile Script (PowerShell)
+# Buildcraft CLI - Compile Script (PowerShell)
 # Compiles Dart CLI to native executable
 
 param(
@@ -71,9 +71,9 @@ Write-Host "Compiling..." -ForegroundColor Cyan
 
 try {
     if ($dartCmd -eq "fvm dart") {
-        & fvm dart compile exe bin/mobile_build_cli.dart -o $outputPath
+        & fvm dart compile exe bin/buildcraft.dart -o $outputPath
     } else {
-        & dart compile exe bin/mobile_build_cli.dart -o $outputPath
+        & dart compile exe bin/buildcraft.dart -o $outputPath
     }
     
     if ($LASTEXITCODE -ne 0) {

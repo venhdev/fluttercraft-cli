@@ -1,5 +1,5 @@
 #!/bin/bash
-# Mobile Build CLI - Compile Script (Bash)
+# Buildcraft CLI - Compile Script (Bash)
 # Compiles Dart CLI to native executable for Linux/macOS
 
 set -e
@@ -51,7 +51,7 @@ fi
 # Compile
 echo ""
 echo "Compiling..."
-$DART_CMD compile exe bin/mobile_build_cli.dart -o "$OUTPUT_PATH"
+$DART_CMD compile exe bin/buildcraft.dart -o "$OUTPUT_PATH"
 
 echo ""
 echo "SUCCESS!"

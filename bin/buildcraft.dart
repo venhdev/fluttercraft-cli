@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 
-import 'package:mobile_build_cli/src/core/app_context.dart';
-import 'package:mobile_build_cli/src/core/command_registry.dart';
-import 'package:mobile_build_cli/src/ui/shell.dart';
+import 'package:buildcraft/src/core/app_context.dart';
+import 'package:buildcraft/src/core/command_registry.dart';
+import 'package:buildcraft/src/ui/shell.dart';
 
-/// Mobile Build CLI
+/// Buildcraft CLI
 /// 
 /// A cross-platform CLI tool for building Flutter apps.
 /// Replaces PowerShell build scripts with a single portable executable.

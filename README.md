@@ -1,4 +1,4 @@
-# Mobile Build CLI
+# Buildcraft CLI
 
 A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell build scripts with a single portable executable.
 
@@ -36,7 +36,7 @@ buildcraft --help
 ### Option 3: Run Directly
 
 ```powershell
-fvm dart run bin/mobile_build_cli.dart --help
+fvm dart run bin/buildcraft.dart --help
 ```
 
 ## Interactive Shell (v0.0.2+)
@@ -191,7 +191,7 @@ fvm dart test
 fvm dart analyze
 
 # Compile to native binary
-fvm dart compile exe bin/mobile_build_cli.dart -o dist/buildcraft.exe
+fvm dart compile exe bin/buildcraft.dart -o dist/buildcraft.exe
 ```
 
 ## Project Structure
@@ -199,7 +199,7 @@ fvm dart compile exe bin/mobile_build_cli.dart -o dist/buildcraft.exe
 ```
 mobile-build-cli/
 ├── bin/
-│   └── mobile_build_cli.dart   # Entry point
+│   └── buildcraft.dart   # Entry point
 ├── lib/
 │   ├── src/
 │   │   ├── commands/           # CLI commands
@@ -218,7 +218,7 @@ mobile-build-cli/
 │   │       ├── console.dart
 │   │       ├── logger.dart
 │   │       └── process_runner.dart
-│   └── mobile_build_cli.dart   # Library exports
+│   └── buildcraft.dart   # Library exports
 ├── dist/
 │   └── buildcraft.exe               # Compiled binary
 ├── scripts/
