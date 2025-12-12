@@ -4,6 +4,8 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 ## Features
 
+- 🖥️ **Interactive Shell** - Continuous REPL with arrow-key menus
+- 🧙 **Build Wizard** - Multi-step guided build configuration
 - 🔧 **Build** - Build APK/AAB/IPA with version management
 - 🧹 **Clean** - Clean project and dist folder
 - ⚙️ **Gen-Env** - Auto-detect project settings and generate `.buildenv`
@@ -37,6 +39,26 @@ mycli --help
 ```powershell
 fvm dart run bin/mobile_build_cli.dart --help
 ```
+
+## Interactive Shell (v0.0.2+)
+
+Start the interactive shell for a continuous REPL experience:
+
+```powershell
+# Start interactive shell (default when no args)
+mycli
+
+# Explicit shell mode with numeric menus
+mycli --interactive-mode numeric
+```
+
+**Shell Commands:**
+- `help` - Show available commands
+- `wizard` / `w` - Build wizard (guided multi-step)
+- `demo` - Test interactive menus
+- `context` - Show loaded project context
+- `build`, `clean`, `gen-env`, `convert` - Regular commands
+- `exit` / `q` - Exit shell
 
 ## Commands
 
