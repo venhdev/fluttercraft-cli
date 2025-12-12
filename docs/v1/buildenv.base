@@ -1,0 +1,40 @@
+##############################################
+# buildenv.base
+# Base config for build environment
+# Used by gen-buildenv.ps1 to generate .buildenv
+##############################################
+
+# ──────────────────────────────────────────────
+# Output & Input
+# ──────────────────────────────────────────────
+OUTPUT_PATH=dist
+ENV_PATH=./.env
+
+# ──────────────────────────────────────────────
+# Core build settings
+# (overridden by pubspec.yaml or .buildenv)
+# ──────────────────────────────────────────────
+BUILD_NAME=1.0.0
+BUILD_NUMBER=1
+BUILD_TYPE=aab            # aab | apk | ipa | macos
+
+USE_DART_DEFINE=false
+NEED_CLEAN=false
+NEED_BUILD_RUNNER=false
+
+# ──────────────────────────────────────────────
+# Third-party integrations
+# ──────────────────────────────────────────────
+USE_FVM=false
+FLUTTER_VERSION=
+
+USE_SHOREBIRD=false
+SHOREBIRD_ARTIFACT=
+SHOREBIRD_AUTO_CONFIRM=true
+
+# ──────────────────────────────────────────────
+# Project-specific runtime values
+# ──────────────────────────────────────────────
+APPNAME=app
+FLAVOR=
+TARGET_DART=lib/main.dart
