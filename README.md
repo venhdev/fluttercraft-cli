@@ -199,31 +199,42 @@ fvm dart compile exe bin/buildcraft.dart -o dist/buildcraft.exe
 ```
 mobile-build-cli/
 ├── bin/
-│   └── buildcraft.dart   # Entry point
+│   └── buildcraft.dart       # Entry point
 ├── lib/
 │   ├── src/
-│   │   ├── commands/           # CLI commands
+│   │   ├── commands/         # CLI commands
 │   │   │   ├── build_command.dart
 │   │   │   ├── clean_command.dart
+│   │   │   ├── convert_command.dart
 │   │   │   ├── gen_env_command.dart
-│   │   │   └── convert_command.dart
-│   │   ├── core/               # Business logic
+│   │   │   └── commands.dart
+│   │   ├── core/             # Business logic
+│   │   │   ├── apk_converter.dart
+│   │   │   ├── app_context.dart
+│   │   │   ├── artifact_mover.dart
 │   │   │   ├── build_env.dart
+│   │   │   ├── command_registry.dart
+│   │   │   ├── flutter_runner.dart
 │   │   │   ├── pubspec_parser.dart
 │   │   │   ├── version_manager.dart
-│   │   │   ├── flutter_runner.dart
-│   │   │   ├── artifact_mover.dart
-│   │   │   └── apk_converter.dart
-│   │   └── utils/              # Utilities
+│   │   │   └── core.dart
+│   │   ├── ui/               # Interactive UI & Shell
+│   │   │   ├── menu.dart
+│   │   │   ├── shell.dart
+│   │   │   └── ui.dart
+│   │   └── utils/            # Utilities
 │   │       ├── console.dart
 │   │       ├── logger.dart
-│   │       └── process_runner.dart
-│   └── buildcraft.dart   # Library exports
+│   │       ├── process_runner.dart
+│   │       └── utils.dart
+│   └── buildcraft.dart       # Library exports
 ├── dist/
-│   └── buildcraft.exe               # Compiled binary
+│   └── buildcraft.exe        # Compiled binary
 ├── scripts/
-│   ├── .buildenv               # Generated config (gitignored)
-│   └── buildenv.base           # Default config
+│   ├── compile.ps1           # Compilation script (Windows)
+│   ├── compile.sh            # Compilation script (Unix)
+│   ├── .buildenv             # Generated config (gitignored)
+│   └── buildenv.base         # Default config
 └── pubspec.yaml
 ```
 

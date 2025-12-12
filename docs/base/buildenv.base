@@ -16,7 +16,7 @@ ENV_PATH=./.env
 # ──────────────────────────────────────────────
 BUILD_NAME=1.0.0
 BUILD_NUMBER=1
-BUILD_TYPE=aab            # aab | apk | ipa | macos
+BUILD_TYPE=aab            # aab | apk | ipa | app
 
 USE_DART_DEFINE=false
 NEED_CLEAN=false
