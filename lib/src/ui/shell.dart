@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../flows/build_flow.dart';
 import '../utils/console.dart';
 import 'interactive_mode.dart';
 import 'menu.dart';
@@ -89,6 +90,11 @@ class Shell {
       case 'demo':
         await _runDemo();
         return;
+        
+      case 'wizard':
+      case 'w':
+        await _runBuildWizard();
+        return;
     }
     
     // Check registered commands
@@ -127,6 +133,7 @@ class Shell {
     console.keyValue('clear, cls', 'Clear the screen');
     console.keyValue('version', 'Show CLI version');
     console.keyValue('demo', 'Test interactive menu');
+    console.keyValue('wizard, w', 'Build wizard (multi-step)');
     console.blank();
     
     // Registered commands
@@ -180,6 +187,40 @@ class Shell {
     console.blank();
     
     console.success('Demo complete!');
+  }
+  
+  /// Run the build wizard
+  Future<void> _runBuildWizard() async {
+    final flow = BuildFlow(
+      console: console,
+      interactiveMode: interactiveMode,
+    );
+    
+    final confirmed = await flow.execute();
+    
+    if (confirmed) {
+      final config = flow.buildConfig;
+      console.blank();
+      console.success('Build wizard complete!');
+      console.keyValue('Config', config.toString());
+      console.blank();
+      
+      // Ask if they want to run the build now
+      final runNow = await Menu.confirm(
+        message: 'Run build now?',
+        defaultValue: true,
+      );
+      
+      if (runNow && _commands.containsKey('build')) {
+        console.info('Starting build...');
+        await _commands['build']!(config.toArgs());
+      } else if (runNow) {
+        console.warning('Build command not registered in shell.');
+        console.info('Run manually: mycli build ${config.toArgs().join(' ')}');
+      }
+    } else {
+      console.warning('Build wizard cancelled.');
+    }
   }
   
   /// Stop the shell (can be called from external handlers)
