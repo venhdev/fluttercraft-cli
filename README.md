@@ -4,8 +4,7 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 ## Features
 
-- 🖥️ **Interactive Shell** - Continuous REPL with arrow-key menus
-- 🧙 **Build Wizard** - Multi-step guided build configuration
+- 🖥️ **Interactive Shell** - Continuous REPL experience
 - 🔧 **Build** - Build APK/AAB/IPA with version management
 - 🧹 **Clean** - Clean project and dist folder
 - ⚙️ **Gen-Env** - Auto-detect project settings and generate `.buildenv`
@@ -17,11 +16,11 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 ### Option 1: Use Compiled Binary
 
-Download `mycli.exe` from the `dist/` folder and add it to your PATH.
+Download `buildcraft.exe` from the `dist/` folder and add it to your PATH.
 
 ```powershell
 # Run from project root
-.\dist\mycli.exe --help
+.\dist\buildcraft.exe --help
 ```
 
 ### Option 2: Global Activation
@@ -31,7 +30,7 @@ Download `mycli.exe` from the `dist/` folder and add it to your PATH.
 fvm dart pub global activate --source path .
 
 # Then use anywhere
-mycli --help
+buildcraft --help
 ```
 
 ### Option 3: Run Directly
@@ -46,15 +45,11 @@ Start the interactive shell for a continuous REPL experience:
 
 ```powershell
 # Start interactive shell (default when no args)
-mycli
-
-# Explicit shell mode with numeric menus
-mycli --interactive-mode numeric
+buildcraft
 ```
 
 **Shell Commands:**
 - `help` - Show available commands
-- `wizard` / `w` - Build wizard (guided multi-step)
 - `demo` - Test interactive menus
 - `context` - Show loaded project context
 - `build`, `clean`, `gen-env`, `convert` - Regular commands
@@ -62,13 +57,13 @@ mycli --interactive-mode numeric
 
 ## Commands
 
-### `mycli gen-env`
+### `buildcraft gen-env`
 
 Generate `.buildenv` configuration from project detection.
 
 ```powershell
-mycli gen-env
-mycli gen-env --force  # Overwrite existing
+buildcraft gen-env
+buildcraft gen-env --force  # Overwrite existing
 ```
 
 Detects:
@@ -77,27 +72,27 @@ Detects:
 - Shorebird configuration from `shorebird.yaml`
 - Main entry point
 
-### `mycli build`
+### `buildcraft build`
 
 Build Flutter app with version management.
 
 ```powershell
 # Interactive build with prompts
-mycli build
+buildcraft build
 
 # Build specific type
-mycli build --type apk
-mycli build --type aab
-mycli build --type ipa
+buildcraft build --type apk
+buildcraft build --type aab
+buildcraft build --type ipa
 
 # Skip prompts
-mycli build --no-confirm
+buildcraft build --no-confirm
 
 # Set version directly
-mycli build --version 1.2.3 --build-number 45
+buildcraft build --version 1.2.3 --build-number 45
 
 # Clean before building
-mycli build --clean
+buildcraft build --clean
 ```
 
 Options:
@@ -107,34 +102,34 @@ Options:
 - `--version, -v` - Set version directly
 - `--build-number` - Set build number directly
 
-### `mycli clean`
+### `buildcraft clean`
 
 Clean project and dist folder.
 
 ```powershell
 # Full clean (flutter clean + remove dist)
-mycli clean
+buildcraft clean
 
 # Only remove dist folder
-mycli clean --dist-only
+buildcraft clean --dist-only
 
 # Skip confirmation
-mycli clean -y
+buildcraft clean -y
 ```
 
-### `mycli convert`
+### `buildcraft convert`
 
 Convert AAB to universal APK using bundletool.
 
 ```powershell
 # Auto-detect AAB from dist folder
-mycli convert
+buildcraft convert
 
 # Specify AAB file
-mycli convert --aab path/to/app.aab
+buildcraft convert --aab path/to/app.aab
 
 # Custom output directory
-mycli convert --output ./releases
+buildcraft convert --output ./releases
 ```
 
 ## Configuration
@@ -196,7 +191,7 @@ fvm dart test
 fvm dart analyze
 
 # Compile to native binary
-fvm dart compile exe bin/mobile_build_cli.dart -o dist/mycli.exe
+fvm dart compile exe bin/mobile_build_cli.dart -o dist/buildcraft.exe
 ```
 
 ## Project Structure
@@ -225,7 +220,7 @@ mobile-build-cli/
 │   │       └── process_runner.dart
 │   └── mobile_build_cli.dart   # Library exports
 ├── dist/
-│   └── mycli.exe               # Compiled binary
+│   └── buildcraft.exe               # Compiled binary
 ├── scripts/
 │   ├── .buildenv               # Generated config (gitignored)
 │   └── buildenv.base           # Default config

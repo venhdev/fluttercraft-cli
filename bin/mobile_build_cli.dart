@@ -6,7 +6,6 @@ import 'package:args/command_runner.dart';
 import 'package:mobile_build_cli/src/core/app_context.dart';
 import 'package:mobile_build_cli/src/core/command_registry.dart';
 import 'package:mobile_build_cli/src/ui/shell.dart';
-import 'package:mobile_build_cli/src/ui/interactive_mode.dart';
 
 /// Mobile Build CLI
 /// 
@@ -38,13 +37,6 @@ void main(List<String> arguments) async {
       help: 'Start interactive shell mode',
       negatable: false,
     )
-    ..addOption(
-      'interactive-mode',
-      abbr: 'i',
-      help: 'Interactive menu mode: arrow (default) or numeric',
-      allowed: ['arrow', 'numeric'],
-      defaultsTo: 'arrow',
-    )
     ..addFlag(
       'help',
       abbr: 'h',
@@ -69,24 +61,16 @@ void main(List<String> arguments) async {
     
     // Handle --version
     if (globalResult['version'] == true) {
-      print('mycli v0.0.2-continuous-shell');
+      print('buildcraft v0.0.2-continuous-shell');
       exit(0);
     }
-    
-    // Get interactive mode
-    final interactiveMode = parseInteractiveMode(
-      globalResult['interactive-mode'] as String?,
-    );
     
     // Load AppContext
     print('Loading project context...');
     final appContext = await AppContext.load();
     
     // Start interactive shell
-    final shell = Shell(
-      interactiveMode: interactiveMode,
-      appContext: appContext,
-    );
+    final shell = Shell(appContext: appContext);
     
     // Register commands
     final commands = registry.getShellCommands();

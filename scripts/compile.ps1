@@ -4,6 +4,7 @@
 param(
     [string]$Target = "windows",
     [string]$OutputDir = "dist/bin",
+    [string]$Version = "0.0.2",
     [switch]$Help
 )
 
@@ -11,21 +12,22 @@ $ErrorActionPreference = "Stop"
 
 # Show help
 if ($Help) {
-    Write-Host "Usage: .\compile.ps1 [-Target <platform>] [-OutputDir <path>]"
+    Write-Host "Usage: .\compile.ps1 [-Target <platform>] [-OutputDir <path>] [-Version <ver>]"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -Target     Target platform: windows, linux, macos (default: windows)"
     Write-Host "  -OutputDir  Output directory (default: dist/bin)"
+    Write-Host "  -Version    Version for output filename (default: 0.0.2)"
     Write-Host "  -Help       Show this help message"
     Write-Host ""
     Write-Host "Examples:"
-    Write-Host "  .\compile.ps1                    # Compile for Windows"
-    Write-Host "  .\compile.ps1 -Target linux      # Compile for Linux"
+    Write-Host "  .\compile.ps1                        # buildcraft.v0.0.2.exe"
+    Write-Host "  .\compile.ps1 -Version 1.0.0         # buildcraft.v1.0.0.exe"
     exit 0
 }
 
 # Determine executable name and extension
-$exeName = "mycli"
+$exeName = "buildcraft"
 switch ($Target.ToLower()) {
     "windows" { $exeExt = ".exe" }
     "linux"   { $exeExt = "" }
@@ -36,14 +38,15 @@ switch ($Target.ToLower()) {
     }
 }
 
-$outputPath = Join-Path $OutputDir "$exeName$exeExt"
+$outputPath = Join-Path $OutputDir "$exeName.v$Version$exeExt"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  Mobile Build CLI - Compiler" -ForegroundColor Cyan
+Write-Host "  BUILDCRAFT CLI - Compiler" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Target:   $Target"
+Write-Host "Version:  v$Version"
 Write-Host "Output:   $outputPath"
 Write-Host ""
 

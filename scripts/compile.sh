@@ -4,9 +4,10 @@
 
 set -e
 
-TARGET="${1:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
-OUTPUT_DIR="${2:-dist/bin}"
-EXE_NAME="mycli"
+VERSION="${1:-0.0.2}"
+TARGET="${2:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
+OUTPUT_DIR="${3:-dist/bin}"
+EXE_NAME="buildcraft"
 
 # Determine extension based on platform
 case "$TARGET" in
@@ -18,19 +19,20 @@ case "$TARGET" in
         ;;
     *)
         echo "Unknown target: $TARGET"
-        echo "Usage: $0 [linux|macos|windows] [output_dir]"
+        echo "Usage: $0 [version] [linux|macos|windows] [output_dir]"
         exit 1
         ;;
 esac
 
-OUTPUT_PATH="$OUTPUT_DIR/$EXE_NAME$EXE_EXT"
+OUTPUT_PATH="$OUTPUT_DIR/$EXE_NAME.v$VERSION$EXE_EXT"
 
 echo ""
 echo "========================================"
-echo "  Mobile Build CLI - Compiler"
+echo "  BUILDCRAFT CLI - Compiler"
 echo "========================================"
 echo ""
 echo "Target:   $TARGET"
+echo "Version:  v$VERSION"
 echo "Output:   $OUTPUT_PATH"
 echo ""
 
