@@ -1,8 +1,7 @@
 /// Buildcraft CLI - Flutter build system
 ///
 /// A cross-platform CLI tool replacing PowerShell build scripts.
-library buildcraft;
-
+library;
 // Export commands
 export 'src/commands/commands.dart';
 

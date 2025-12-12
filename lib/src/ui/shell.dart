@@ -77,7 +77,7 @@ class Shell {
         
       case 'version':
       case 'v':
-        console.info('buildcraft v0.0.2-continuous-shell');
+        console.info('buildcraft v0.0.3');
         return;
         
       case 'context':
@@ -103,7 +103,7 @@ class Shell {
     print('');
     print('\x1B[1m\x1B[36m┌─────────────────────────────────────────┐\x1B[0m');
     print('\x1B[1m\x1B[36m│         BUILDCRAFT CLI                  │\x1B[0m');
-    print('\x1B[1m\x1B[36m│         v0.0.2-continuous-shell         │\x1B[0m');
+    print('\x1B[1m\x1B[36m│         v0.0.3                          │\x1B[0m');
     print('\x1B[1m\x1B[36m└─────────────────────────────────────────┘\x1B[0m');
     print('');
     console.info('Type "help" for available commands, "exit" to quit.');
@@ -153,7 +153,7 @@ class Shell {
     console.keyValue('App Name', ctx.appName);
     console.keyValue('Version', ctx.version);
     console.keyValue('Build Type', ctx.buildType);
-    console.keyValue('Flavor', ctx.flavor.isEmpty ? '(none)' : ctx.flavor);
+    console.keyValue('Flavor', (ctx.flavor == null || ctx.flavor!.isEmpty) ? '(none)' : ctx.flavor!);
     console.keyValue('Output Path', ctx.outputPath);
     console.keyValue('Use FVM', ctx.useFvm.toString());
     console.keyValue('Use Shorebird', ctx.useShorebird.toString());

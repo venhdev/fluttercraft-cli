@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
-import '../core/build_env.dart';
+import '../core/build_config.dart';
 import '../core/apk_converter.dart';
 import '../utils/console.dart';
 
@@ -44,8 +44,29 @@ class ConvertCommand extends Command<int> {
 
     console.header('AAB → UNIVERSAL APK CONVERTER');
 
-    final buildEnv = BuildEnv(projectRoot: projectRoot);
-    await buildEnv.load();
+    // Load config
+    BuildConfig config;
+    try {
+      config = await BuildConfig.load();
+    } on ConfigNotFoundException {
+      // Use defaults if no config
+      config = BuildConfig(
+        projectRoot: projectRoot,
+        appName: 'app',
+        buildName: '1.0.0',
+        buildNumber: 1,
+        buildType: 'aab',
+        targetDart: 'lib/main.dart',
+        outputPath: 'dist',
+        useDartDefine: false,
+        needClean: false,
+        needBuildRunner: false,
+        useFvm: false,
+        useShorebird: false,
+        shorebirdAutoConfirm: true,
+        keystorePath: 'android/key.properties',
+      );
+    }
 
     final converter = ApkConverter(projectRoot: projectRoot, console: console);
 
@@ -55,7 +76,7 @@ class ConvertCommand extends Command<int> {
     if (aabPath == null || aabPath.isEmpty) {
       // Search in dist folder
       console.section('Searching for AAB files...');
-      final searchPath = buildEnv.absoluteOutputPath;
+      final searchPath = config.absoluteOutputPath;
       final aabFiles = await converter.findAabFiles(searchPath);
       
       if (aabFiles.isEmpty) {
@@ -89,7 +110,7 @@ class ConvertCommand extends Command<int> {
     // Find bundletool
     console.section('Locating bundletool...');
     String? bundletoolPath = argResults?['bundletool'] as String?;
-    bundletoolPath ??= buildEnv.bundletoolPath;
+    bundletoolPath ??= config.bundletoolPath;
     
     bundletoolPath = await converter.findBundletool(customPath: bundletoolPath);
     
@@ -110,7 +131,7 @@ class ConvertCommand extends Command<int> {
     String keyPropertiesPath = argResults?['key-properties'] as String? ?? '';
     
     if (keyPropertiesPath.isEmpty) {
-      keyPropertiesPath = p.join(projectRoot, buildEnv.keyPropertiesPath);
+      keyPropertiesPath = p.join(projectRoot, config.keystorePath);
     }
     
     if (!await File(keyPropertiesPath).exists()) {
@@ -149,7 +170,7 @@ class ConvertCommand extends Command<int> {
     // Output path
     String outputPath = argResults?['output'] as String? ?? '';
     if (outputPath.isEmpty) {
-      outputPath = buildEnv.absoluteOutputPath;
+      outputPath = config.absoluteOutputPath;
     }
 
     console.blank();

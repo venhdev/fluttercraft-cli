@@ -2,7 +2,6 @@ import 'package:args/command_runner.dart';
 
 import '../commands/build_command.dart';
 import '../commands/clean_command.dart';
-import '../commands/gen_env_command.dart';
 import '../commands/convert_command.dart';
 
 /// Centralized command registry for the CLI
@@ -19,18 +18,16 @@ class CommandRegistry {
   /// Create a new CommandRunner with all registered commands
   CommandRunner<int> createRunner() {
     return CommandRunner<int>(
-      'mycli',
-      'Flutter Build CLI - Cross-platform build system\n'
+      'buildcraft',
+      'BuildCraft CLI - Cross-platform Flutter build system\n'
       '\n'
       'Commands:\n'
       '  build     Build Flutter app (APK/AAB/IPA)\n'
       '  clean     Clean project and dist folder\n'
-      '  gen-env   Generate .buildenv from project detection\n'
       '  convert   Convert AAB to universal APK',
     )
       ..addCommand(BuildCommand())
       ..addCommand(CleanCommand())
-      ..addCommand(GenEnvCommand())
       ..addCommand(ConvertCommand());
   }
   
@@ -42,19 +39,17 @@ class CommandRegistry {
     return {
       'build': (args) async => await runner.run(['build', ...args]) ?? 0,
       'clean': (args) async => await runner.run(['clean', ...args]) ?? 0,
-      'gen-env': (args) async => await runner.run(['gen-env', ...args]) ?? 0,
       'convert': (args) async => await runner.run(['convert', ...args]) ?? 0,
     };
   }
   
   /// List of available command names
-  List<String> get commandNames => ['build', 'clean', 'gen-env', 'convert'];
+  List<String> get commandNames => ['build', 'clean', 'convert'];
   
   /// Get command descriptions for help display
   Map<String, String> get commandDescriptions => {
     'build': 'Build Flutter app (APK/AAB/IPA)',
     'clean': 'Clean project and dist folder',
-    'gen-env': 'Generate .buildenv from project detection',
     'convert': 'Convert AAB to universal APK',
   };
 }

@@ -19,7 +19,7 @@ void main(List<String> arguments) async {
   final registry = CommandRegistry();
   
   // Check if first argument is a known command
-  final knownCommands = ['build', 'clean', 'gen-env', 'convert'];
+  final knownCommands = ['build', 'clean', 'convert'];
   final firstArg = arguments.isNotEmpty ? arguments.first : '';
   final isCommand = knownCommands.contains(firstArg);
   
@@ -61,7 +61,7 @@ void main(List<String> arguments) async {
     
     // Handle --version
     if (globalResult['version'] == true) {
-      print('buildcraft v0.0.2-continuous-shell');
+      print('buildcraft v0.0.3');
       exit(0);
     }
     
@@ -107,12 +107,12 @@ Future<void> _runSingleCommand(CommandRegistry registry, List<String> arguments)
 }
 
 void _printUsage(ArgParser parser) {
-  print('mycli - Flutter Build CLI');
+  print('buildcraft - Flutter Build CLI');
   print('');
   print('Usage:');
-  print('  mycli                      Start interactive shell (default)');
-  print('  mycli --shell              Start interactive shell (explicit)');
-  print('  mycli <command> [options]  Run single command and exit');
+  print('  buildcraft                      Start interactive shell (default)');
+  print('  buildcraft --shell              Start interactive shell (explicit)');
+  print('  buildcraft <command> [options]  Run single command and exit');
   print('');
   print('Global Options:');
   print(parser.usage);
@@ -120,12 +120,14 @@ void _printUsage(ArgParser parser) {
   print('Commands:');
   print('  build     Build Flutter app (APK/AAB/IPA)');
   print('  clean     Clean project and dist folder');
-  print('  gen-env   Generate .buildenv from project detection');
   print('  convert   Convert AAB to universal APK');
   print('');
+  print('Configuration:');
+  print('  Create a buildcraft.yaml file in your project root.');
+  print('  See buildcraft.yaml.example for a template.');
+  print('');
   print('Examples:');
-  print('  mycli                             # Start interactive shell');
-  print('  mycli --interactive-mode numeric  # Shell with numeric menus');
-  print('  mycli build --type apk            # Build APK and exit');
-  print('  mycli clean                       # Clean and exit');
+  print('  buildcraft                    # Start interactive shell');
+  print('  buildcraft build --type apk   # Build APK and exit');
+  print('  buildcraft clean              # Clean and exit');
 }

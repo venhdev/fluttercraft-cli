@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 
-import '../core/build_env.dart';
+import '../core/build_config.dart';
 import '../core/flutter_runner.dart';
 import '../utils/console.dart';
 
@@ -36,11 +36,32 @@ class CleanCommand extends Command<int> {
 
     console.header('CLEAN PROJECT');
 
-    final buildEnv = BuildEnv(projectRoot: projectRoot);
-    await buildEnv.load();
+    // Load config
+    BuildConfig config;
+    try {
+      config = await BuildConfig.load();
+    } on ConfigNotFoundException {
+      // Use default output path if no config
+      config = BuildConfig(
+        projectRoot: projectRoot,
+        appName: 'app',
+        buildName: '1.0.0',
+        buildNumber: 1,
+        buildType: 'aab',
+        targetDart: 'lib/main.dart',
+        outputPath: 'dist',
+        useDartDefine: false,
+        needClean: false,
+        needBuildRunner: false,
+        useFvm: false,
+        useShorebird: false,
+        shorebirdAutoConfirm: true,
+        keystorePath: 'android/key.properties',
+      );
+    }
     
     final flutterRunner = FlutterRunner(projectRoot: projectRoot);
-    final distDir = Directory(buildEnv.absoluteOutputPath);
+    final distDir = Directory(config.absoluteOutputPath);
 
     // Show what will be cleaned
     console.section('Clean Targets');
@@ -65,7 +86,7 @@ class CleanCommand extends Command<int> {
       // Flutter clean (unless dist-only)
       if (argResults?['dist-only'] != true) {
         console.section('Running flutter clean...');
-        final result = await flutterRunner.clean(useFvm: buildEnv.useFvm);
+        final result = await flutterRunner.clean(useFvm: config.useFvm);
         
         if (result.success) {
           console.success('Flutter clean completed');

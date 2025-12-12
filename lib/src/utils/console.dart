@@ -11,15 +11,8 @@ class _AnsiColors {
   static const String green = '\x1B[32m';
   static const String yellow = '\x1B[33m';
   static const String blue = '\x1B[34m';
-  static const String magenta = '\x1B[35m';
   static const String cyan = '\x1B[36m';
   static const String white = '\x1B[37m';
-  
-  // Background colors
-  static const String bgRed = '\x1B[41m';
-  static const String bgGreen = '\x1B[42m';
-  static const String bgYellow = '\x1B[43m';
-  static const String bgBlue = '\x1B[44m';
 }
 
 /// Console utility for pretty terminal output
@@ -96,7 +89,7 @@ class Console {
   /// Print a key-value pair
   void keyValue(String key, String value, {int keyWidth = 16}) {
     final paddedKey = key.padRight(keyWidth);
-    print('  ${_colorize(paddedKey, _AnsiColors.dim)}: ${_colorize(value, _AnsiColors.white)}');
+    print('  ${_colorize(paddedKey, _AnsiColors.blue)}: ${_colorize(value, _AnsiColors.white)}');
   }
 
   // ─────────────────────────────────────────────────────────────────

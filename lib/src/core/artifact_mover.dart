@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../utils/console.dart';
-import 'build_env.dart';
+import 'build_config.dart';
 
 /// Result of artifact moving operation
 class ArtifactResult {
@@ -29,7 +29,7 @@ class ArtifactMover {
   }) : _console = console ?? Console();
 
   /// Move build artifacts to output directory
-  Future<ArtifactResult> moveArtifacts(BuildEnv config) async {
+  Future<ArtifactResult> moveArtifacts(BuildConfig config) async {
     final buildType = config.buildType.toLowerCase();
     final outputDir = config.absoluteOutputPath;
     final fullAppName = config.fullAppName;
@@ -60,12 +60,12 @@ class ArtifactMover {
 
   /// Move APK artifact
   Future<ArtifactResult> _moveApk(
-    BuildEnv config,
+    BuildConfig config,
     String outputDir,
     String fullAppName,
   ) async {
     final srcPath = p.join(projectRoot, 'build', 'app', 'outputs', 'flutter-apk');
-    final flavor = config.flavor;
+    final flavor = config.flavor ?? '';
     
     // Possible APK file patterns
     final patterns = <String>[
@@ -92,12 +92,12 @@ class ArtifactMover {
 
   /// Move AAB artifact
   Future<ArtifactResult> _moveAab(
-    BuildEnv config,
+    BuildConfig config,
     String outputDir,
     String fullAppName,
   ) async {
     final srcPath = p.join(projectRoot, 'build', 'app', 'outputs', 'bundle');
-    final flavor = config.flavor;
+    final flavor = config.flavor ?? '';
     
     // Possible AAB file patterns
     final patterns = <String>[
@@ -123,7 +123,7 @@ class ArtifactMover {
 
   /// Move IPA artifact
   Future<ArtifactResult> _moveIpa(
-    BuildEnv config,
+    BuildConfig config,
     String outputDir,
     String fullAppName,
   ) async {
@@ -155,7 +155,7 @@ class ArtifactMover {
 
   /// Move macOS app artifact
   Future<ArtifactResult> _moveMacOsApp(
-    BuildEnv config,
+    BuildConfig config,
     String outputDir,
     String fullAppName,
   ) async {

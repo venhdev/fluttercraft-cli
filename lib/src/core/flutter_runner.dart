@@ -1,6 +1,6 @@
 import '../utils/process_runner.dart';
 import '../utils/console.dart';
-import 'build_env.dart';
+import 'build_config.dart';
 
 /// Handles execution of Flutter, FVM, and Shorebird commands
 class FlutterRunner {
@@ -54,7 +54,7 @@ class FlutterRunner {
   }
 
   /// Build Flutter app
-  Future<ProcessResult> build(BuildEnv config) async {
+  Future<ProcessResult> build(BuildConfig config) async {
     _console.section('Building ${config.buildType.toUpperCase()}...');
     
     // Determine platform from build type
@@ -69,6 +69,29 @@ class FlutterRunner {
       return _buildWithFvm(platform, flutterArgs);
     } else {
       return _buildWithFlutter(platform, flutterArgs);
+    }
+  }
+
+  /// Get the full build command for logging
+  String getBuildCommand(BuildConfig config) {
+    final platform = _getPlatform(config.buildType);
+    final flutterArgs = _buildFlutterArgs(config);
+    
+    if (config.useShorebird) {
+      final sbArgs = <String>['shorebird', 'release', 'android'];
+      if (config.buildType == 'apk') {
+        sbArgs.addAll(['--artifact', 'apk']);
+      }
+      if (config.shorebirdAutoConfirm) {
+        sbArgs.add('--no-confirm');
+      }
+      sbArgs.add('--');
+      sbArgs.addAll(flutterArgs);
+      return sbArgs.join(' ');
+    } else if (config.useFvm) {
+      return 'fvm flutter build $platform ${flutterArgs.join(' ')}';
+    } else {
+      return 'flutter build $platform ${flutterArgs.join(' ')}';
     }
   }
 
@@ -90,10 +113,10 @@ class FlutterRunner {
   }
 
   /// Build flutter command arguments
-  List<String> _buildFlutterArgs(BuildEnv config) {
+  List<String> _buildFlutterArgs(BuildConfig config) {
     final args = <String>['--release'];
     
-    if (config.flavor.isNotEmpty) {
+    if (config.flavor != null && config.flavor!.isNotEmpty) {
       args.add('--flavor=${config.flavor}');
     }
     
@@ -104,7 +127,7 @@ class FlutterRunner {
     args.add('--build-name=${config.buildName}');
     args.add('--build-number=${config.buildNumber}');
     
-    if (config.envPath.isNotEmpty) {
+    if (config.envPath != null && config.envPath!.isNotEmpty) {
       args.add('--dart-define-from-file=${config.envPath}');
     }
     
@@ -113,7 +136,7 @@ class FlutterRunner {
 
   /// Build with Shorebird
   Future<ProcessResult> _buildWithShorebird(
-    BuildEnv config,
+    BuildConfig config,
     List<String> flutterArgs,
   ) async {
     _console.info('Using Shorebird for build');
@@ -129,10 +152,10 @@ class FlutterRunner {
     }
     
     // Manual artifact override
-    if (config.shorebirdArtifact.isNotEmpty) {
+    if (config.shorebirdArtifact != null && config.shorebirdArtifact!.isNotEmpty) {
       // Remove any existing artifact args
       sbArgs.removeWhere((arg) => arg == '--artifact' || arg == 'apk' || arg == 'aab');
-      sbArgs.addAll(['--artifact', config.shorebirdArtifact]);
+      sbArgs.addAll(['--artifact', config.shorebirdArtifact!]);
       _console.info('Shorebird → using manual artifact: ${config.shorebirdArtifact}');
     }
     
@@ -140,7 +163,7 @@ class FlutterRunner {
       sbArgs.add('--no-confirm');
     }
     
-    if (config.flutterVersion.isNotEmpty) {
+    if (config.flutterVersion != null && config.flutterVersion!.isNotEmpty) {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
     

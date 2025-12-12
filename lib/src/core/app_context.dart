@@ -1,24 +1,24 @@
 import 'dart:io';
 
-import 'build_env.dart';
+import 'build_config.dart';
 import 'pubspec_parser.dart';
 
 /// Shared runtime context that holds configuration loaded once at startup
 /// 
 /// This class encapsulates:
-/// - BuildEnv (.buildenv configuration)
+/// - BuildConfig (buildcraft.yaml configuration)
 /// - PubspecInfo (pubspec.yaml data)
 /// - Project paths and environment info
 /// 
 /// Load once with [AppContext.load()] and pass to commands/flows.
 class AppContext {
-  final BuildEnv buildEnv;
+  final BuildConfig config;
   final PubspecInfo? pubspecInfo;
   final String projectRoot;
   final DateTime loadedAt;
   
   AppContext._({
-    required this.buildEnv,
+    required this.config,
     this.pubspecInfo,
     required this.projectRoot,
     required this.loadedAt,
@@ -28,56 +28,73 @@ class AppContext {
   static Future<AppContext> load({String? projectRoot}) async {
     final root = projectRoot ?? Directory.current.path;
     
-    // Load buildenv
-    final buildEnv = BuildEnv(projectRoot: root);
-    await buildEnv.load();
+    // Load config from buildcraft.yaml
+    BuildConfig config;
+    try {
+      config = await BuildConfig.load();
+    } on ConfigNotFoundException {
+      // Create default config if not found
+      config = BuildConfig(
+        projectRoot: root,
+        appName: 'app',
+        buildName: '1.0.0',
+        buildNumber: 1,
+        buildType: 'aab',
+        targetDart: 'lib/main.dart',
+        outputPath: 'dist',
+        useDartDefine: false,
+        needClean: false,
+        needBuildRunner: false,
+        useFvm: false,
+        useShorebird: false,
+        shorebirdAutoConfirm: true,
+        keystorePath: 'android/key.properties',
+      );
+    }
     
     // Load pubspec
     final pubspecParser = PubspecParser(projectRoot: root);
     final pubspecInfo = await pubspecParser.parse();
     
     return AppContext._(
-      buildEnv: buildEnv,
+      config: config,
       pubspecInfo: pubspecInfo,
       projectRoot: root,
       loadedAt: DateTime.now(),
     );
   }
   
-  /// Reload configuration (e.g., after gen-env)
+  /// Reload configuration
   Future<AppContext> reload() async {
     return AppContext.load(projectRoot: projectRoot);
   }
   
   // ─────────────────────────────────────────────────────────────────
-  // Convenience getters (delegate to BuildEnv/PubspecInfo)
+  // Convenience getters (delegate to BuildConfig/PubspecInfo)
   // ─────────────────────────────────────────────────────────────────
   
-  /// App name from buildenv or pubspec
-  String get appName => buildEnv.appName.isNotEmpty 
-      ? buildEnv.appName 
+  /// App name from config or pubspec
+  String get appName => config.appName.isNotEmpty 
+      ? config.appName 
       : (pubspecInfo?.name ?? 'app');
   
-  /// Current version from pubspec
-  String get version => pubspecInfo?.fullVersion ?? buildEnv.fullVersion;
+  /// Current version from pubspec or config
+  String get version => pubspecInfo?.fullVersion ?? config.fullVersion;
   
-  /// Build type (apk, aab, ipa)
-  String get buildType => buildEnv.buildType;
+  /// Build type (apk, aab, ipa, app)
+  String get buildType => config.buildType;
   
   /// Flavor (dev, staging, prod)
-  String get flavor => buildEnv.flavor;
+  String? get flavor => config.flavor;
   
   /// Output path for artifacts
-  String get outputPath => buildEnv.absoluteOutputPath;
+  String get outputPath => config.absoluteOutputPath;
   
   /// Whether to use FVM
-  bool get useFvm => buildEnv.useFvm;
+  bool get useFvm => config.useFvm;
   
   /// Whether to use Shorebird
-  bool get useShorebird => buildEnv.useShorebird;
-  
-  /// Check if buildenv file exists
-  Future<bool> get hasBuildEnv => buildEnv.exists();
+  bool get useShorebird => config.useShorebird;
   
   /// Check if pubspec exists
   bool get hasPubspec => pubspecInfo != null;
@@ -96,6 +113,7 @@ class AppContext {
         '  buildType: $buildType,\n'
         '  flavor: $flavor,\n'
         '  useFvm: $useFvm,\n'
+        '  useShorebird: $useShorebird,\n'
         '  projectRoot: $projectRoot,\n'
         '  loadedAt: $loadedAt\n'
         ')';
