@@ -7,3 +7,4 @@ export 'version_manager.dart';
 export 'flutter_runner.dart';
 export 'artifact_mover.dart';
 export 'apk_converter.dart';
+export 'command_registry.dart';
