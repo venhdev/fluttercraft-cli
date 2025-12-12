@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../core/app_context.dart';
 import '../flows/build_flow.dart';
 import '../utils/console.dart';
 import 'interactive_mode.dart';
@@ -13,6 +14,7 @@ import 'menu.dart';
 class Shell {
   final Console console;
   final InteractiveMode interactiveMode;
+  final AppContext? appContext;
   final Map<String, Future<int> Function(List<String> args)> _commands = {};
   
   bool _running = false;
@@ -20,6 +22,7 @@ class Shell {
   Shell({
     Console? console,
     this.interactiveMode = InteractiveMode.arrow,
+    this.appContext,
   }) : console = console ?? Console();
   
   /// Register a command handler
@@ -95,6 +98,11 @@ class Shell {
       case 'w':
         await _runBuildWizard();
         return;
+        
+      case 'context':
+      case 'ctx':
+        _showContext();
+        return;
     }
     
     // Check registered commands
@@ -134,6 +142,7 @@ class Shell {
     console.keyValue('version', 'Show CLI version');
     console.keyValue('demo', 'Test interactive menu');
     console.keyValue('wizard, w', 'Build wizard (multi-step)');
+    console.keyValue('context, ctx', 'Show loaded context');
     console.blank();
     
     // Registered commands
@@ -221,6 +230,35 @@ class Shell {
     } else {
       console.warning('Build wizard cancelled.');
     }
+  }
+  
+  /// Show loaded context info
+  void _showContext() {
+    console.section('Runtime Context');
+    console.blank();
+    
+    if (appContext == null) {
+      console.warning('No context loaded.');
+      console.info('Context is loaded automatically when shell starts.');
+      return;
+    }
+    
+    final ctx = appContext!;
+    console.keyValue('App Name', ctx.appName);
+    console.keyValue('Version', ctx.version);
+    console.keyValue('Build Type', ctx.buildType);
+    console.keyValue('Flavor', ctx.flavor.isEmpty ? '(none)' : ctx.flavor);
+    console.keyValue('Output Path', ctx.outputPath);
+    console.keyValue('Use FVM', ctx.useFvm.toString());
+    console.keyValue('Use Shorebird', ctx.useShorebird.toString());
+    console.keyValue('Project Root', ctx.projectRoot);
+    console.keyValue('Loaded At', ctx.loadedAt.toString());
+    console.keyValue('Context Age', '${ctx.age.inSeconds}s');
+    
+    if (ctx.isStale) {
+      console.warning('Context is stale (>5 min). Run "reload" to refresh.');
+    }
+    console.blank();
   }
   
   /// Stop the shell (can be called from external handlers)

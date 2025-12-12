@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 
+import 'package:mobile_build_cli/src/core/app_context.dart';
 import 'package:mobile_build_cli/src/core/command_registry.dart';
 import 'package:mobile_build_cli/src/ui/shell.dart';
 import 'package:mobile_build_cli/src/ui/interactive_mode.dart';
@@ -77,8 +78,15 @@ void main(List<String> arguments) async {
       globalResult['interactive-mode'] as String?,
     );
     
+    // Load AppContext
+    print('Loading project context...');
+    final appContext = await AppContext.load();
+    
     // Start interactive shell
-    final shell = Shell(interactiveMode: interactiveMode);
+    final shell = Shell(
+      interactiveMode: interactiveMode,
+      appContext: appContext,
+    );
     
     // Register commands
     final commands = registry.getShellCommands();

@@ -1,6 +1,7 @@
 // Core barrel file
 // Export all core business logic classes here
 
+export 'app_context.dart';
 export 'build_env.dart';
 export 'pubspec_parser.dart';
 export 'version_manager.dart';
