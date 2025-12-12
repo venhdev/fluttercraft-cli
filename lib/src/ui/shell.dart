@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../utils/console.dart';
 import 'interactive_mode.dart';
+import 'menu.dart';
 
 /// Interactive Shell REPL for the CLI
 /// 
@@ -84,6 +85,10 @@ class Shell {
       case 'version':
         console.info('mycli v0.0.2-continuous-shell');
         return;
+        
+      case 'demo':
+        await _runDemo();
+        return;
     }
     
     // Check registered commands
@@ -121,6 +126,7 @@ class Shell {
     console.keyValue('exit, quit, q', 'Exit the shell');
     console.keyValue('clear, cls', 'Clear the screen');
     console.keyValue('version', 'Show CLI version');
+    console.keyValue('demo', 'Test interactive menu');
     console.blank();
     
     // Registered commands
@@ -144,6 +150,36 @@ class Shell {
     } else {
       stdout.write('\x1B[2J\x1B[H');
     }
+  }
+  
+  /// Run interactive menu demo
+  Future<void> _runDemo() async {
+    console.section('Interactive Menu Demo');
+    console.blank();
+    
+    // Demo arrow-key menu
+    final target = await Menu.select(
+      title: 'Select build target:',
+      options: ['apk', 'aab', 'ipa', 'macos'],
+      mode: interactiveMode,
+    );
+    
+    if (target == null) {
+      console.warning('Selection cancelled.');
+      return;
+    }
+    
+    console.success('Selected: $target');
+    console.blank();
+    
+    // Demo confirm
+    final confirmed = await Menu.confirm(
+      message: 'Would you like to continue?',
+    );
+    console.info('Confirmed: $confirmed');
+    console.blank();
+    
+    console.success('Demo complete!');
   }
   
   /// Stop the shell (can be called from external handlers)
