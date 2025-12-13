@@ -37,7 +37,7 @@ flags:
 # ──────────────────────────────────────────────
 fvm:
   enabled: true             # USE_FVM - use FVM for flutter commands
-  version: null              # FLUTTER_VERSION - pinned version (optional)
+  version: null              # FLUTTER_VERSION - pinned version (optional, auto-detected from .fvmrc if null)
 
 # ──────────────────────────────────────────────
 # Shorebird integration

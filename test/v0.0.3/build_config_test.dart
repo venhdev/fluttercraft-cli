@@ -17,11 +17,12 @@ void main() {
       } catch (_) {}
     });
 
-    test('throws ConfigNotFoundException when file does not exist', () async {
-      expect(
-        () => BuildConfig.load(configPath: '$tempDir/nonexistent.yaml'),
-        throwsA(isA<ConfigNotFoundException>()),
-      );
+    test('returns default config when file does not exist', () async {
+      final config = await BuildConfig.load(configPath: '$tempDir/nonexistent.yaml');
+      
+      expect(config.appName, 'app'); // default
+      expect(config.buildName, '1.0.0'); // default
+      expect(config.useFvm, false); // default
     });
 
     test('parses minimal config with defaults', () async {
@@ -138,6 +139,62 @@ shorebird:
         () => BuildConfig.load(configPath: configFile.path),
         throwsA(isA<ConfigParseException>()),
       );
+    });
+
+    test('auto-detects FVM version from .fvmrc when version is null', () async {
+      // Create .fvmrc file in temp directory
+      final fvmrcFile = File('$tempDir/.fvmrc');
+      await fvmrcFile.writeAsString('''{
+  "flutter": "3.35.3"
+}''');
+
+      // Create config with FVM enabled but version null
+      final configFile = File('$tempDir/flutterbuild.yaml');
+      await configFile.writeAsString('''
+app:
+  name: testapp
+
+fvm:
+  enabled: true
+  version: null
+''');
+
+      // Change to temp directory to test detection
+      final originalDir = Directory.current;
+      Directory.current = tempDir;
+
+      try {
+        final config = await BuildConfig.load(configPath: configFile.path);
+        
+        expect(config.useFvm, true);
+        expect(config.flutterVersion, '3.35.3');
+      } finally {
+        Directory.current = originalDir;
+      }
+    });
+
+    test('uses explicit version when provided even if .fvmrc exists', () async {
+      // Create .fvmrc file
+      final fvmrcFile = File('$tempDir/.fvmrc');
+      await fvmrcFile.writeAsString('''{
+  "flutter": "3.35.3"
+}''');
+
+      // Create config with explicit version
+      final configFile = File('$tempDir/flutterbuild.yaml');
+      await configFile.writeAsString('''
+app:
+  name: testapp
+
+fvm:
+  enabled: true
+  version: 3.24.0
+''');
+
+      final config = await BuildConfig.load(configPath: configFile.path);
+      
+      expect(config.useFvm, true);
+      expect(config.flutterVersion, '3.24.0'); // Should use explicit version
     });
   });
 }

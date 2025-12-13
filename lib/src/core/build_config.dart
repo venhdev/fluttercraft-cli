@@ -135,7 +135,12 @@ class BuildConfig {
     // FVM section
     final fvm = yaml['fvm'] as YamlMap?;
     final useFvm = _getBool(fvm, 'enabled', false);
-    final flutterVersion = _getStringOrNull(fvm, 'version');
+    var flutterVersion = _getStringOrNull(fvm, 'version');
+    
+    // Auto-detect FVM version from .fvmrc if enabled but version is null
+    if (useFvm && flutterVersion == null) {
+      flutterVersion = _detectFvmVersion(projectRoot);
+    }
     
     // Shorebird section
     final shorebird = yaml['shorebird'] as YamlMap?;
@@ -203,6 +208,34 @@ class BuildConfig {
     if (value == null) return defaultValue;
     if (value is bool) return value;
     return value.toString().toLowerCase() == 'true';
+  }
+
+  /// Detect FVM version from .fvmrc file
+  /// 
+  /// Reads the .fvmrc JSON file in the project root and extracts the Flutter version.
+  /// Returns null if the file doesn't exist or cannot be parsed.
+  static String? _detectFvmVersion(String projectRoot) {
+    try {
+      final fvmrcPath = p.join(projectRoot, '.fvmrc');
+      final fvmrcFile = File(fvmrcPath);
+      
+      if (!fvmrcFile.existsSync()) {
+        return null;
+      }
+      
+      final content = fvmrcFile.readAsStringSync();
+      final json = loadYaml(content) as YamlMap?;
+      
+      if (json == null) {
+        return null;
+      }
+      
+      final version = json['flutter'];
+      return version?.toString();
+    } catch (e) {
+      // If we can't read or parse .fvmrc, return null
+      return null;
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────
