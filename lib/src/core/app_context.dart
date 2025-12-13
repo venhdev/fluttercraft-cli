@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'build_config.dart';
 import 'pubspec_parser.dart';
 
@@ -16,51 +18,37 @@ class AppContext {
   final PubspecInfo? pubspecInfo;
   final String projectRoot;
   final DateTime loadedAt;
+  final bool hasConfigFile;
   
   AppContext._({
     required this.config,
     this.pubspecInfo,
     required this.projectRoot,
     required this.loadedAt,
+    required this.hasConfigFile,
   });
   
   /// Load context from current directory
   static Future<AppContext> load({String? projectRoot}) async {
     final root = projectRoot ?? Directory.current.path;
     
-    // Load config from flutterbuild.yaml
-    BuildConfig config;
-    try {
-      config = await BuildConfig.load();
-    } on ConfigNotFoundException {
-      // Create default config if not found
-      config = BuildConfig(
-        projectRoot: root,
-        appName: 'app',
-        buildName: '1.0.0',
-        buildNumber: 1,
-        buildType: 'aab',
-        targetDart: 'lib/main.dart',
-        outputPath: 'dist',
-        useDartDefine: false,
-        needClean: false,
-        needBuildRunner: false,
-        useFvm: false,
-        useShorebird: false,
-        shorebirdAutoConfirm: true,
-        keystorePath: 'android/key.properties',
-      );
-    }
-    
-    // Load pubspec
+    // Load pubspec first
     final pubspecParser = PubspecParser(projectRoot: root);
     final pubspecInfo = await pubspecParser.parse();
+    
+    // Check if flutterbuild.yaml exists
+    final configPath = p.join(root, 'flutterbuild.yaml');
+    final hasConfigFile = await File(configPath).exists();
+    
+    // Load config with pubspec fallback
+    final config = await BuildConfig.load(pubspecInfo: pubspecInfo);
     
     return AppContext._(
       config: config,
       pubspecInfo: pubspecInfo,
       projectRoot: root,
       loadedAt: DateTime.now(),
+      hasConfigFile: hasConfigFile,
     );
   }
   

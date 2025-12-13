@@ -1,6 +1,6 @@
 name: flutterbuild
 description: Flutter build CLI - cross-platform build system
-version: 0.0.3
+version: 0.0.4
 repository: https://github.com/venhdev/mobile-build-cli.git
 
 environment:

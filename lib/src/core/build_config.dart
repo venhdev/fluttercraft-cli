@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
+import 'pubspec_parser.dart';
+
 /// Configuration loaded from buildcraft.yaml
 class BuildConfig {
   final String projectRoot;
@@ -62,15 +64,36 @@ class BuildConfig {
   });
 
   /// Load configuration from flutterbuild.yaml
-  static Future<BuildConfig> load({String? configPath}) async {
+  /// 
+  /// If [pubspecInfo] is provided and flutterbuild.yaml doesn't exist,
+  /// creates a default config using pubspec data.
+  static Future<BuildConfig> load({
+    String? configPath,
+    PubspecInfo? pubspecInfo,
+  }) async {
     final projectRoot = Directory.current.path;
     final path = configPath ?? p.join(projectRoot, 'flutterbuild.yaml');
     
     final file = File(path);
     if (!await file.exists()) {
-      throw ConfigNotFoundException(
-        'flutterbuild.yaml not found at: $path\n'
-        'Create a flutterbuild.yaml file in your project root.',
+      // Return default config with pubspec fallback
+      return BuildConfig(
+        projectRoot: projectRoot,
+        appName: pubspecInfo?.name ?? 'app',
+        buildName: pubspecInfo?.buildName ?? '1.0.0',
+        buildNumber: pubspecInfo != null 
+            ? int.tryParse(pubspecInfo.buildNumber) ?? 1 
+            : 1,
+        buildType: 'aab',
+        targetDart: 'lib/main.dart',
+        outputPath: 'dist',
+        useDartDefine: false,
+        needClean: false,
+        needBuildRunner: false,
+        useFvm: false,
+        useShorebird: false,
+        shorebirdAutoConfirm: true,
+        keystorePath: 'android/key.properties',
       );
     }
     

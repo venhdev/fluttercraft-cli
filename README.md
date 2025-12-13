@@ -10,8 +10,10 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - 🔧 **Build** - Build APK/AAB/IPA with version management
 - 🧹 **Clean** - Clean project and dist folder
 - 📦 **Convert** - Convert AAB to universal APK using bundletool
+- ⚙️ **Gen** - Generate flutterbuild.yaml configuration file
 - 🎯 **FVM Support** - Automatic FVM detection and usage
 - 🐦 **Shorebird Support** - Integrated Shorebird release builds
+- 🚀 **Smart Defaults** - Works without config, reads from pubspec.yaml
 
 ## Installation
 
@@ -56,7 +58,7 @@ flb>
 - `help` - Show available commands
 - `context` / `ctx` - Show loaded project context
 - `version` / `v` - Show version
-- `build`, `clean`, `convert` - Regular commands
+- `build`, `clean`, `convert`, `gen` - Regular commands
 - `exit` / `quit` / `q` - Exit shell
 
 ## Commands
@@ -131,12 +133,47 @@ Options:
 - `--bundletool` - Path to bundletool.jar
 - `--key-properties` - Path to key.properties
 
+### `flb gen`
+
+Generate `flutterbuild.yaml` configuration file.
+
+```powershell
+# Generate config (reads app name/version from pubspec.yaml)
+flb gen
+
+# Overwrite existing config
+flb gen --force
+```
+
+Options:
+- `--force, -f` - Overwrite existing flutterbuild.yaml
+
+**What it does:**
+- Creates `flutterbuild.yaml` in your project root
+- Automatically populates app name and version from `pubspec.yaml`
+- Sets sensible defaults for all other settings
+
 ## Configuration
+
+### First Run
+
+**Good news!** The CLI works without any configuration file. On first run:
+
+1. **No `flutterbuild.yaml`?** The CLI will:
+   - Read app name and version from `pubspec.yaml`
+   - Use sensible defaults for all settings
+   - Show a warning: "⚠ No flutterbuild.yaml found. Run 'gen' to create one."
+
+2. **Generate config** (recommended):
+   ```powershell
+   flb gen
+   ```
+   This creates `flutterbuild.yaml` with your app's name and version pre-filled.
 
 ### `flutterbuild.yaml` File
 
 The build configuration is stored in `flutterbuild.yaml` at the project root.
-Copy `flutterbuild.yaml.example` to get started.
+Generate it with `flb gen` or copy `flutterbuild.yaml.example`.
 
 ```yaml
 # ──────────────────────────────────────────────

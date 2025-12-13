@@ -77,7 +77,7 @@ class Shell {
         
       case 'version':
       case 'v':
-        console.info('flb v0.0.3');
+        console.info('flb v0.0.4');
         return;
         
       case 'context':
@@ -103,9 +103,16 @@ class Shell {
     print('');
     print('\x1B[1m\x1B[36m┌─────────────────────────────────────────┐\x1B[0m');
     print('\x1B[1m\x1B[36m│         FlutterBuild CLI                │\x1B[0m');
-    print('\x1B[1m\x1B[36m│         v0.0.3                          │\x1B[0m');
+    print('\x1B[1m\x1B[36m│         v0.0.4                          │\x1B[0m');
     print('\x1B[1m\x1B[36m└─────────────────────────────────────────┘\x1B[0m');
     print('');
+    
+    // Show warning if flutterbuild.yaml doesn't exist
+    if (appContext != null && !appContext!.hasConfigFile) {
+      console.warning('⚠ No flutterbuild.yaml found. Run \'gen\' to create one.');
+      print('');
+    }
+    
     console.info('Type "help" for available commands, "exit" to quit.');
     print('');
   }

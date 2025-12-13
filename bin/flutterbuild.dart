@@ -19,7 +19,7 @@ void main(List<String> arguments) async {
   final registry = CommandRegistry();
   
   // Check if first argument is a known command
-  final knownCommands = ['build', 'clean', 'convert'];
+  final knownCommands = ['build', 'clean', 'convert', 'gen'];
   final firstArg = arguments.isNotEmpty ? arguments.first : '';
   final isCommand = knownCommands.contains(firstArg);
   
@@ -61,7 +61,7 @@ void main(List<String> arguments) async {
     
     // Handle --version
     if (globalResult['version'] == true) {
-      print('flb v0.0.3');
+      print('flb v0.0.4');
       exit(0);
     }
     
@@ -121,13 +121,15 @@ void _printUsage(ArgParser parser) {
   print('  build     Build Flutter app (APK/AAB/IPA)');
   print('  clean     Clean project and dist folder');
   print('  convert   Convert AAB to universal APK');
+  print('  gen       Generate flutterbuild.yaml');
   print('');
   print('Configuration:');
   print('  Create a flutterbuild.yaml file in your project root.');
-  print('  See flutterbuild.yaml.example for a template.');
+  print('  Run \'flb gen\' to generate a template.');
   print('');
   print('Examples:');
   print('  flb                    # Start interactive shell');
   print('  flb build --type apk   # Build APK and exit');
+  print('  flb gen                # Generate flutterbuild.yaml');
   print('  flb clean              # Clean and exit');
 }

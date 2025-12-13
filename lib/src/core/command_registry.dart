@@ -3,6 +3,7 @@ import 'package:args/command_runner.dart';
 import '../commands/build_command.dart';
 import '../commands/clean_command.dart';
 import '../commands/convert_command.dart';
+import '../commands/gen_command.dart';
 
 /// Centralized command registry for the CLI
 /// 
@@ -26,11 +27,13 @@ class CommandRegistry {
       'Commands:\n'
       '  build     Build Flutter app (APK/AAB/IPA)\n'
       '  clean     Clean project and dist folder\n'
-      '  convert   Convert AAB to universal APK',
+      '  convert   Convert AAB to universal APK\n'
+      '  gen       Generate flutterbuild.yaml',
     )
       ..addCommand(BuildCommand())
       ..addCommand(CleanCommand())
-      ..addCommand(ConvertCommand());
+      ..addCommand(ConvertCommand())
+      ..addCommand(GenCommand());
   }
   
   /// Get a map of command names to their execution handlers
@@ -42,16 +45,18 @@ class CommandRegistry {
       'build': (args) async => await runner.run(['build', ...args]) ?? 0,
       'clean': (args) async => await runner.run(['clean', ...args]) ?? 0,
       'convert': (args) async => await runner.run(['convert', ...args]) ?? 0,
+      'gen': (args) async => await runner.run(['gen', ...args]) ?? 0,
     };
   }
   
   /// List of available command names
-  List<String> get commandNames => ['build', 'clean', 'convert'];
+  List<String> get commandNames => ['build', 'clean', 'convert', 'gen'];
   
   /// Get command descriptions for help display
   Map<String, String> get commandDescriptions => {
     'build': 'Build Flutter app (APK/AAB/IPA)',
     'clean': 'Clean project and dist folder',
     'convert': 'Convert AAB to universal APK',
+    'gen': 'Generate flutterbuild.yaml',
   };
 }
