@@ -141,7 +141,6 @@ class Shell {
   /// Show loaded context info
   void _showContext() {
     console.section('Runtime Context');
-    console.blank();
     
     if (appContext == null) {
       console.warning('No context loaded.');
@@ -150,21 +149,35 @@ class Shell {
     }
     
     final ctx = appContext!;
+    
+    // Application Info
+    console.section('Application');
     console.keyValue('App Name', ctx.appName);
     console.keyValue('Version', ctx.version);
+    
+    // Build Configuration
+    console.section('Build Configuration');
     console.keyValue('Build Type', ctx.buildType);
     console.keyValue('Flavor', (ctx.flavor == null || ctx.flavor!.isEmpty) ? '(none)' : ctx.flavor!);
     console.keyValue('Output Path', ctx.outputPath);
+    
+    // Tools & Integrations
+    console.section('Tools & Integrations');
     console.keyValue('Use FVM', ctx.useFvm.toString());
     console.keyValue('Use Shorebird', ctx.useShorebird.toString());
+    
+    // Project Info
+    console.section('Project');
     console.keyValue('Project Root', ctx.projectRoot);
+    
+    // Context Metadata
+    console.section('Context Metadata');
     console.keyValue('Loaded At', ctx.loadedAt.toString());
     console.keyValue('Context Age', '${ctx.age.inSeconds}s');
     
     if (ctx.isStale) {
       console.warning('Context is stale (>5 min). Run "reload" to refresh.');
     }
-    console.blank();
   }
   
   /// Stop the shell (can be called from external handlers)

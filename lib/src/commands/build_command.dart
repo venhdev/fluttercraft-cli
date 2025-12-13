@@ -228,6 +228,13 @@ class BuildCommand extends Command<int> {
     console.keyValue('Use Shorebird', buildConfig.useShorebird.toString());
     console.keyValue('Build ID', buildId);
     console.blank();
+    
+    // Show the full command that will be executed
+    console.section('Build Command');
+    console.info('The following command will be executed:');
+    console.blank();
+    console.info('  $buildCmd');
+    console.blank();
 
     // Confirmation
     if (argResults?['no-confirm'] != true) {

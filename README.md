@@ -7,7 +7,6 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - 🖥️ **Interactive Shell** - Continuous REPL experience
 - 🔧 **Build** - Build APK/AAB/IPA with version management
 - 🧹 **Clean** - Clean project and dist folder
-- ⚙️ **Gen-Env** - Auto-detect project settings and generate `.buildenv`
 - 📦 **Convert** - Convert AAB to universal APK using bundletool
 - 🎯 **FVM Support** - Automatic FVM detection and usage
 - 🐦 **Shorebird Support** - Integrated Shorebird release builds
@@ -52,25 +51,10 @@ buildcraft
 - `help` - Show available commands
 - `demo` - Test interactive menus
 - `context` - Show loaded project context
-- `build`, `clean`, `gen-env`, `convert` - Regular commands
+- `build`, `clean`, `convert` - Regular commands
 - `exit` / `q` - Exit shell
 
 ## Commands
-
-### `buildcraft gen-env`
-
-Generate `.buildenv` configuration from project detection.
-
-```powershell
-buildcraft gen-env
-buildcraft gen-env --force  # Overwrite existing
-```
-
-Detects:
-- App name and version from `pubspec.yaml`
-- FVM configuration from `.fvmrc`
-- Shorebird configuration from `shorebird.yaml`
-- Main entry point
 
 ### `buildcraft build`
 
@@ -117,6 +101,10 @@ buildcraft clean --dist-only
 buildcraft clean -y
 ```
 
+Options:
+- `--dist-only` - Only remove dist folder
+- `--yes, -y` - Skip confirmation prompts
+
 ### `buildcraft convert`
 
 Convert AAB to universal APK using bundletool.
@@ -132,54 +120,79 @@ buildcraft convert --aab path/to/app.aab
 buildcraft convert --output ./releases
 ```
 
+Options:
+- `--aab, -a` - Path to AAB file
+- `--output, -o` - Output directory
+- `--bundletool` - Path to bundletool.jar
+- `--key-properties` - Path to key.properties
+
 ## Configuration
 
-### `.buildenv` File
+### `buildcraft.yaml` File
 
-The build configuration is stored in `scripts/.buildenv`:
+The build configuration is stored in `buildcraft.yaml` at the project root.
+Copy `buildcraft.yaml.example` to get started.
 
-```ini
-APPNAME=myapp
-BUILD_NAME=1.0.0
-BUILD_NUMBER=1
-BUILD_TYPE=aab
+```yaml
+# ──────────────────────────────────────────────
+# App info (from pubspec or override here)
+# ──────────────────────────────────────────────
+app:
+  name: testapp                # generated filename prefix
 
-OUTPUT_PATH=dist
-ENV_PATH=./.env
-TARGET_DART=lib/main.dart
-FLAVOR=
+# ──────────────────────────────────────────────
+# Core build settings
+# ──────────────────────────────────────────────
+build:
+  name: 1.0.1                # version
+  number: 10                  # build number
+  type: apk                  # default build type
+  flavor: null               # flavor name
+  target: lib/main.dart      # entry point
 
-USE_FVM=true
-FLUTTER_VERSION=3.9.2
+# ──────────────────────────────────────────────
+# Output & Input paths
+# ──────────────────────────────────────────────
+paths:
+  output: dist               # output directory
+  env: ./.env                # env file path
 
-USE_SHOREBIRD=false
-SHOREBIRD_ARTIFACT=
-SHOREBIRD_AUTO_CONFIRM=true
+# ──────────────────────────────────────────────
+# Build flags
+# ──────────────────────────────────────────────
+flags:
+  use_dart_define: false     # use --dart-define-from-file
+  need_clean: false          # run clean before build
+  need_build_runner: false   # run build_runner before build
 
-NEED_CLEAN=false
-NEED_BUILD_RUNNER=false
+# ──────────────────────────────────────────────
+# FVM integration
+# ──────────────────────────────────────────────
+fvm:
+  enabled: true             # use FVM if detected
+  version: null              # pin specific version
 
-BUNDLETOOL_PATH=
-KEY_PROPERTIES_PATH=android/key.properties
-KEYSTORE_PATH=
+# ──────────────────────────────────────────────
+# Shorebird integration
+# ──────────────────────────────────────────────
+shorebird:
+  enabled: false             # use shorebird release
+  artifact: null             # apk | aab
+  auto_confirm: true         # skip confirmation
 ```
-
-### `buildenv.base` File
-
-Default values are stored in `scripts/buildenv.base`. These are used as fallbacks when generating `.buildenv`.
 
 ## Output
 
-Build artifacts are copied to the `OUTPUT_PATH` (default: `dist/`) with naming:
+Build artifacts are copied to the `output` directory (default: `dist/`) with naming:
 
 ```
-{APPNAME}_{version}+{buildnumber}.{ext}
+{app_name}_{version}+{build_number}.{ext}
 Example: myapp_1.2.3+45.aab
 ```
 
 Logs are saved to:
 - `dist/logs/build-latest.log` (always overwritten)
-- `dist/logs/build-1.2.3+45-2025-12-12_15-30-22.log` (archived)
+- `dist/logs/build-{version}-summary.json` (build summary)
 
 ## Development
 
@@ -199,43 +212,23 @@ fvm dart compile exe bin/buildcraft.dart -o dist/buildcraft.exe
 ```
 mobile-build-cli/
 ├── bin/
-│   └── buildcraft.dart       # Entry point
+│   └── buildcraft.dart           # CLI Entry point
 ├── lib/
 │   ├── src/
-│   │   ├── commands/         # CLI commands
-│   │   │   ├── build_command.dart
-│   │   │   ├── clean_command.dart
-│   │   │   ├── convert_command.dart
-│   │   │   ├── gen_env_command.dart
-│   │   │   └── commands.dart
-│   │   ├── core/             # Business logic
-│   │   │   ├── apk_converter.dart
-│   │   │   ├── app_context.dart
-│   │   │   ├── artifact_mover.dart
-│   │   │   ├── build_env.dart
-│   │   │   ├── command_registry.dart
-│   │   │   ├── flutter_runner.dart
-│   │   │   ├── pubspec_parser.dart
-│   │   │   ├── version_manager.dart
-│   │   │   └── core.dart
-│   │   ├── ui/               # Interactive UI & Shell
-│   │   │   ├── menu.dart
-│   │   │   ├── shell.dart
-│   │   │   └── ui.dart
-│   │   └── utils/            # Utilities
-│   │       ├── console.dart
-│   │       ├── logger.dart
-│   │       ├── process_runner.dart
-│   │       └── utils.dart
-│   └── buildcraft.dart       # Library exports
-├── dist/
-│   └── buildcraft.exe        # Compiled binary
+│   │   ├── commands/             # Command implementations (build, clean, convert)
+│   │   ├── core/                 # Core logic, business rules, and state
+│   │   ├── ui/                   # Interactive Shell, Menu, and UI components
+│   │   └── utils/                # Logging, Console I/O, and helper utilities
+│   └── buildcraft.dart           # Main library export
 ├── scripts/
-│   ├── compile.ps1           # Compilation script (Windows)
-│   ├── compile.sh            # Compilation script (Unix)
-│   ├── .buildenv             # Generated config (gitignored)
-│   └── buildenv.base         # Default config
-└── pubspec.yaml
+│   ├── compile.ps1               # Compilation script (Windows)
+│   └── compile.sh                # Compilation script (Unix/Mac)
+├── test/                         # Unit and integration tests
+├── dist/                         # Build output (executables and logs)
+├── buildcraft.yaml               # Active configuration file
+├── buildcraft.yaml.example       # Configuration template
+├── pubspec.yaml                  # Dart dependencies and metadata
+└── analysis_options.yaml         # Static analysis rules
 ```
 
 ## License

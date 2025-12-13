@@ -4,9 +4,7 @@
 
 set -e
 
-VERSION="${1:-0.0.2}"
-TARGET="${2:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
-OUTPUT_DIR="${3:-dist/bin}"
+TARGET="${1:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
 EXE_NAME="buildcraft"
 
 # Determine extension based on platform
@@ -19,25 +17,25 @@ case "$TARGET" in
         ;;
     *)
         echo "Unknown target: $TARGET"
-        echo "Usage: $0 [version] [linux|macos|windows] [output_dir]"
+        echo "Usage: $0 [linux|macos|windows]"
         exit 1
         ;;
 esac
 
-OUTPUT_PATH="$OUTPUT_DIR/$EXE_NAME.v$VERSION$EXE_EXT"
+# Define output path
+OUTPUT_PATH="bin/$EXE_NAME$EXE_EXT"
 
 echo ""
 echo "========================================"
 echo "  BUILDCRAFT CLI - Compiler"
 echo "========================================"
 echo ""
-echo "Target:   $TARGET"
-echo "Version:  v$VERSION"
-echo "Output:   $OUTPUT_PATH"
+echo "Target:    $TARGET"
+echo "Output:    $OUTPUT_PATH"
 echo ""
 
 # Create output directory
-mkdir -p "$OUTPUT_DIR"
+mkdir -p "bin"
 
 # Check for fvm or dart
 if command -v fvm &> /dev/null; then
@@ -63,6 +61,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     SIZE=$(stat --printf="%s" "$OUTPUT_PATH" | awk '{printf "%.2f MB", $1/1048576}')
 fi
+
 echo "Size: $SIZE"
 echo ""
 
@@ -74,3 +73,5 @@ echo ""
 echo "Done! You can now run:"
 echo "  $OUTPUT_PATH"
 echo "  $OUTPUT_PATH --help"
+
+

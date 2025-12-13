@@ -3,8 +3,7 @@
 
 param(
     [string]$Target = "windows",
-    [string]$OutputDir = "dist/bin",
-    [string]$Version = "0.0.2",
+    [string]$Version = "0.0.3",
     [switch]$Help
 )
 
@@ -12,17 +11,18 @@ $ErrorActionPreference = "Stop"
 
 # Show help
 if ($Help) {
-    Write-Host "Usage: .\compile.ps1 [-Target <platform>] [-OutputDir <path>] [-Version <ver>]"
+    Write-Host "Usage: .\compile.ps1 [-Target <platform>]"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -Target     Target platform: windows, linux, macos (default: windows)"
-    Write-Host "  -OutputDir  Output directory (default: dist/bin)"
-    Write-Host "  -Version    Version for output filename (default: 0.0.2)"
     Write-Host "  -Help       Show this help message"
     Write-Host ""
     Write-Host "Examples:"
-    Write-Host "  .\compile.ps1                        # buildcraft.v0.0.2.exe"
-    Write-Host "  .\compile.ps1 -Version 1.0.0         # buildcraft.v1.0.0.exe"
+    Write-Host "  .\compile.ps1                        # bin/buildcraft.exe"
+    Write-Host "  .\compile.ps1 -Target linux          # bin/buildcraft"
+    Write-Host ""
+    Write-Host "Output:"
+    Write-Host "  bin/buildcraft.exe                   # Latest version (no version suffix)"
     exit 0
 }
 
@@ -38,7 +38,8 @@ switch ($Target.ToLower()) {
     }
 }
 
-$outputPath = Join-Path $OutputDir "$exeName.v$Version$exeExt"
+# Define output path
+$outputPath = Join-Path "bin" "$exeName$exeExt"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
@@ -46,14 +47,13 @@ Write-Host "  BUILDCRAFT CLI - Compiler" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Target:   $Target"
-Write-Host "Version:  v$Version"
 Write-Host "Output:   $outputPath"
 Write-Host ""
 
 # Ensure output directory exists
-if (-not (Test-Path $OutputDir)) {
-    Write-Host "Creating output directory: $OutputDir"
-    New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
+if (-not (Test-Path "bin")) {
+    Write-Host "Creating output directory: bin"
+    New-Item -ItemType Directory -Path "bin" -Force | Out-Null
 }
 
 # Check if dart is available (prefer fvm)
