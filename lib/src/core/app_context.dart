@@ -6,7 +6,7 @@ import 'pubspec_parser.dart';
 /// Shared runtime context that holds configuration loaded once at startup
 /// 
 /// This class encapsulates:
-/// - BuildConfig (buildcraft.yaml configuration)
+/// - BuildConfig (flutterbuild.yaml configuration)
 /// - PubspecInfo (pubspec.yaml data)
 /// - Project paths and environment info
 /// 
@@ -28,7 +28,7 @@ class AppContext {
   static Future<AppContext> load({String? projectRoot}) async {
     final root = projectRoot ?? Directory.current.path;
     
-    // Load config from buildcraft.yaml
+    // Load config from flutterbuild.yaml
     BuildConfig config;
     try {
       config = await BuildConfig.load();

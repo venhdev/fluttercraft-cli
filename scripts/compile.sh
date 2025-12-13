@@ -1,11 +1,11 @@
 #!/bin/bash
-# Buildcraft CLI - Compile Script (Bash)
+# FlutterBuild CLI - Compile Script (Bash)
 # Compiles Dart CLI to native executable for Linux/macOS
 
 set -e
 
 TARGET="${1:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
-EXE_NAME="buildcraft"
+EXE_NAME="flutterbuild"
 
 # Determine extension based on platform
 case "$TARGET" in
@@ -27,7 +27,7 @@ OUTPUT_PATH="bin/$EXE_NAME$EXE_EXT"
 
 echo ""
 echo "========================================"
-echo "  BUILDCRAFT CLI - Compiler"
+echo "  FlutterBuild - Compiler"
 echo "========================================"
 echo ""
 echo "Target:    $TARGET"
@@ -49,7 +49,7 @@ fi
 # Compile
 echo ""
 echo "Compiling..."
-$DART_CMD compile exe bin/buildcraft.dart -o "$OUTPUT_PATH"
+$DART_CMD compile exe bin/flutterbuild.dart -o "$OUTPUT_PATH"
 
 echo ""
 echo "SUCCESS!"

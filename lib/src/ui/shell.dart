@@ -34,7 +34,7 @@ class Shell {
     _printBanner();
     
     while (_running) {
-      stdout.write('buildcraft> ');
+      stdout.write('flutterbuild> ');
       final input = stdin.readLineSync()?.trim() ?? '';
       
       if (input.isEmpty) continue;
@@ -77,7 +77,7 @@ class Shell {
         
       case 'version':
       case 'v':
-        console.info('buildcraft v0.0.3');
+        console.info('flb v0.0.3');
         return;
         
       case 'context':
@@ -102,7 +102,7 @@ class Shell {
   void _printBanner() {
     print('');
     print('\x1B[1m\x1B[36m┌─────────────────────────────────────────┐\x1B[0m');
-    print('\x1B[1m\x1B[36m│         BUILDCRAFT CLI                  │\x1B[0m');
+    print('\x1B[1m\x1B[36m│         FlutterBuild CLI                │\x1B[0m');
     print('\x1B[1m\x1B[36m│         v0.0.3                          │\x1B[0m');
     print('\x1B[1m\x1B[36m└─────────────────────────────────────────┘\x1B[0m');
     print('');

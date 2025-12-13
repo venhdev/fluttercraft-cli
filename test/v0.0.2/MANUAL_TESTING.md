@@ -17,7 +17,7 @@ cd c:\src\self\flutter-dart\cli\mobile-build-cli
 ### 1.1 Shell Startup
 - [x] Run `fvm dart run bin/mobile_build_cli.dart`
 - [x] Verify banner displays with version `v0.0.2-continuous-shell`
-- [x] Verify `buildcraft>` prompt appears
+- [x] Verify `flutterbuild>` prompt appears
 
 ### 1.2 Help Command
 - [ ] Type `help` → verify command list displays
@@ -25,7 +25,7 @@ cd c:\src\self\flutter-dart\cli\mobile-build-cli
 - [ ] Verify all commands listed: help, exit, clear, version, demo, context
 
 ### 1.3 Version Command
-- [ ] Type `version` → verify shows `buildcraft v0.0.2-continuous-shell`
+- [ ] Type `version` → verify shows `flutterbuild v0.0.2-continuous-shell`
 
 ### 1.4 Clear Command
 - [ ] Type `clear` → screen should clear
@@ -97,3 +97,4 @@ cd c:\src\self\flutter-dart\cli\mobile-build-cli
 ```
 (Record your observations here)
 ```
+

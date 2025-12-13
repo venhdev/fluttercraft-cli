@@ -1,0 +1,53 @@
+════════════════════════════════════════════════════════════════
+  FlutterBuild CLI - Build Log
+  Build ID: 20251213-140646-7501
+  Started: 2025-12-13 14:06:51.343575
+  Version: 1.0.1+10
+════════════════════════════════════════════════════════════════
+
+[14:06:51] [INFO] Build started
+[14:06:51] [INFO] Build ID: 20251213-140646-7501
+
+────────────────────────────────────────────────────────────
+  Build Configuration
+────────────────────────────────────────────────────────────
+
+[14:06:51] [INFO] App Name: testapp
+[14:06:51] [INFO] Version: 1.0.1+10
+[14:06:51] [INFO] Build Type: APK
+[14:06:51] [INFO] Flavor: (none)
+[14:06:51] [INFO] Target: lib/main.dart
+[14:06:51] [INFO] Output Path: C:\src\self\flutter-dart\cli\mobile-build-cli\dist
+[14:06:51] [INFO] Env Path: ./.env
+
+────────────────────────────────────────────────────────────
+  Build Flags
+────────────────────────────────────────────────────────────
+
+[14:06:51] [INFO] Use Dart Define: false
+[14:06:51] [INFO] Need Clean: false
+[14:06:51] [INFO] Need Build Runner: false
+
+────────────────────────────────────────────────────────────
+  Integrations
+────────────────────────────────────────────────────────────
+
+[14:06:51] [INFO] Use FVM: true
+[14:06:51] [INFO] Flutter Version: (auto)
+[14:06:51] [INFO] Use Shorebird: false
+[14:06:51] [INFO] Shorebird Artifact: (default)
+[14:06:51] [INFO] Shorebird Auto Confirm: true
+
+────────────────────────────────────────────────────────────
+  Build Command
+────────────────────────────────────────────────────────────
+
+[14:06:51] [INFO] Command: fvm flutter build apk --release --build-name=1.0.1 --build-number=10 --dart-define-from-file=./.env
+
+════════════════════════════════════════════════════════════════
+  Build FAILED
+  Build ID: 20251213-140646-7501
+  Ended: 2025-12-13 14:07:14.121997
+  Duration: 0s
+  Output: N/A
+════════════════════════════════════════════════════════════════

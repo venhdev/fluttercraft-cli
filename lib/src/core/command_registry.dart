@@ -18,8 +18,10 @@ class CommandRegistry {
   /// Create a new CommandRunner with all registered commands
   CommandRunner<int> createRunner() {
     return CommandRunner<int>(
-      'buildcraft',
-      'BuildCraft CLI - Cross-platform Flutter build system\n'
+      'flutterbuild',
+      'FlutterBuild CLI - Cross-platform Flutter build system\n'
+      '\n'
+      'Usage: flb <command> [arguments]\n'
       '\n'
       'Commands:\n'
       '  build     Build Flutter app (APK/AAB/IPA)\n'

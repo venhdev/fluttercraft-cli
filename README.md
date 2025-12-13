@@ -1,6 +1,8 @@
-# Buildcraft CLI
+# FlutterBuild CLI (flb)
 
 A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell build scripts with a single portable executable.
+
+**Display Name:** `flb` - Short, fast, and friendly!
 
 ## Features
 
@@ -15,11 +17,11 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 ### Option 1: Use Compiled Binary
 
-Download `buildcraft.exe` from the `dist/` folder and add it to your PATH.
+Download `flutterbuild.exe` from the `bin/` folder and add it to your PATH.
 
 ```powershell
 # Run from project root
-.\dist\buildcraft.exe --help
+.\bin\flutterbuild.exe --help
 ```
 
 ### Option 2: Global Activation
@@ -29,54 +31,57 @@ Download `buildcraft.exe` from the `dist/` folder and add it to your PATH.
 fvm dart pub global activate --source path .
 
 # Then use anywhere
-buildcraft --help
+flutterbuild --help
 ```
 
 ### Option 3: Run Directly
 
 ```powershell
-fvm dart run bin/buildcraft.dart --help
+fvm dart run bin/flutterbuild.dart --help
 ```
 
-## Interactive Shell (v0.0.2+)
+## Interactive Shell
 
 Start the interactive shell for a continuous REPL experience:
 
 ```powershell
 # Start interactive shell (default when no args)
-buildcraft
+flutterbuild
+
+# You'll see the flb prompt:
+flb>
 ```
 
 **Shell Commands:**
 - `help` - Show available commands
-- `demo` - Test interactive menus
-- `context` - Show loaded project context
+- `context` / `ctx` - Show loaded project context
+- `version` / `v` - Show version
 - `build`, `clean`, `convert` - Regular commands
-- `exit` / `q` - Exit shell
+- `exit` / `quit` / `q` - Exit shell
 
 ## Commands
 
-### `buildcraft build`
+### `flb build`
 
 Build Flutter app with version management.
 
 ```powershell
 # Interactive build with prompts
-buildcraft build
+flb build
 
 # Build specific type
-buildcraft build --type apk
-buildcraft build --type aab
-buildcraft build --type ipa
+flb build --type apk
+flb build --type aab
+flb build --type ipa
 
 # Skip prompts
-buildcraft build --no-confirm
+flb build --no-confirm
 
 # Set version directly
-buildcraft build --version 1.2.3 --build-number 45
+flb build --version 1.2.3 --build-number 45
 
 # Clean before building
-buildcraft build --clean
+flb build --clean
 ```
 
 Options:
@@ -86,38 +91,38 @@ Options:
 - `--version, -v` - Set version directly
 - `--build-number` - Set build number directly
 
-### `buildcraft clean`
+### `flb clean`
 
 Clean project and dist folder.
 
 ```powershell
 # Full clean (flutter clean + remove dist)
-buildcraft clean
+flb clean
 
 # Only remove dist folder
-buildcraft clean --dist-only
+flb clean --dist-only
 
 # Skip confirmation
-buildcraft clean -y
+flb clean -y
 ```
 
 Options:
 - `--dist-only` - Only remove dist folder
 - `--yes, -y` - Skip confirmation prompts
 
-### `buildcraft convert`
+### `flb convert`
 
 Convert AAB to universal APK using bundletool.
 
 ```powershell
 # Auto-detect AAB from dist folder
-buildcraft convert
+flb convert
 
 # Specify AAB file
-buildcraft convert --aab path/to/app.aab
+flb convert --aab path/to/app.aab
 
 # Custom output directory
-buildcraft convert --output ./releases
+flb convert --output ./releases
 ```
 
 Options:
@@ -128,10 +133,10 @@ Options:
 
 ## Configuration
 
-### `buildcraft.yaml` File
+### `flutterbuild.yaml` File
 
-The build configuration is stored in `buildcraft.yaml` at the project root.
-Copy `buildcraft.yaml.example` to get started.
+The build configuration is stored in `flutterbuild.yaml` at the project root.
+Copy `flutterbuild.yaml.example` to get started.
 
 ```yaml
 # ──────────────────────────────────────────────
@@ -191,12 +196,16 @@ Example: myapp_1.2.3+45.aab
 ```
 
 Logs are saved to:
-- `dist/logs/build-latest.log` (always overwritten)
-- `dist/logs/build-{version}-summary.json` (build summary)
+- `.flutterbuild/build_latest.log` (always overwritten)
+- `.flutterbuild/logs/{build-id}.log` (per-build log)
+- `.flutterbuild/build_history.jsonl` (JSONL build history)
 
 ## Development
 
 ```powershell
+# Install dependencies
+fvm dart pub get
+
 # Run tests
 fvm dart test
 
@@ -204,7 +213,8 @@ fvm dart test
 fvm dart analyze
 
 # Compile to native binary
-fvm dart compile exe bin/buildcraft.dart -o dist/buildcraft.exe
+.\scripts\compile.ps1
+# Output: bin/flutterbuild.exe
 ```
 
 ## Project Structure
@@ -212,24 +222,33 @@ fvm dart compile exe bin/buildcraft.dart -o dist/buildcraft.exe
 ```
 mobile-build-cli/
 ├── bin/
-│   └── buildcraft.dart           # CLI Entry point
+│   └── flutterbuild.dart         # CLI Entry point
 ├── lib/
 │   ├── src/
 │   │   ├── commands/             # Command implementations (build, clean, convert)
 │   │   ├── core/                 # Core logic, business rules, and state
 │   │   ├── ui/                   # Interactive Shell, Menu, and UI components
 │   │   └── utils/                # Logging, Console I/O, and helper utilities
-│   └── buildcraft.dart           # Main library export
+│   └── flutterbuild.dart         # Main library export
 ├── scripts/
 │   ├── compile.ps1               # Compilation script (Windows)
 │   └── compile.sh                # Compilation script (Unix/Mac)
 ├── test/                         # Unit and integration tests
-├── dist/                         # Build output (executables and logs)
-├── buildcraft.yaml               # Active configuration file
-├── buildcraft.yaml.example       # Configuration template
+├── bin/                          # Compiled executable
+├── flutterbuild.yaml             # Active configuration file
+├── flutterbuild.yaml.example     # Configuration template
 ├── pubspec.yaml                  # Dart dependencies and metadata
 └── analysis_options.yaml         # Static analysis rules
 ```
+
+## Why "flb"?
+
+**FlutterBuild** → **flb** (Flutter Build)
+
+- ⚡ **Fast to type**: Only 3 characters
+- 🎯 **Clear purpose**: Flutter Build
+- 💪 **Professional**: Sounds like a proper build tool
+- 🚀 **Memorable**: Short and punchy
 
 ## License
 

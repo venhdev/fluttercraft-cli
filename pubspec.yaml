@@ -1,7 +1,7 @@
-name: buildcraft
-description: Flutter build CLI - cross-platform build system replacing PowerShell scripts
+name: flutterbuild
+description: Flutter build CLI - cross-platform build system
 version: 0.0.3
-repository: https://github.com/venhdev/buildcraft.git
+repository: https://github.com/venhdev/mobile-build-cli.git
 
 environment:
   sdk: ^3.9.2

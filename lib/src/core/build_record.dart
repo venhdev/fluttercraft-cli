@@ -83,7 +83,7 @@ class BuildRecord {
 
 /// Manages build history in JSONL format
 class BuildHistory {
-  static const String _historyDir = '.buildcraft';
+  static const String _historyDir = '.flutterbuild';
   static const String _historyFile = 'build_history.jsonl';
 
   final String projectRoot;
@@ -93,12 +93,12 @@ class BuildHistory {
   /// Get path to history file
   String get historyPath => p.join(projectRoot, _historyDir, _historyFile);
 
-  /// Get path to .buildcraft directory
-  String get buildcraftDir => p.join(projectRoot, _historyDir);
+  /// Get path to .flutterbuild directory
+  String get flutterbuildDir => p.join(projectRoot, _historyDir);
 
   /// Append a record to history
   Future<void> append(BuildRecord record) async {
-    final dir = Directory(buildcraftDir);
+    final dir = Directory(flutterbuildDir);
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }

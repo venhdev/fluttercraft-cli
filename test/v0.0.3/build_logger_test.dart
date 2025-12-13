@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:buildcraft/src/utils/build_logger.dart';
+import 'package:flutterbuild/src/utils/build_logger.dart';
 
 void main() {
   group('BuildLogger', () {
@@ -19,10 +19,10 @@ void main() {
       } catch (_) {}
     });
 
-    test('init creates .buildcraft and logs directories', () async {
+    test('init creates .flutterbuild and logs directories', () async {
       await logger.init();
 
-      expect(await Directory(logger.buildcraftPath).exists(), true);
+      expect(await Directory(logger.flutterbuildPath).exists(), true);
       expect(await Directory(logger.logsPath).exists(), true);
     });
 

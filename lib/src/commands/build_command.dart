@@ -55,18 +55,18 @@ class BuildCommand extends Command<int> {
     final console = Console();
     final projectRoot = Directory.current.path;
     
-    console.header('BUILDCRAFT CLI');
+    console.header('FlutterBuild CLI');
 
     // Generate build ID for logging
     final buildId = _generateBuildId();
 
-    // Load config from buildcraft.yaml
+    // Load config from flutterbuild.yaml
     BuildConfig config;
     try {
       config = await BuildConfig.load();
     } on ConfigNotFoundException catch (e) {
       console.error(e.message);
-      console.info('Create a buildcraft.yaml file in your project root.');
+      console.info('Create a flutterbuild.yaml file in your project root.');
       return 1;
     }
 

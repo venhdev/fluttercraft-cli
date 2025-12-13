@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:buildcraft/src/core/build_config.dart';
+import 'package:flutterbuild/src/core/build_config.dart';
 
 void main() {
   group('BuildConfig', () {
@@ -26,7 +26,7 @@ void main() {
 
     test('parses minimal config with defaults', () async {
       // Create minimal config file
-      final configFile = File('$tempDir/buildcraft.yaml');
+      final configFile = File('$tempDir/flutterbuild.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -45,7 +45,7 @@ app:
     });
 
     test('parses full config correctly', () async {
-      final configFile = File('$tempDir/buildcraft.yaml');
+      final configFile = File('$tempDir/flutterbuild.yaml');
       await configFile.writeAsString('''
 app:
   name: myapp
@@ -103,7 +103,7 @@ bundletool:
     });
 
     test('fullVersion combines buildName and buildNumber', () async {
-      final configFile = File('$tempDir/buildcraft.yaml');
+      final configFile = File('$tempDir/flutterbuild.yaml');
       await configFile.writeAsString('''
 build:
   name: 1.2.3
@@ -115,7 +115,7 @@ build:
     });
 
     test('fullAppName includes shorebird suffix when enabled', () async {
-      final configFile = File('$tempDir/buildcraft.yaml');
+      final configFile = File('$tempDir/flutterbuild.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -131,7 +131,7 @@ shorebird:
     });
 
     test('throws ConfigParseException for empty file', () async {
-      final configFile = File('$tempDir/buildcraft.yaml');
+      final configFile = File('$tempDir/flutterbuild.yaml');
       await configFile.writeAsString('');
 
       expect(

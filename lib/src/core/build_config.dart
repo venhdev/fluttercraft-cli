@@ -61,16 +61,16 @@ class BuildConfig {
     required this.keystorePath,
   });
 
-  /// Load configuration from buildcraft.yaml
+  /// Load configuration from flutterbuild.yaml
   static Future<BuildConfig> load({String? configPath}) async {
     final projectRoot = Directory.current.path;
-    final path = configPath ?? p.join(projectRoot, 'buildcraft.yaml');
+    final path = configPath ?? p.join(projectRoot, 'flutterbuild.yaml');
     
     final file = File(path);
     if (!await file.exists()) {
       throw ConfigNotFoundException(
-        'buildcraft.yaml not found at: $path\n'
-        'Create a buildcraft.yaml file in your project root.',
+        'flutterbuild.yaml not found at: $path\n'
+        'Create a flutterbuild.yaml file in your project root.',
       );
     }
     
@@ -78,7 +78,7 @@ class BuildConfig {
     final yaml = loadYaml(content) as YamlMap?;
     
     if (yaml == null) {
-      throw ConfigParseException('buildcraft.yaml is empty or invalid');
+      throw ConfigParseException('flutterbuild.yaml is empty or invalid');
     }
     
     return _parseYaml(yaml, projectRoot);
@@ -220,7 +220,7 @@ class BuildConfig {
   }
 }
 
-/// Exception thrown when buildcraft.yaml is not found
+/// Exception thrown when flutterbuild.yaml is not found
 class ConfigNotFoundException implements Exception {
   final String message;
   ConfigNotFoundException(this.message);
@@ -229,7 +229,7 @@ class ConfigNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// Exception thrown when buildcraft.yaml cannot be parsed
+/// Exception thrown when flutterbuild.yaml cannot be parsed
 class ConfigParseException implements Exception {
   final String message;
   ConfigParseException(this.message);
