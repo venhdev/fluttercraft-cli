@@ -1,3 +1,23 @@
+## 0.1.0 (2025-12-15)
+
+### ⚠️ Breaking Changes
+- **Breaking:** Renamed `auto_confirm` → `no_confirm` in Shorebird config (update your `fluttercraft.yaml`)
+
+### ✨ New Features
+- **Edit before build** - Type `e` at confirmation to modify the build command interactively
+- **Reload command** - Added `reload`/`r` command in shell to hot-reload config from disk
+- **Improved help** - Shorebird-style help format with proper sections
+
+### 🐛 Bug Fixes
+- **fix**: Removed `--release` flag from Shorebird builds (per official docs: "never add --release when using shorebird")
+- **fix**: Shorebird artifact now correctly derived from build type
+
+### 📝 Documentation
+- Cleaner YAML format in generated `fluttercraft.yaml` (comments above lines, no uppercase labels)
+- Added `@read-only` annotation for derived config values
+
+---
+
 ## 0.0.6 (2025-12-15) - Initial Release
 
 > **Craft Your Flutter Builds with Precision**

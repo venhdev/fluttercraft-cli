@@ -55,7 +55,7 @@ class CleanCommand extends Command<int> {
         needBuildRunner: false,
         useFvm: false,
         useShorebird: false,
-        shorebirdAutoConfirm: true,
+        shorebirdNoConfirm: true,
         keystorePath: 'android/key.properties',
       );
     }

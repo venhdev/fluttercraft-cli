@@ -1,0 +1,20 @@
+# v0.1.0 Test Configuration
+# Shared test configs for v0.1.0 features
+
+# ──────────────────────────────────────────────
+# Shorebird enabled with no_confirm: true
+# ──────────────────────────────────────────────
+app:
+  name: testapp
+
+build:
+  name: 1.0.0
+  number: 1
+  type: apk
+
+shorebird:
+  enabled: true
+  no_confirm: true
+
+fvm:
+  enabled: false

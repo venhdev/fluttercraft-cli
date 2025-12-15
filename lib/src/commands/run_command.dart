@@ -17,6 +17,12 @@ class RunCommand {
   Future<void> execute(List<String> args) async {
     // Parse flags
     final showList = args.contains('--list') || args.contains('-l');
+    final showHelp = args.contains('--help') || args.contains('-h');
+    
+    if (showHelp) {
+      _printHelp();
+      return;
+    }
     
     if (showList) {
       _listAliases();
@@ -31,6 +37,16 @@ class RunCommand {
     
     final aliasName = args[0];
     await _runAlias(aliasName);
+  }
+  
+  void _printHelp() {
+    _console.log('Run custom command aliases defined in fluttercraft.yaml');
+    _console.blank();
+    _console.log('Usage: fluttercraft run <alias> [arguments]');
+    _console.log('-h, --help     Print this usage information.');
+    _console.log('-l, --list     List all available aliases');
+    _console.blank();
+    _console.log('Run "fluttercraft help" to see global options.');
   }
   
   void _listAliases() {

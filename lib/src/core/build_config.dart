@@ -47,7 +47,7 @@ class BuildConfig {
   final bool useShorebird;
   final String? shorebirdAppId;  // Informational only - actual commands read from shorebird.yaml
   final String? shorebirdArtifact;
-  final bool shorebirdAutoConfirm;
+  final bool shorebirdNoConfirm;
   
   // Bundletool
   final String? bundletoolPath;
@@ -74,7 +74,7 @@ class BuildConfig {
     required this.useShorebird,
     this.shorebirdAppId,
     this.shorebirdArtifact,
-    required this.shorebirdAutoConfirm,
+    required this.shorebirdNoConfirm,
     this.bundletoolPath,
     required this.keystorePath,
     this.aliases = const {},
@@ -109,7 +109,7 @@ class BuildConfig {
         needBuildRunner: false,
         useFvm: false,
         useShorebird: false,
-        shorebirdAutoConfirm: true,
+        shorebirdNoConfirm: true,
         keystorePath: 'android/key.properties',
       );
     }
@@ -164,7 +164,8 @@ class BuildConfig {
     final useShorebird = _getBool(shorebird, 'enabled', false);
     var shorebirdAppId = _getStringOrNull(shorebird, 'app_id');
     final shorebirdArtifact = _getStringOrNull(shorebird, 'artifact');
-    final shorebirdAutoConfirm = _getBool(shorebird, 'auto_confirm', true);
+    // Parse no_confirm (defaults to true - skip confirmation prompts)
+    final shorebirdNoConfirm = _getBool(shorebird, 'no_confirm', true);
     
     // Auto-detect Shorebird app_id from shorebird.yaml if enabled but app_id is null
     if (useShorebird && shorebirdAppId == null) {
@@ -198,7 +199,7 @@ class BuildConfig {
       useShorebird: useShorebird,
       shorebirdAppId: shorebirdAppId,
       shorebirdArtifact: shorebirdArtifact,
-      shorebirdAutoConfirm: shorebirdAutoConfirm,
+      shorebirdNoConfirm: shorebirdNoConfirm,
       bundletoolPath: bundletoolPath,
       keystorePath: keystorePath,
       aliases: aliases,

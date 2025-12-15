@@ -8,6 +8,8 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - **Streamlined Build Process** - Build, version, and deploy in one flow
 - **Seamless Integrations** - FVM, Shorebird, auto-determine versions and context
 - **Custom Command Aliases** - Define reusable command sequences via `flc run <alias>`
+- **Edit Before Build** - Modify build command before execution (v0.1.0)
+- **Reload Config** - Hot-reload configuration in shell mode (v0.1.0)
 
 ## Quick Start
 
@@ -65,22 +67,29 @@ fvm dart run bin/fluttercraft.dart build
 
 ## Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
 | `build` | Build Flutter app (APK/AAB/IPA) | `flc build --type apk` |
 | `clean` | Clean project and dist folder | `flc clean --dist-only` |
 | `convert` | Convert AAB to universal APK | `flc convert --aab app.aab` |
 | `gen` | Generate fluttercraft.yaml | `flc gen --force` |
 | `run` | Run custom command alias | `flc run gen-icon` |
 
+**Shell Commands (in interactive mode):**
+
+| Command | Description |
+|---------|-------------|
+| `reload`, `r` | Reload configuration from disk |
+| `context`, `ctx` | Show loaded context |
+| `help`, `?` | Show available commands |
+
 **Interactive Mode:**
 ```powershell
-flc                    # Start interactive shell
-flc build              # Interactive build with prompts
+flc --shell            # Start interactive shell
+flc -s                 # Start interactive shell (short)
 ```
 
 **Direct Mode:**
 ```powershell
+flc                    # Show help (default)
 flc build --type apk --no-confirm
 flc run --list
 ```
@@ -124,7 +133,7 @@ shorebird:
   enabled: false
   app_id: null   # Auto-detected from shorebird.yaml
   artifact: null
-  auto_confirm: true
+  no_confirm: true  # Skip confirmation prompts
 
 alias:
   gen-icon:

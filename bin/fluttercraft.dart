@@ -14,14 +14,15 @@ import 'package:fluttercraft/src/version.dart';
 /// A cross-platform CLI tool for building Flutter apps.
 /// Replaces PowerShell build scripts with a single portable executable.
 /// 
-/// Supports two modes:
-/// - Single-command mode: `flc build --type apk` (runs and exits)
-/// - Interactive shell mode: `flc` or `flc --shell` (continuous REPL)
+/// Behavior:
+/// - `flc` - Show help (default, like shorebird)
+/// - `flc --shell` or `flc -s` - Start interactive shell
+/// - `flc <command>` - Run single command and exit
 void main(List<String> arguments) async {
   final registry = CommandRegistry();
   
   // Check if first argument is a known command
-  final knownCommands = ['build', 'clean', 'convert', 'gen', 'run'];
+  final knownCommands = ['build', 'clean', 'convert', 'gen', 'run', 'help'];
   final firstArg = arguments.isNotEmpty ? arguments.first : '';
   final isCommand = knownCommands.contains(firstArg);
   
@@ -31,7 +32,7 @@ void main(List<String> arguments) async {
     return;
   }
   
-  // Parse global options for shell mode
+  // Parse global options
   final globalParser = ArgParser()
     ..addFlag(
       'shell',
@@ -55,40 +56,39 @@ void main(List<String> arguments) async {
   try {
     final globalResult = globalParser.parse(arguments);
     
-    // Handle --help
-    if (globalResult['help'] == true) {
-      _printUsage(globalParser);
-      exit(0);
-    }
-    
     // Handle --version
     if (globalResult['version'] == true) {
       print('flc v$appVersion');
       exit(0);
     }
     
-    // Load AppContext
-    print('Loading project context...');
-    final appContext = await AppContext.load();
-    
-    // Start interactive shell
-    final shell = Shell(appContext: appContext);
-    
-    // Register commands
-    final commands = registry.getShellCommands();
-    for (final entry in commands.entries) {
-      shell.registerCommand(entry.key, entry.value);
+    // Handle --shell: start interactive shell
+    if (globalResult['shell'] == true) {
+      print('Loading project context...');
+      final appContext = await AppContext.load();
+      
+      final shell = Shell(appContext: appContext);
+      
+      // Register commands
+      final commands = registry.getShellCommands();
+      for (final entry in commands.entries) {
+        shell.registerCommand(entry.key, entry.value);
+      }
+      
+      // Register run command with AppContext
+      shell.registerCommand('run', (args) async {
+        final runCmd = RunCommand(appContext);
+        await runCmd.execute(args);
+        return 0;
+      });
+      
+      final exitCode = await shell.run();
+      exit(exitCode);
     }
     
-    // Register run command with AppContext
-    shell.registerCommand('run', (args) async {
-      final runCmd = RunCommand(appContext);
-      await runCmd.execute(args);
-      return 0;
-    });
-    
-    final exitCode = await shell.run();
-    exit(exitCode);
+    // Default: show help (like shorebird)
+    _printUsage(globalParser);
+    exit(0);
   } on FormatException catch (e) {
     print('Error: $e');
     _printUsage(globalParser);
@@ -129,32 +129,24 @@ Future<void> _runSingleCommand(CommandRegistry registry, List<String> arguments)
 }
 
 void _printUsage(ArgParser parser) {
-  print('flc - Flutter Build CLI');
+  print('fluttercraft - Craft Your Flutter Builds with Precision');
   print('');
-  print('Usage:');
-  print('  flc                      Start interactive shell (default)');
-  print('  flc --shell              Start interactive shell (explicit)');
-  print('  flc <command> [options]  Run single command and exit');
+  print('Usage: fluttercraft <command> [arguments]');
+  print('       flc <command> [arguments]');
   print('');
-  print('Global Options:');
-  print(parser.usage);
+  print('Global options:');
+  print('-h, --help       Print this usage information.');
+  print('-v, --version    Print the current version.');
+  print('-s, --shell      Start interactive shell mode.');
   print('');
-  print('Commands:');
+  print('Available commands:');
   print('  build     Build Flutter app (APK/AAB/IPA)');
   print('  clean     Clean project and dist folder');
   print('  convert   Convert AAB to universal APK');
   print('  gen       Generate fluttercraft.yaml');
   print('  run       Run custom command alias');
   print('');
-  print('Configuration:');
-  print('  Create a fluttercraft.yaml file in your project root.');
-  print('  Run \'flc gen\' to generate a template.');
-  print('');
-  print('Examples:');
-  print('  flc                    # Start interactive shell');
-  print('  flc build --type apk   # Build APK and exit');
-  print('  flc gen                # Generate fluttercraft.yaml');
-  print('  flc clean              # Clean and exit');
+  print('Run "fluttercraft help <command>" for more information about a command.');
 }
 
 

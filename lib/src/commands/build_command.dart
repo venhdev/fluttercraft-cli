@@ -101,7 +101,7 @@ class BuildCommand extends Command<int> {
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
       shorebirdArtifact: config.shorebirdArtifact,
-      shorebirdAutoConfirm: config.shorebirdAutoConfirm,
+      shorebirdNoConfirm: config.shorebirdNoConfirm,
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
     );
@@ -181,7 +181,7 @@ class BuildCommand extends Command<int> {
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
       shorebirdArtifact: config.shorebirdArtifact,
-      shorebirdAutoConfirm: config.shorebirdAutoConfirm,
+      shorebirdNoConfirm: config.shorebirdNoConfirm,
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
     );
@@ -211,10 +211,10 @@ class BuildCommand extends Command<int> {
     logger.info('Flutter Version: ${buildConfig.flutterVersion ?? "(auto)"}');
     logger.info('Use Shorebird: ${buildConfig.useShorebird}');
     logger.info('Shorebird Artifact: ${buildConfig.shorebirdArtifact ?? "(default)"}');
-    logger.info('Shorebird Auto Confirm: ${buildConfig.shorebirdAutoConfirm}');
+    logger.info('Shorebird Auto Confirm: ${buildConfig.shorebirdNoConfirm}');
 
     // Get full build command for JSONL record
-    final buildCmd = flutterRunner.getBuildCommand(buildConfig);
+    var buildCmd = flutterRunner.getBuildCommand(buildConfig);
     logger.section('Build Command');
     logger.info('Command: $buildCmd');
 
@@ -236,12 +236,38 @@ class BuildCommand extends Command<int> {
     console.info('  $buildCmd');
     console.blank();
 
-    // Confirmation
+    // Confirmation with edit option
     if (argResults?['no-confirm'] != true) {
-      if (!console.confirm('Proceed with build?')) {
-        console.warning('Build cancelled by user.');
-        await logger.endSession(success: false);
-        return 0;
+      var currentCmd = buildCmd;
+      
+      while (true) {
+        stdout.write('\nProceed with build? (y/n/e to edit): ');
+        final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
+        
+        if (input == 'n' || input == 'no') {
+          console.warning('Build cancelled by user.');
+          await logger.endSession(success: false);
+          return 0;
+        } else if (input == 'y' || input == 'yes' || input.isEmpty) {
+          // Update buildCmd if it was edited
+          buildCmd = currentCmd;
+          break;
+        } else if (input == 'e' || input == 'edit') {
+          console.section('Edit Command');
+          console.info('Current command:');
+          console.info('  $currentCmd');
+          console.blank();
+          stdout.write('Enter modified command (or press Enter to keep current): ');
+          final edited = stdin.readLineSync()?.trim() ?? '';
+          if (edited.isNotEmpty) {
+            currentCmd = edited;
+            console.success('Command updated.');
+            console.info('New command:');
+            console.info('  $currentCmd');
+          }
+        } else {
+          console.warning('Invalid input. Use y (yes), n (no), or e (edit).');
+        }
       }
     }
 

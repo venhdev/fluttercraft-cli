@@ -60,8 +60,8 @@ class FlutterRunner {
     // Determine platform from build type
     final platform = _getPlatform(config.buildType);
     
-    // Build flutter args
-    final flutterArgs = _buildFlutterArgs(config);
+    // Build flutter args (exclude --release for Shorebird per official docs)
+    final flutterArgs = _buildFlutterArgs(config, forShorebird: config.useShorebird);
     
     if (config.useShorebird) {
       return _buildWithShorebird(config, flutterArgs);
@@ -75,14 +75,14 @@ class FlutterRunner {
   /// Get the full build command for logging
   String getBuildCommand(BuildConfig config) {
     final platform = _getPlatform(config.buildType);
-    final flutterArgs = _buildFlutterArgs(config);
+    final flutterArgs = _buildFlutterArgs(config, forShorebird: config.useShorebird);
     
     if (config.useShorebird) {
       final sbArgs = <String>['shorebird', 'release', 'android'];
       if (config.buildType == 'apk') {
         sbArgs.addAll(['--artifact', 'apk']);
       }
-      if (config.shorebirdAutoConfirm) {
+      if (config.shorebirdNoConfirm) {
         sbArgs.add('--no-confirm');
       }
       sbArgs.add('--');
@@ -113,8 +113,16 @@ class FlutterRunner {
   }
 
   /// Build flutter command arguments
-  List<String> _buildFlutterArgs(BuildConfig config) {
-    final args = <String>['--release'];
+  /// 
+  /// When [forShorebird] is true, excludes --release flag per Shorebird docs:
+  /// "never add --release | --debug | --profile when using shorebird"
+  List<String> _buildFlutterArgs(BuildConfig config, {bool forShorebird = false}) {
+    final args = <String>[];
+    
+    // Only add --release for non-Shorebird builds
+    if (!forShorebird) {
+      args.add('--release');
+    }
     
     if (config.flavor != null && config.flavor!.isNotEmpty) {
       args.add('--flavor=${config.flavor}');
@@ -159,7 +167,7 @@ class FlutterRunner {
       _console.info('Shorebird → using manual artifact: ${config.shorebirdArtifact}');
     }
     
-    if (config.shorebirdAutoConfirm) {
+    if (config.shorebirdNoConfirm) {
       sbArgs.add('--no-confirm');
     }
     

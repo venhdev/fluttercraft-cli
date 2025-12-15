@@ -74,7 +74,7 @@ fvm:
 shorebird:
   enabled: true
   artifact: apk
-  auto_confirm: false
+  no_confirm: false
 
 bundletool:
   path: /tools/bundletool.jar
@@ -98,7 +98,7 @@ bundletool:
       expect(config.flutterVersion, '3.24.0');
       expect(config.useShorebird, true);
       expect(config.shorebirdArtifact, 'apk');
-      expect(config.shorebirdAutoConfirm, false);
+      expect(config.shorebirdNoConfirm, false);
       expect(config.bundletoolPath, '/tools/bundletool.jar');
       expect(config.keystorePath, 'keys/release.properties');
     });

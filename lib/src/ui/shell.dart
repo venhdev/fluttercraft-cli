@@ -11,15 +11,19 @@ import '../version.dart';
 /// to registered command handlers.
 class Shell {
   final Console console;
-  final AppContext? appContext;
+  AppContext? _appContext;
   final Map<String, Future<int> Function(List<String> args)> _commands = {};
   
   bool _running = false;
   
   Shell({
     Console? console,
-    this.appContext,
-  }) : console = console ?? Console();
+    AppContext? appContext,
+  }) : console = console ?? Console(),
+       _appContext = appContext;
+  
+  /// Get current app context
+  AppContext? get appContext => _appContext;
   
   /// Register a command handler
   void registerCommand(
@@ -85,6 +89,11 @@ class Shell {
       case 'ctx':
         _showContext();
         return;
+        
+      case 'reload':
+      case 'r':
+        await _reloadContext();
+        return;
     }
     
     // Check registered commands
@@ -126,6 +135,7 @@ class Shell {
     console.keyValue('clear, cls, c', 'Clear the screen');
     console.keyValue('version, v', 'Show CLI version');
     console.keyValue('context, ctx', 'Show loaded context');
+    console.keyValue('reload, r', 'Reload configuration from disk');
     
     if (_commands.isNotEmpty) {
       console.section('Registered Commands');
@@ -185,6 +195,25 @@ class Shell {
     
     if (ctx.isStale) {
       console.warning('Context is stale (>5 min). Run "reload" to refresh.');
+    }
+  }
+  
+  /// Reload configuration from fluttercraft.yaml
+  Future<void> _reloadContext() async {
+    console.info('Reloading configuration...');
+    
+    try {
+      _appContext = await AppContext.load();
+      console.success('Configuration reloaded successfully.');
+      
+      // Show brief summary of loaded config
+      if (_appContext != null) {
+        console.keyValue('App Name', _appContext!.appName);
+        console.keyValue('Version', _appContext!.version);
+        console.keyValue('Build Type', _appContext!.buildType);
+      }
+    } catch (e) {
+      console.error('Failed to reload: $e');
     }
   }
   
