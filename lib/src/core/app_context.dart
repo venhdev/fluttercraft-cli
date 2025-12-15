@@ -8,7 +8,7 @@ import 'pubspec_parser.dart';
 /// Shared runtime context that holds configuration loaded once at startup
 /// 
 /// This class encapsulates:
-/// - BuildConfig (flutterbuild.yaml configuration)
+/// - BuildConfig (fluttercraft.yaml configuration)
 /// - PubspecInfo (pubspec.yaml data)
 /// - Project paths and environment info
 /// 
@@ -36,8 +36,8 @@ class AppContext {
     final pubspecParser = PubspecParser(projectRoot: root);
     final pubspecInfo = await pubspecParser.parse();
     
-    // Check if flutterbuild.yaml exists
-    final configPath = p.join(root, 'flutterbuild.yaml');
+    // Check if fluttercraft.yaml exists
+    final configPath = p.join(root, 'fluttercraft.yaml');
     final hasConfigFile = await File(configPath).exists();
     
     // Load config with pubspec fallback
@@ -107,3 +107,4 @@ class AppContext {
         ')';
   }
 }
+

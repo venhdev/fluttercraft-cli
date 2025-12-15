@@ -24,7 +24,7 @@ If you want to build manually without the scripts:
 
 ```powershell
 # Build executable
-fvm dart compile exe bin/flutterbuild.dart -o bin/flutterbuild.exe
+fvm dart compile exe bin/fluttercraft.dart -o bin/fluttercraft.exe
 ```
 
 ## Output Structure
@@ -32,10 +32,11 @@ fvm dart compile exe bin/flutterbuild.dart -o bin/flutterbuild.exe
 After building, you'll have:
 ```
 bin/
-└── flutterbuild.exe              # Latest version
+└── fluttercraft.exe              # Latest version
 ```
 
-The executable is always built to `bin/flutterbuild.exe` and displays as "flb" when running.
+The executable is always built to `bin/fluttercraft.exe` and displays as "fluttercraft" when running.
+
 
 
 

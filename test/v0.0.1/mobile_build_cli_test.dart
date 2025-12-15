@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:flutterbuild/src/core/version_manager.dart';
+import 'package:fluttercraft/src/core/version_manager.dart';
 
 void main() {
   group('SemanticVersion', () {
@@ -47,3 +47,4 @@ void main() {
     });
   });
 }
+

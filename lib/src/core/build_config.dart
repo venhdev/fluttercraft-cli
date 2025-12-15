@@ -63,16 +63,16 @@ class BuildConfig {
     required this.keystorePath,
   });
 
-  /// Load configuration from flutterbuild.yaml
+  /// Load configuration from fluttercraft.yaml
   /// 
-  /// If [pubspecInfo] is provided and flutterbuild.yaml doesn't exist,
+  /// If [pubspecInfo] is provided and fluttercraft.yaml doesn't exist,
   /// creates a default config using pubspec data.
   static Future<BuildConfig> load({
     String? configPath,
     PubspecInfo? pubspecInfo,
   }) async {
     final projectRoot = Directory.current.path;
-    final path = configPath ?? p.join(projectRoot, 'flutterbuild.yaml');
+    final path = configPath ?? p.join(projectRoot, 'fluttercraft.yaml');
     
     final file = File(path);
     if (!await file.exists()) {
@@ -101,7 +101,7 @@ class BuildConfig {
     final yaml = loadYaml(content) as YamlMap?;
     
     if (yaml == null) {
-      throw ConfigParseException('flutterbuild.yaml is empty or invalid');
+      throw ConfigParseException('fluttercraft.yaml is empty or invalid');
     }
     
     return _parseYaml(yaml, projectRoot);
@@ -276,7 +276,7 @@ class BuildConfig {
   }
 }
 
-/// Exception thrown when flutterbuild.yaml is not found
+/// Exception thrown when fluttercraft.yaml is not found
 class ConfigNotFoundException implements Exception {
   final String message;
   ConfigNotFoundException(this.message);
@@ -285,7 +285,7 @@ class ConfigNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// Exception thrown when flutterbuild.yaml cannot be parsed
+/// Exception thrown when fluttercraft.yaml cannot be parsed
 class ConfigParseException implements Exception {
   final String message;
   ConfigParseException(this.message);
@@ -293,3 +293,4 @@ class ConfigParseException implements Exception {
   @override
   String toString() => message;
 }
+

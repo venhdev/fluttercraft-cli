@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-/// Logger utility for writing build logs to .flutterbuild/ directory
+/// Logger utility for writing build logs to .fluttercraft/ directory
 /// 
 /// Log structure:
-/// - `.flutterbuild/build_latest.log`  - Overwritten each run
-/// - `.flutterbuild/logs/{uuid}.log`   - Per-build log file
+/// - `.fluttercraft/build_latest.log`  - Overwritten each run
+/// - `.fluttercraft/logs/{uuid}.log`   - Per-build log file
 class BuildLogger {
   final String projectRoot;
   final String buildId;
@@ -14,7 +14,7 @@ class BuildLogger {
   IOSink? _latestSink;
   IOSink? _buildSink;
   
-  static const String _flutterbuildDir = '.flutterbuild';
+  static const String _fluttercraftDir = '.fluttercraft';
   static const String _logsDir = 'logs';
   static const String _latestLogName = 'build_latest.log';
 
@@ -23,24 +23,24 @@ class BuildLogger {
     required this.buildId,
   });
 
-  /// Get .flutterbuild directory path
-  String get flutterbuildPath => p.join(projectRoot, _flutterbuildDir);
+  /// Get .fluttercraft directory path
+  String get fluttercraftPath => p.join(projectRoot, _fluttercraftDir);
   
   /// Get logs directory path
-  String get logsPath => p.join(flutterbuildPath, _logsDir);
+  String get logsPath => p.join(fluttercraftPath, _logsDir);
   
   /// Get path to latest log
-  String get latestLogPath => p.join(flutterbuildPath, _latestLogName);
+  String get latestLogPath => p.join(fluttercraftPath, _latestLogName);
   
   /// Get path to this build's log
   String get buildLogPath => p.join(logsPath, '$buildId.log');
 
   /// Initialize logger and create directories
   Future<void> init() async {
-    // Create .flutterbuild directory
-    final flutterbuildDir = Directory(flutterbuildPath);
-    if (!await flutterbuildDir.exists()) {
-      await flutterbuildDir.create(recursive: true);
+    // Create .fluttercraft directory
+    final fluttercraftDir = Directory(fluttercraftPath);
+    if (!await fluttercraftDir.exists()) {
+      await fluttercraftDir.create(recursive: true);
     }
     
     // Create logs subdirectory
@@ -65,7 +65,7 @@ class BuildLogger {
   void _writeHeader(String? version) {
     final header = '''
 ════════════════════════════════════════════════════════════════
-  FlutterBuild CLI - Build Log
+  fluttercraft CLI - Build Log
   Build ID: $buildId
   Started: ${DateTime.now()}
   Version: ${version ?? 'N/A'}
@@ -150,3 +150,4 @@ class BuildLogger {
     _buildSink = null;
   }
 }
+

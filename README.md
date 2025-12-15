@@ -1,4 +1,4 @@
-# FlutterBuild CLI (flb)
+# fluttercraft CLI (fluttercraft)
 
 A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell build scripts with a single portable executable.
 
@@ -8,7 +8,7 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - 🔧 **Build** - Build APK/AAB/IPA with version management
 - 🧹 **Clean** - Clean project and dist folder
 - 📦 **Convert** - Convert AAB to universal APK using bundletool
-- ⚙️ **Gen** - Generate flutterbuild.yaml configuration file
+- ⚙️ **Gen** - Generate fluttercraft.yaml configuration file
 - 🎯 **FVM Support** - Automatic FVM detection from `.fvmrc`
 - 🐦 **Shorebird Support** - Integrated Shorebird release builds
 - 🚀 **Smart Defaults** - Works without config, reads from pubspec.yaml
@@ -17,71 +17,71 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 ```powershell
 # Generate config (optional but recommended)
-flb gen
+fluttercraft gen
 
 # Build interactively
-flb build
+fluttercraft build
 
 # Or build directly
-flb build --type apk --no-confirm
+fluttercraft build --type apk --no-confirm
 ```
 
 ## Installation
 
 **Option 1: Compiled Binary**
 ```powershell
-.\bin\flutterbuild.exe --help
+.\bin\fluttercraft.exe --help
 ```
 
 **Option 2: Global Activation**
 ```powershell
 fvm dart pub global activate --source path .
-flutterbuild --help
+fluttercraft --help
 ```
 
 **Option 3: Run Directly**
 ```powershell
-fvm dart run bin/flutterbuild.dart --help
+fvm dart run bin/fluttercraft.dart --help
 ```
 
 ## Commands
 
-### `flb build`
+### `fluttercraft build`
 ```powershell
-flb build                              # Interactive
-flb build --type apk                   # Build APK
-flb build --no-confirm                 # Skip prompts
-flb build --version 1.2.3 --build-number 45
+fluttercraft build                              # Interactive
+fluttercraft build --type apk                   # Build APK
+fluttercraft build --no-confirm                 # Skip prompts
+fluttercraft build --version 1.2.3 --build-number 45
 ```
 
-### `flb clean`
+### `fluttercraft clean`
 ```powershell
-flb clean                              # Full clean
-flb clean --dist-only                  # Only dist folder
+fluttercraft clean                              # Full clean
+fluttercraft clean --dist-only                  # Only dist folder
 ```
 
-### `flb convert`
+### `fluttercraft convert`
 ```powershell
-flb convert                            # Auto-detect AAB
-flb convert --aab path/to/app.aab      # Specify AAB
+fluttercraft convert                            # Auto-detect AAB
+fluttercraft convert --aab path/to/app.aab      # Specify AAB
 ```
 
-### `flb gen`
+### `fluttercraft gen`
 ```powershell
-flb gen                                # Generate config
-flb gen --force                        # Overwrite existing
+fluttercraft gen                                # Generate config
+fluttercraft gen --force                        # Overwrite existing
 ```
 
 ## Configuration
 
 ### First Run (No Config Required)
 
-The CLI works without `flutterbuild.yaml`:
+The CLI works without `fluttercraft.yaml`:
 - Reads app name/version from `pubspec.yaml`
 - Uses sensible defaults
-- Run `flb gen` to create config file
+- Run `fluttercraft gen` to create config file
 
-### `flutterbuild.yaml`
+### `fluttercraft.yaml`
 
 ```yaml
 app:
@@ -143,9 +143,9 @@ Build artifacts: `dist/{app_name}_{version}+{build_number}.{ext}`
 Example: `myapp_1.2.3+45.aab`
 
 Logs:
-- `.flutterbuild/build_latest.log`
-- `.flutterbuild/logs/{build-id}.log`
-- `.flutterbuild/build_history.jsonl`
+- `.fluttercraft/build_latest.log`
+- `.fluttercraft/logs/{build-id}.log`
+- `.fluttercraft/build_history.jsonl`
 
 ## Development
 
@@ -159,3 +159,4 @@ fvm dart analyze                       # Analyze code
 ## License
 
 MIT
+

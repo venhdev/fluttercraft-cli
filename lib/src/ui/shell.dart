@@ -34,7 +34,7 @@ class Shell {
     _printBanner();
     
     while (_running) {
-      stdout.write('flutterbuild> ');
+      stdout.write('fluttercraft> ');
       final input = stdin.readLineSync()?.trim() ?? '';
       
       if (input.isEmpty) continue;
@@ -102,14 +102,14 @@ class Shell {
   void _printBanner() {
     print('');
     print('\x1B[1m\x1B[36m┌─────────────────────────────────────────┐\x1B[0m');
-    print('\x1B[1m\x1B[36m│         FlutterBuild CLI                │\x1B[0m');
+    print('\x1B[1m\x1B[36m│         fluttercraft CLI                │\x1B[0m');
     print('\x1B[1m\x1B[36m│         v0.0.4                          │\x1B[0m');
     print('\x1B[1m\x1B[36m└─────────────────────────────────────────┘\x1B[0m');
     print('');
     
-    // Show warning if flutterbuild.yaml doesn't exist
+    // Show warning if fluttercraft.yaml doesn't exist
     if (appContext != null && !appContext!.hasConfigFile) {
-      console.warning('⚠ No flutterbuild.yaml found. Run \'gen\' to create one.');
+      console.warning('⚠ No fluttercraft.yaml found. Run \'gen\' to create one.');
       print('');
     }
     
@@ -195,3 +195,4 @@ class Shell {
   /// Check if shell is running
   bool get isRunning => _running;
 }
+

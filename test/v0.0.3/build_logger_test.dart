@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:flutterbuild/src/utils/build_logger.dart';
+import 'package:fluttercraft/src/utils/build_logger.dart';
 
 void main() {
   group('BuildLogger', () {
@@ -19,10 +19,10 @@ void main() {
       } catch (_) {}
     });
 
-    test('init creates .flutterbuild and logs directories', () async {
+    test('init creates .fluttercraft and logs directories', () async {
       await logger.init();
 
-      expect(await Directory(logger.flutterbuildPath).exists(), true);
+      expect(await Directory(logger.fluttercraftPath).exists(), true);
       expect(await Directory(logger.logsPath).exists(), true);
     });
 
@@ -106,3 +106,4 @@ void main() {
     });
   });
 }
+

@@ -1,4 +1,4 @@
-# FlutterBuild CLI - Compile Script (PowerShell)
+# fluttercraft CLI - Compile Script (PowerShell)
 # Compiles Dart CLI to native executable
 
 param(
@@ -18,16 +18,16 @@ if ($Help) {
     Write-Host "  -Help       Show this help message"
     Write-Host ""
     Write-Host "Examples:"
-    Write-Host "  .\compile.ps1                        # bin/flutterbuild.exe"
-    Write-Host "  .\compile.ps1 -Target linux          # bin/flutterbuild"
+    Write-Host "  .\compile.ps1                        # bin/fluttercraft.exe"
+    Write-Host "  .\compile.ps1 -Target linux          # bin/fluttercraft"
     Write-Host ""
     Write-Host "Output:"
-    Write-Host "  bin/flutterbuild.exe                   # Latest version (no version suffix)"
+    Write-Host "  bin/fluttercraft.exe                   # Latest version (no version suffix)"
     exit 0
 }
 
 # Determine executable name and extension
-$exeName = "flutterbuild"
+$exeName = "fluttercraft"
 switch ($Target.ToLower()) {
     "windows" { $exeExt = ".exe" }
     "linux"   { $exeExt = "" }
@@ -43,7 +43,7 @@ $outputPath = Join-Path "bin" "$exeName$exeExt"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  FlutterBuild CLI - Compiler" -ForegroundColor Cyan
+Write-Host "  fluttercraft CLI - Compiler" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Target:   $Target"
@@ -71,9 +71,9 @@ Write-Host "Compiling..." -ForegroundColor Cyan
 
 try {
     if ($dartCmd -eq "fvm dart") {
-        & fvm dart compile exe bin/flutterbuild.dart -o $outputPath
+        & fvm dart compile exe bin/fluttercraft.dart -o $outputPath
     } else {
-        & dart compile exe bin/flutterbuild.dart -o $outputPath
+        & dart compile exe bin/fluttercraft.dart -o $outputPath
     }
     
     if ($LASTEXITCODE -ne 0) {
@@ -104,3 +104,4 @@ try {
     Write-Host "ERROR: $_" -ForegroundColor Red
     exit 1
 }
+

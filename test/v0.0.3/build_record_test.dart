@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:flutterbuild/src/core/build_record.dart';
+import 'package:fluttercraft/src/core/build_record.dart';
 
 void main() {
   group('BuildRecord', () {
@@ -210,3 +210,4 @@ void main() {
     });
   });
 }
+

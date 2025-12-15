@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:flutterbuild/src/core/build_config.dart';
+import 'package:fluttercraft/src/core/build_config.dart';
 
 void main() {
   group('BuildConfig', () {
@@ -27,7 +27,7 @@ void main() {
 
     test('parses minimal config with defaults', () async {
       // Create minimal config file
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -46,7 +46,7 @@ app:
     });
 
     test('parses full config correctly', () async {
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 app:
   name: myapp
@@ -104,7 +104,7 @@ bundletool:
     });
 
     test('fullVersion combines buildName and buildNumber', () async {
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 build:
   name: 1.2.3
@@ -116,7 +116,7 @@ build:
     });
 
     test('fullAppName includes shorebird suffix when enabled', () async {
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -132,7 +132,7 @@ shorebird:
     });
 
     test('throws ConfigParseException for empty file', () async {
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('');
 
       expect(
@@ -149,7 +149,7 @@ shorebird:
 }''');
 
       // Create config with FVM enabled but version null
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -181,7 +181,7 @@ fvm:
 }''');
 
       // Create config with explicit version
-      final configFile = File('$tempDir/flutterbuild.yaml');
+      final configFile = File('$tempDir/fluttercraft.yaml');
       await configFile.writeAsString('''
 app:
   name: testapp
@@ -198,3 +198,4 @@ fvm:
     });
   });
 }
+

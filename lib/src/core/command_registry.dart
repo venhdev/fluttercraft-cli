@@ -19,8 +19,8 @@ class CommandRegistry {
   /// Create a new CommandRunner with all registered commands
   CommandRunner<int> createRunner() {
     return CommandRunner<int>(
-      'flutterbuild',
-      'FlutterBuild CLI - Cross-platform Flutter build system\n'
+      'fluttercraft',
+      'fluttercraft CLI - Cross-platform Flutter build system\n'
       '\n'
       'Usage: flb <command> [arguments]\n'
       '\n'
@@ -28,7 +28,7 @@ class CommandRegistry {
       '  build     Build Flutter app (APK/AAB/IPA)\n'
       '  clean     Clean project and dist folder\n'
       '  convert   Convert AAB to universal APK\n'
-      '  gen       Generate flutterbuild.yaml',
+      '  gen       Generate fluttercraft.yaml',
     )
       ..addCommand(BuildCommand())
       ..addCommand(CleanCommand())
@@ -57,6 +57,7 @@ class CommandRegistry {
     'build': 'Build Flutter app (APK/AAB/IPA)',
     'clean': 'Clean project and dist folder',
     'convert': 'Convert AAB to universal APK',
-    'gen': 'Generate flutterbuild.yaml',
+    'gen': 'Generate fluttercraft.yaml',
   };
 }
+
