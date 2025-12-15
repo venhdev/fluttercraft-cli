@@ -47,37 +47,24 @@ fvm dart run bin/fluttercraft.dart --help
 
 ## Commands
 
-### `fluttercraft build`
+| Command | Description | Example |
+|---------|-------------|---------|
+| `build` | Build Flutter app (APK/AAB/IPA) | `flc build --type apk` |
+| `clean` | Clean project and dist folder | `flc clean --dist-only` |
+| `convert` | Convert AAB to universal APK | `flc convert --aab app.aab` |
+| `gen` | Generate fluttercraft.yaml | `flc gen --force` |
+| `run` | Run custom command alias | `flc run gen-icon` |
+
+**Interactive Mode:**
 ```powershell
-fluttercraft build                              # Interactive
-fluttercraft build --type apk                   # Build APK
-fluttercraft build --no-confirm                 # Skip prompts
-fluttercraft build --version 1.2.3 --build-number 45
+flc                    # Start interactive shell
+flc build              # Interactive build with prompts
 ```
 
-### `fluttercraft clean`
+**Direct Mode:**
 ```powershell
-fluttercraft clean                              # Full clean
-fluttercraft clean --dist-only                  # Only dist folder
-```
-
-### `fluttercraft convert`
-```powershell
-fluttercraft convert                            # Auto-detect AAB
-fluttercraft convert --aab path/to/app.aab      # Specify AAB
-```
-
-### `fluttercraft gen`
-```powershell
-fluttercraft gen                                # Generate config
-fluttercraft gen --force                        # Overwrite existing
-```
-
-### `fluttercraft run`
-```powershell
-fluttercraft run --list                         # List all aliases
-fluttercraft run gen-icon                       # Run gen-icon alias
-fluttercraft run brn                            # Run build_runner alias
+flc build --type apk --no-confirm
+flc run --list
 ```
 
 ## Configuration

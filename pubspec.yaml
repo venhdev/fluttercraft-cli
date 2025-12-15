@@ -1,7 +1,7 @@
 name: fluttercraft
 description: Flutter build CLI - cross-platform build system
 version: 0.0.6
-repository: https://github.com/venhdev/mobile-build-cli.git
+repository: https://github.com/venhdev/fluttercraft-cli.git
 
 environment:
   sdk: ^3.9.2
