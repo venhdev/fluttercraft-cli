@@ -34,6 +34,7 @@ class BuildConfig {
   
   // Shorebird integration
   final bool useShorebird;
+  final String? shorebirdAppId;  // Informational only - actual commands read from shorebird.yaml
   final String? shorebirdArtifact;
   final bool shorebirdAutoConfirm;
   
@@ -57,6 +58,7 @@ class BuildConfig {
     required this.useFvm,
     this.flutterVersion,
     required this.useShorebird,
+    this.shorebirdAppId,
     this.shorebirdArtifact,
     required this.shorebirdAutoConfirm,
     this.bundletoolPath,
@@ -139,14 +141,20 @@ class BuildConfig {
     
     // Auto-detect FVM version from .fvmrc if enabled but version is null
     if (useFvm && flutterVersion == null) {
-      flutterVersion = _detectFvmVersion(projectRoot);
+      flutterVersion = detectFvmVersion(projectRoot);
     }
     
     // Shorebird section
     final shorebird = yaml['shorebird'] as YamlMap?;
     final useShorebird = _getBool(shorebird, 'enabled', false);
+    var shorebirdAppId = _getStringOrNull(shorebird, 'app_id');
     final shorebirdArtifact = _getStringOrNull(shorebird, 'artifact');
     final shorebirdAutoConfirm = _getBool(shorebird, 'auto_confirm', true);
+    
+    // Auto-detect Shorebird app_id from shorebird.yaml if enabled but app_id is null
+    if (useShorebird && shorebirdAppId == null) {
+      shorebirdAppId = detectShorebirdAppId(projectRoot);
+    }
     
     // Bundletool section
     final bundletool = yaml['bundletool'] as YamlMap?;
@@ -169,6 +177,7 @@ class BuildConfig {
       useFvm: useFvm,
       flutterVersion: flutterVersion,
       useShorebird: useShorebird,
+      shorebirdAppId: shorebirdAppId,
       shorebirdArtifact: shorebirdArtifact,
       shorebirdAutoConfirm: shorebirdAutoConfirm,
       bundletoolPath: bundletoolPath,
@@ -213,8 +222,9 @@ class BuildConfig {
   /// Detect FVM version from .fvmrc file
   /// 
   /// Reads the .fvmrc JSON file in the project root and extracts the Flutter version.
-  /// Returns null if the file doesn't exist or cannot be parsed.
-  static String? _detectFvmVersion(String projectRoot) {
+  /// Also checks .fvm/version file as a fallback.
+  /// Returns null if neither file exists or cannot be parsed.
+  static String? detectFvmVersion(String projectRoot) {
     try {
       final fvmrcPath = p.join(projectRoot, '.fvmrc');
       final fvmrcFile = File(fvmrcPath);
@@ -234,6 +244,36 @@ class BuildConfig {
       return version?.toString();
     } catch (e) {
       // If we can't read or parse .fvmrc, return null
+      return null;
+    }
+  }
+
+  /// Detect Shorebird app_id from shorebird.yaml file
+  /// 
+  /// Reads the shorebird.yaml file in the project root and extracts the app_id.
+  /// Returns null if the file doesn't exist or cannot be parsed.
+  /// 
+  /// Note: This is informational only. Actual Shorebird commands read from shorebird.yaml directly.
+  static String? detectShorebirdAppId(String projectRoot) {
+    try {
+      final shorebirdPath = p.join(projectRoot, 'shorebird.yaml');
+      final shorebirdFile = File(shorebirdPath);
+      
+      if (!shorebirdFile.existsSync()) {
+        return null;
+      }
+      
+      final content = shorebirdFile.readAsStringSync();
+      final yaml = loadYaml(content) as YamlMap?;
+      
+      if (yaml == null) {
+        return null;
+      }
+      
+      final appId = yaml['app_id'];
+      return appId?.toString();
+    } catch (e) {
+      // If we can't read or parse shorebird.yaml, return null
       return null;
     }
   }

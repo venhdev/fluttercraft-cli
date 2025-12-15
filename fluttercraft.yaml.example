@@ -44,6 +44,7 @@ fvm:
 # ──────────────────────────────────────────────
 shorebird:
   enabled: false             # USE_SHOREBIRD
+  app_id: null               # SHOREBIRD_APP_ID (auto-detected from shorebird.yaml)
   artifact: null             # SHOREBIRD_ARTIFACT - apk | aab
   auto_confirm: true         # SHOREBIRD_AUTO_CONFIRM --no-confirm
 
