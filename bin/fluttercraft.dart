@@ -13,8 +13,8 @@ import 'package:fluttercraft/src/ui/shell.dart';
 /// Replaces PowerShell build scripts with a single portable executable.
 /// 
 /// Supports two modes:
-/// - Single-command mode: `flb build --type apk` (runs and exits)
-/// - Interactive shell mode: `flb` or `flb --shell` (continuous REPL)
+/// - Single-command mode: `flc build --type apk` (runs and exits)
+/// - Interactive shell mode: `flc` or `flc --shell` (continuous REPL)
 void main(List<String> arguments) async {
   final registry = CommandRegistry();
   
@@ -61,7 +61,7 @@ void main(List<String> arguments) async {
     
     // Handle --version
     if (globalResult['version'] == true) {
-      print('flb v0.0.4');
+      print('flc v0.0.4');
       exit(0);
     }
     
@@ -107,12 +107,12 @@ Future<void> _runSingleCommand(CommandRegistry registry, List<String> arguments)
 }
 
 void _printUsage(ArgParser parser) {
-  print('flb - Flutter Build CLI');
+  print('flc - Flutter Build CLI');
   print('');
   print('Usage:');
-  print('  flb                      Start interactive shell (default)');
-  print('  flb --shell              Start interactive shell (explicit)');
-  print('  flb <command> [options]  Run single command and exit');
+  print('  flc                      Start interactive shell (default)');
+  print('  flc --shell              Start interactive shell (explicit)');
+  print('  flc <command> [options]  Run single command and exit');
   print('');
   print('Global Options:');
   print(parser.usage);
@@ -125,12 +125,13 @@ void _printUsage(ArgParser parser) {
   print('');
   print('Configuration:');
   print('  Create a fluttercraft.yaml file in your project root.');
-  print('  Run \'flb gen\' to generate a template.');
+  print('  Run \'flc gen\' to generate a template.');
   print('');
   print('Examples:');
-  print('  flb                    # Start interactive shell');
-  print('  flb build --type apk   # Build APK and exit');
-  print('  flb gen                # Generate fluttercraft.yaml');
-  print('  flb clean              # Clean and exit');
+  print('  flc                    # Start interactive shell');
+  print('  flc build --type apk   # Build APK and exit');
+  print('  flc gen                # Generate fluttercraft.yaml');
+  print('  flc clean              # Clean and exit');
 }
+
 

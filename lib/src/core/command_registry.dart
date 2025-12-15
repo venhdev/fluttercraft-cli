@@ -22,7 +22,7 @@ class CommandRegistry {
       'fluttercraft',
       'fluttercraft CLI - Cross-platform Flutter build system\n'
       '\n'
-      'Usage: flb <command> [arguments]\n'
+      'Usage: flc <command> [arguments]\n'
       '\n'
       'Commands:\n'
       '  build     Build Flutter app (APK/AAB/IPA)\n'
@@ -60,4 +60,5 @@ class CommandRegistry {
     'gen': 'Generate fluttercraft.yaml',
   };
 }
+
 

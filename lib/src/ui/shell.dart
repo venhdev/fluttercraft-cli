@@ -77,7 +77,7 @@ class Shell {
         
       case 'version':
       case 'v':
-        console.info('flb v0.0.4');
+        console.info('flc v0.0.4');
         return;
         
       case 'context':
@@ -195,4 +195,5 @@ class Shell {
   /// Check if shell is running
   bool get isRunning => _running;
 }
+
 
