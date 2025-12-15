@@ -109,6 +109,7 @@ fvm:
 
 shorebird:
   enabled: false
+  app_id: null   # Auto-detected from shorebird.yaml
   artifact: null
   auto_confirm: true
 ```

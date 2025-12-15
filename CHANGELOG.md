@@ -1,3 +1,11 @@
+## 0.0.5 (2025-12-15)
+
+- **feat**: Add BuildConfig for YAML-based project configuration, FVM integration, and update documentation and gitignore
+- **refactor**: FlutterCraft (renamed ALL)
+- **fix**: Complete rename to fluttercraft, also alias flb to flc
+- **fix**: Auto-detect FVM Flutter version from `.fvmrc`
+- **fix**: Auto-detect Shorebird app_id from `shorebird.yaml`
+
 ## 0.0.4 (2025-12-13)
 
 - **New `gen` command** - Generate `fluttercraft.yaml` with `--force` flag support
