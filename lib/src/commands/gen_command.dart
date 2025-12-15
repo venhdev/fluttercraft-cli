@@ -132,8 +132,9 @@ fvm:
 # Shorebird integration
 # ──────────────────────────────────────────────
 shorebird:
-  enabled: false             # USE_SHOREBIRD
-  app_id: ${shorebirdAppId ?? 'null'}               # SHOREBIRD_APP_ID (auto-detected from shorebird.yaml)
+  enabled: ${shorebirdAppId != null ? 'true' : 'false'}             # USE_SHOREBIRD
+  # SHOREBIRD_APP_ID (auto-detected from shorebird.yaml)
+  app_id: ${shorebirdAppId ?? 'null'}
   artifact: null             # SHOREBIRD_ARTIFACT - apk | aab
   auto_confirm: true         # SHOREBIRD_AUTO_CONFIRM --no-confirm
 

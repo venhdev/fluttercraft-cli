@@ -2,17 +2,12 @@
 
 A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell build scripts with a single portable executable.
 
-## Features
+## ✨ Key Features
 
-- 🖥️ **Interactive Shell** - Continuous REPL experience
-- 🔧 **Build** - Build APK/AAB/IPA with version management
-- 🧹 **Clean** - Clean project and dist folder
-- 📦 **Convert** - Convert AAB to universal APK using bundletool
-- ⚙️ **Gen** - Generate fluttercraft.yaml configuration file
-- 🎯 **FVM Support** - Automatic FVM detection from `.fvmrc`
-- 🐦 **Shorebird Support** - Integrated Shorebird release builds
-- 🚀 **Smart Defaults** - Works without config, reads from pubspec.yaml
-- 🔧 **Custom Aliases** - Define reusable command sequences
+- **Interactive Shell** - Continuous REPL for rapid development
+- **Streamlined Build Process** - Build, version, and deploy in one flow
+- **Seamless Integrations** - FVM, Shorebird, auto-determine versions and context
+- **Custom Command Aliases** - Define reusable command sequences via `flc run <alias>`
 
 ## Quick Start
 
@@ -27,22 +22,45 @@ fluttercraft build
 fluttercraft build --type apk --no-confirm
 ```
 
-## Installation
+## 📦 Installation
 
-**Option 1: Compiled Binary**
-```powershell
-.\bin\fluttercraft.exe --help
+### From pub.dev (Recommended)
+```bash
+# Install globally
+dart pub global activate fluttercraft
+
+# Use anywhere
+flc --version
+flc build
 ```
 
-**Option 2: Global Activation**
-```powershell
-fvm dart pub global activate --source path .
-fluttercraft --help
+### From Binary
+1. Download `fluttercraft.exe` from [releases](https://github.com/venhdev/fluttercraft-cli/releases)
+2. Add to PATH or run directly:
+   ```bash
+   .\fluttercraft.exe --help
+   ```
+
+### From Source
+```bash
+# Clone and activate
+git clone https://github.com/venhdev/fluttercraft-cli.git
+cd fluttercraft-cli
+dart pub global activate --source path .
+
+# Or install directly from git
+dart pub global activate --source git https://github.com/venhdev/fluttercraft-cli.git
 ```
 
-**Option 3: Run Directly**
-```powershell
+### Run Directly (No Installation)
+```bash
+# Clone repository
+git clone https://github.com/venhdev/fluttercraft-cli.git
+cd fluttercraft-cli
+
+# Run commands
 fvm dart run bin/fluttercraft.dart --help
+fvm dart run bin/fluttercraft.dart build
 ```
 
 ## Commands
