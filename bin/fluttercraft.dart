@@ -5,7 +5,9 @@ import 'package:args/command_runner.dart';
 
 import 'package:fluttercraft/src/core/app_context.dart';
 import 'package:fluttercraft/src/core/command_registry.dart';
+import 'package:fluttercraft/src/commands/run_command.dart';
 import 'package:fluttercraft/src/ui/shell.dart';
+import 'package:fluttercraft/src/version.dart';
 
 /// fluttercraft CLI
 /// 
@@ -19,7 +21,7 @@ void main(List<String> arguments) async {
   final registry = CommandRegistry();
   
   // Check if first argument is a known command
-  final knownCommands = ['build', 'clean', 'convert', 'gen'];
+  final knownCommands = ['build', 'clean', 'convert', 'gen', 'run'];
   final firstArg = arguments.isNotEmpty ? arguments.first : '';
   final isCommand = knownCommands.contains(firstArg);
   
@@ -61,7 +63,7 @@ void main(List<String> arguments) async {
     
     // Handle --version
     if (globalResult['version'] == true) {
-      print('flc v0.0.4');
+      print('flc v$appVersion');
       exit(0);
     }
     
@@ -78,6 +80,13 @@ void main(List<String> arguments) async {
       shell.registerCommand(entry.key, entry.value);
     }
     
+    // Register run command with AppContext
+    shell.registerCommand('run', (args) async {
+      final runCmd = RunCommand(appContext);
+      await runCmd.execute(args);
+      return 0;
+    });
+    
     final exitCode = await shell.run();
     exit(exitCode);
   } on FormatException catch (e) {
@@ -92,6 +101,19 @@ void main(List<String> arguments) async {
 
 /// Run in single-command mode using CommandRunner
 Future<void> _runSingleCommand(CommandRegistry registry, List<String> arguments) async {
+  // Handle run command specially since it needs AppContext
+  if (arguments.isNotEmpty && arguments.first == 'run') {
+    try {
+      final appContext = await AppContext.load();
+      final runCmd = RunCommand(appContext);
+      await runCmd.execute(arguments.sublist(1));
+      exit(0);
+    } catch (e) {
+      print('Error: $e');
+      exit(1);
+    }
+  }
+  
   final runner = registry.createRunner();
   
   try {
@@ -122,6 +144,7 @@ void _printUsage(ArgParser parser) {
   print('  clean     Clean project and dist folder');
   print('  convert   Convert AAB to universal APK');
   print('  gen       Generate fluttercraft.yaml');
+  print('  run       Run custom command alias');
   print('');
   print('Configuration:');
   print('  Create a fluttercraft.yaml file in your project root.');

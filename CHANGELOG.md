@@ -1,3 +1,9 @@
+## 0.0.6 (2025-12-15)
+
+- **feat**: Add custom command alias support via `flc run <alias>`
+- **feat**: Add `--list` flag to show all available aliases
+- **feat**: Update config generation to include alias examples
+
 ## 0.0.5 (2025-12-15)
 
 - **feat**: Add BuildConfig for YAML-based project configuration, FVM integration, and update documentation and gitignore

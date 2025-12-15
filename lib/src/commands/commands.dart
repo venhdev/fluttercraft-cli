@@ -5,3 +5,4 @@ export 'build_command.dart';
 export 'clean_command.dart';
 export 'convert_command.dart';
 export 'gen_command.dart';
+export 'run_command.dart';

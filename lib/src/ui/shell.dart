@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../core/app_context.dart';
 import '../utils/console.dart';
+import '../version.dart';
 
 /// Interactive Shell REPL for the CLI
 /// 
@@ -77,7 +78,7 @@ class Shell {
         
       case 'version':
       case 'v':
-        console.info('flc v0.0.4');
+        console.info('flc v$appVersion');
         return;
         
       case 'context':
@@ -103,7 +104,7 @@ class Shell {
     print('');
     print('\x1B[1m\x1B[36m┌─────────────────────────────────────────┐\x1B[0m');
     print('\x1B[1m\x1B[36m│         fluttercraft CLI                │\x1B[0m');
-    print('\x1B[1m\x1B[36m│         v0.0.4                          │\x1B[0m');
+    print('\x1B[1m\x1B[36m│         v$appVersion                          │\x1B[0m');
     print('\x1B[1m\x1B[36m└─────────────────────────────────────────┘\x1B[0m');
     print('');
     

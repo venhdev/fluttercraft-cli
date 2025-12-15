@@ -143,6 +143,19 @@ shorebird:
 bundletool:
   path: null                 # BUNDLETOOL_PATH (optional)
   keystore: android/key.properties  # KEY_PROPERTIES_PATH
+
+# ──────────────────────────────────────────────
+# Custom command aliases
+# ──────────────────────────────────────────────
+alias:
+  gen-icon:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter pub run flutter_launcher_icons
+  brn:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
 ''';
   }
 }

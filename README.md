@@ -12,6 +12,7 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - 🎯 **FVM Support** - Automatic FVM detection from `.fvmrc`
 - 🐦 **Shorebird Support** - Integrated Shorebird release builds
 - 🚀 **Smart Defaults** - Works without config, reads from pubspec.yaml
+- 🔧 **Custom Aliases** - Define reusable command sequences
 
 ## Quick Start
 
@@ -72,6 +73,13 @@ fluttercraft gen                                # Generate config
 fluttercraft gen --force                        # Overwrite existing
 ```
 
+### `fluttercraft run`
+```powershell
+fluttercraft run --list                         # List all aliases
+fluttercraft run gen-icon                       # Run gen-icon alias
+fluttercraft run brn                            # Run build_runner alias
+```
+
 ## Configuration
 
 ### First Run (No Config Required)
@@ -112,6 +120,39 @@ shorebird:
   app_id: null   # Auto-detected from shorebird.yaml
   artifact: null
   auto_confirm: true
+
+alias:
+  gen-icon:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter pub run flutter_launcher_icons
+  brn:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
+```
+
+## Custom Command Aliases
+
+Define reusable command sequences in `fluttercraft.yaml`:
+
+```yaml
+alias:
+  gen-icon:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter pub run flutter_launcher_icons
+  brn:
+    cmds:
+      - fvm flutter pub get
+      - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
+```
+
+Then run them with:
+```powershell
+flc run gen-icon
+flc run brn
+flc run --list  # Show all available aliases
 ```
 
 ## FVM Integration

@@ -5,6 +5,17 @@ import 'package:path/path.dart' as p;
 
 import 'pubspec_parser.dart';
 
+/// Custom command alias definition
+class CommandAlias {
+  final String name;
+  final List<String> commands;
+  
+  CommandAlias({
+    required this.name,
+    required this.commands,
+  });
+}
+
 /// Configuration loaded from buildcraft.yaml
 class BuildConfig {
   final String projectRoot;
@@ -41,6 +52,9 @@ class BuildConfig {
   // Bundletool
   final String? bundletoolPath;
   final String keystorePath;
+  
+  // Custom command aliases
+  final Map<String, CommandAlias> aliases;
 
   BuildConfig({
     required this.projectRoot,
@@ -63,6 +77,7 @@ class BuildConfig {
     required this.shorebirdAutoConfirm,
     this.bundletoolPath,
     required this.keystorePath,
+    this.aliases = const {},
   });
 
   /// Load configuration from fluttercraft.yaml
@@ -161,6 +176,10 @@ class BuildConfig {
     final bundletoolPath = _getStringOrNull(bundletool, 'path');
     final keystorePath = _getString(bundletool, 'keystore', 'android/key.properties');
     
+    // Alias section
+    final aliasMap = yaml['alias'] as YamlMap?;
+    final aliases = _parseAliases(aliasMap);
+    
     return BuildConfig(
       projectRoot: projectRoot,
       appName: appName,
@@ -182,6 +201,7 @@ class BuildConfig {
       shorebirdAutoConfirm: shorebirdAutoConfirm,
       bundletoolPath: bundletoolPath,
       keystorePath: keystorePath,
+      aliases: aliases,
     );
   }
 
@@ -217,6 +237,35 @@ class BuildConfig {
     if (value == null) return defaultValue;
     if (value is bool) return value;
     return value.toString().toLowerCase() == 'true';
+  }
+
+  static Map<String, CommandAlias> _parseAliases(YamlMap? aliasMap) {
+    if (aliasMap == null) return {};
+    
+    final result = <String, CommandAlias>{};
+    
+    for (final entry in aliasMap.entries) {
+      final name = entry.key.toString();
+      final config = entry.value as YamlMap?;
+      
+      if (config == null) continue;
+      
+      final cmds = config['cmds'];
+      if (cmds == null) continue;
+      
+      final commands = <String>[];
+      if (cmds is YamlList) {
+        for (final cmd in cmds) {
+          commands.add(cmd.toString());
+        }
+      }
+      
+      if (commands.isNotEmpty) {
+        result[name] = CommandAlias(name: name, commands: commands);
+      }
+    }
+    
+    return result;
   }
 
   /// Detect FVM version from .fvmrc file
