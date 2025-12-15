@@ -1,8 +1,21 @@
-## 0.0.6 (2025-12-15)
+## 0.0.6 (2025-12-15) - Initial Release
 
-- **feat**: Add custom command alias support via `flc run <alias>`
-- **feat**: Add `--list` flag to show all available aliases
-- **feat**: Update config generation to include alias examples
+> **Craft Your Flutter Builds with Precision**
+
+### ✨ Key Features
+- **Interactive Shell** - Continuous REPL for rapid development
+- **Streamlined Build Process** - Build, version, and deploy in one flow
+- **Seamless Integrations** - FVM, Shorebird, auto-determine versions and context
+- **Custom Command Aliases** - Define reusable command sequences via `flc run <alias>`
+
+### 📦 Installation
+```bash
+# From pub.dev
+dart pub global activate fluttercraft
+
+# From binary
+# Download fluttercraft-v0.0.6-windows-x64.exe from releases
+```
 
 ## 0.0.5 (2025-12-15)
 

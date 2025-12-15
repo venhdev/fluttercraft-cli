@@ -36,8 +36,8 @@ git push origin main --tags
 ### Create Release
 1. Go to: https://github.com/venhdev/fluttercraft-cli/releases/new
 2. Select tag: `v{x.x.x}`
-3. Title: `v{x.x.x} - {Feature Name}`
-4. Description: Copy from `CHANGELOG.md` or create release notes
+3. Title: `v{x.x.x} - Initial Release` (or feature name)
+4. Description: Copy the version section from `CHANGELOG.md`
 5. **Attach binaries:** Drag and drop compiled `.exe` files
 6. Click **"Publish release"**
 
