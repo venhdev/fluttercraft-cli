@@ -1,4 +1,4 @@
-# fluttercraft CLI (fluttercraft)
+# fluttercraft CLI (fluttercraft) - Craft Your Flutter Builds with Precision
 
 A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell build scripts with a single portable executable.
 
