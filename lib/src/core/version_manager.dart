@@ -78,26 +78,17 @@ class SemanticVersion {
 }
 
 /// Version bump type
-enum VersionBump {
-  none,
-  patch,
-  minor,
-  major,
-}
+enum VersionBump { none, patch, minor, major }
 
 /// Build number handling type
-enum BuildNumberAction {
-  keep,
-  increment,
-  custom,
-}
+enum BuildNumberAction { keep, increment, custom }
 
 /// Manages version incrementing and prompts
 class VersionManager {
   /// Apply version bump to a semantic version
   SemanticVersion applyBump(SemanticVersion version, VersionBump bump) {
     final newVersion = version.copy();
-    
+
     switch (bump) {
       case VersionBump.major:
         newVersion.incrementMajor();
@@ -112,7 +103,7 @@ class VersionManager {
         // No change
         break;
     }
-    
+
     return newVersion;
   }
 
@@ -123,7 +114,7 @@ class VersionManager {
     int? customNumber,
   }) {
     final newVersion = version.copy();
-    
+
     switch (action) {
       case BuildNumberAction.increment:
         newVersion.incrementBuildNumber();
@@ -137,7 +128,7 @@ class VersionManager {
         // No change
         break;
     }
-    
+
     return newVersion;
   }
 
@@ -146,7 +137,7 @@ class VersionManager {
     final patchVersion = current.copy()..incrementPatch();
     final minorVersion = current.copy()..incrementMinor();
     final majorVersion = current.copy()..incrementMajor();
-    
+
     return [
       'No change (keep ${current.buildName})',
       'Patch (+0.0.1) → ${patchVersion.buildName}',

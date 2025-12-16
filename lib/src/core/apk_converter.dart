@@ -11,11 +11,7 @@ class ConversionResult {
   final String? outputPath;
   final String? error;
 
-  ConversionResult({
-    required this.success,
-    this.outputPath,
-    this.error,
-  });
+  ConversionResult({required this.success, this.outputPath, this.error});
 }
 
 /// Keystore configuration parsed from key.properties
@@ -49,8 +45,8 @@ class ApkConverter {
     required this.projectRoot,
     ProcessRunner? processRunner,
     Console? console,
-  })  : _processRunner = processRunner ?? ProcessRunner(),
-        _console = console ?? Console();
+  }) : _processRunner = processRunner ?? ProcessRunner(),
+       _console = console ?? Console();
 
   /// Default paths to search for bundletool
   static final List<String> defaultBundletoolPaths = [
@@ -84,7 +80,8 @@ class ApkConverter {
 
       final globPattern = p.basename(pattern);
       await for (final entity in dir.list()) {
-        if (entity is File && _matchesGlob(p.basename(entity.path), globPattern)) {
+        if (entity is File &&
+            _matchesGlob(p.basename(entity.path), globPattern)) {
           return entity.path;
         }
       }
@@ -98,10 +95,10 @@ class ApkConverter {
     if (!pattern.contains('*')) {
       return filename == pattern;
     }
-    
+
     final prefix = pattern.split('*').first;
     final suffix = pattern.split('*').last;
-    
+
     return filename.startsWith(prefix) && filename.endsWith(suffix);
   }
 
@@ -194,15 +191,24 @@ class ApkConverter {
 
     // Validate inputs
     if (!await File(aabPath).exists()) {
-      return ConversionResult(success: false, error: 'AAB file not found: $aabPath');
+      return ConversionResult(
+        success: false,
+        error: 'AAB file not found: $aabPath',
+      );
     }
 
     if (!await File(bundletoolPath).exists()) {
-      return ConversionResult(success: false, error: 'Bundletool not found: $bundletoolPath');
+      return ConversionResult(
+        success: false,
+        error: 'Bundletool not found: $bundletoolPath',
+      );
     }
 
     if (!await File(keystorePath).exists()) {
-      return ConversionResult(success: false, error: 'Keystore not found: $keystorePath');
+      return ConversionResult(
+        success: false,
+        error: 'Keystore not found: $keystorePath',
+      );
     }
 
     // Create temp paths
@@ -223,26 +229,25 @@ class ApkConverter {
     _console.info('Running bundletool...');
 
     // Run bundletool
-    final result = await _processRunner.run(
-      'java',
-      [
-        '-jar',
-        bundletoolPath,
-        'build-apks',
-        '--bundle=$aabPath',
-        '--output=$apksTemp',
-        '--mode=universal',
-        '--ks=$keystorePath',
-        '--ks-key-alias=${keystoreConfig.keyAlias}',
-        '--ks-pass=pass:${keystoreConfig.storePassword}',
-        '--key-pass=pass:${keystoreConfig.keyPassword}',
-        '--overwrite',
-      ],
-      workingDirectory: projectRoot,
-    );
+    final result = await _processRunner.run('java', [
+      '-jar',
+      bundletoolPath,
+      'build-apks',
+      '--bundle=$aabPath',
+      '--output=$apksTemp',
+      '--mode=universal',
+      '--ks=$keystorePath',
+      '--ks-key-alias=${keystoreConfig.keyAlias}',
+      '--ks-pass=pass:${keystoreConfig.storePassword}',
+      '--key-pass=pass:${keystoreConfig.keyPassword}',
+      '--overwrite',
+    ], workingDirectory: projectRoot);
 
     if (!result.success) {
-      return ConversionResult(success: false, error: 'Bundletool failed: ${result.stderr}');
+      return ConversionResult(
+        success: false,
+        error: 'Bundletool failed: ${result.stderr}',
+      );
     }
 
     // Extract APK from APKS file
@@ -288,7 +293,10 @@ class ApkConverter {
       return ConversionResult(success: true, outputPath: finalApkPath);
     }
 
-    return ConversionResult(success: false, error: 'universal.apk not found in extracted files');
+    return ConversionResult(
+      success: false,
+      error: 'universal.apk not found in extracted files',
+    );
   }
 
   /// Find AAB files in a directory

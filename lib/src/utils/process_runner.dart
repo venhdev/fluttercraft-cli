@@ -26,13 +26,11 @@ class ProcessRunner {
   final Console _console;
   final bool verbose;
 
-  ProcessRunner({
-    Console? console,
-    this.verbose = false,
-  }) : _console = console ?? Console();
+  ProcessRunner({Console? console, this.verbose = false})
+    : _console = console ?? Console();
 
   /// Run a command and wait for completion
-  /// 
+  ///
   /// [command] - The command to run (e.g., 'flutter', 'fvm')
   /// [args] - Arguments for the command
   /// [workingDirectory] - Working directory for the command
@@ -45,7 +43,7 @@ class ProcessRunner {
     Map<String, String>? environment,
   }) async {
     final fullCommand = '$command ${args.join(' ')}';
-    
+
     if (verbose) {
       _console.info('Running: $fullCommand');
     }
@@ -64,29 +62,33 @@ class ProcessRunner {
 
       // Stream stdout
       final stdoutCompleter = Completer<void>();
-      process.stdout.transform(utf8.decoder).listen(
-        (data) {
-          stdoutBuffer.write(data);
-          if (streamOutput) {
-            stdout.write(data);
-          }
-        },
-        onDone: () => stdoutCompleter.complete(),
-        onError: (e) => stdoutCompleter.completeError(e),
-      );
+      process.stdout
+          .transform(utf8.decoder)
+          .listen(
+            (data) {
+              stdoutBuffer.write(data);
+              if (streamOutput) {
+                stdout.write(data);
+              }
+            },
+            onDone: () => stdoutCompleter.complete(),
+            onError: (e) => stdoutCompleter.completeError(e),
+          );
 
       // Stream stderr
       final stderrCompleter = Completer<void>();
-      process.stderr.transform(utf8.decoder).listen(
-        (data) {
-          stderrBuffer.write(data);
-          if (streamOutput) {
-            stderr.write(data);
-          }
-        },
-        onDone: () => stderrCompleter.complete(),
-        onError: (e) => stderrCompleter.completeError(e),
-      );
+      process.stderr
+          .transform(utf8.decoder)
+          .listen(
+            (data) {
+              stderrBuffer.write(data);
+              if (streamOutput) {
+                stderr.write(data);
+              }
+            },
+            onDone: () => stderrCompleter.complete(),
+            onError: (e) => stderrCompleter.completeError(e),
+          );
 
       // Wait for process to complete
       final exitCode = await process.exitCode;
@@ -110,11 +112,7 @@ class ProcessRunner {
     } catch (e) {
       _console.error('Failed to execute: $fullCommand');
       _console.error('Error: $e');
-      return ProcessResult(
-        exitCode: -1,
-        stdout: '',
-        stderr: e.toString(),
-      );
+      return ProcessResult(exitCode: -1, stdout: '', stderr: e.toString());
     }
   }
 
@@ -142,11 +140,19 @@ class ProcessRunner {
     bool streamOutput = true,
   }) async {
     if (useFvm) {
-      return run('fvm', ['flutter', ...args],
-          workingDirectory: workingDirectory, streamOutput: streamOutput);
+      return run(
+        'fvm',
+        ['flutter', ...args],
+        workingDirectory: workingDirectory,
+        streamOutput: streamOutput,
+      );
     }
-    return run('flutter', args,
-        workingDirectory: workingDirectory, streamOutput: streamOutput);
+    return run(
+      'flutter',
+      args,
+      workingDirectory: workingDirectory,
+      streamOutput: streamOutput,
+    );
   }
 
   /// Run dart command (with FVM support)
@@ -157,11 +163,19 @@ class ProcessRunner {
     bool streamOutput = true,
   }) async {
     if (useFvm) {
-      return run('fvm', ['dart', ...args],
-          workingDirectory: workingDirectory, streamOutput: streamOutput);
+      return run(
+        'fvm',
+        ['dart', ...args],
+        workingDirectory: workingDirectory,
+        streamOutput: streamOutput,
+      );
     }
-    return run('dart', args,
-        workingDirectory: workingDirectory, streamOutput: streamOutput);
+    return run(
+      'dart',
+      args,
+      workingDirectory: workingDirectory,
+      streamOutput: streamOutput,
+    );
   }
 
   /// Run shorebird command
@@ -170,8 +184,12 @@ class ProcessRunner {
     String? workingDirectory,
     bool streamOutput = true,
   }) async {
-    return run('shorebird', args,
-        workingDirectory: workingDirectory, streamOutput: streamOutput);
+    return run(
+      'shorebird',
+      args,
+      workingDirectory: workingDirectory,
+      streamOutput: streamOutput,
+    );
   }
 
   /// Check if a command exists on the system

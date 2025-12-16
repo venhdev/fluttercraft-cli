@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
 import '../core/build_config.dart';
+import '../core/build_flags.dart';
 import '../core/apk_converter.dart';
 import '../utils/console.dart';
 
@@ -22,19 +23,9 @@ class ConvertCommand extends Command<int> {
         abbr: 'a',
         help: 'Path to AAB file (auto-detects from dist if not specified)',
       )
-      ..addOption(
-        'output',
-        abbr: 'o',
-        help: 'Output directory for APK',
-      )
-      ..addOption(
-        'bundletool',
-        help: 'Path to bundletool.jar',
-      )
-      ..addOption(
-        'key-properties',
-        help: 'Path to key.properties file',
-      );
+      ..addOption('output', abbr: 'o', help: 'Output directory for APK')
+      ..addOption('bundletool', help: 'Path to bundletool.jar')
+      ..addOption('key-properties', help: 'Path to key.properties file');
   }
 
   @override
@@ -58,9 +49,7 @@ class ConvertCommand extends Command<int> {
         buildType: 'aab',
         targetDart: 'lib/main.dart',
         outputPath: 'dist',
-        useDartDefine: false,
-        needClean: false,
-        needBuildRunner: false,
+        flags: BuildFlags.defaults,
         useFvm: false,
         useShorebird: false,
         shorebirdNoConfirm: true,
@@ -72,17 +61,17 @@ class ConvertCommand extends Command<int> {
 
     // Find or prompt for AAB file
     String? aabPath = argResults?['aab'] as String?;
-    
+
     if (aabPath == null || aabPath.isEmpty) {
       // Search in dist folder
       console.section('Searching for AAB files...');
       final searchPath = config.absoluteOutputPath;
       final aabFiles = await converter.findAabFiles(searchPath);
-      
+
       if (aabFiles.isEmpty) {
         console.warning('No AAB files found in $searchPath');
         aabPath = console.prompt('Enter path to AAB file');
-        
+
         if (aabPath.isEmpty) {
           console.error('No AAB file specified');
           return 1;
@@ -111,41 +100,44 @@ class ConvertCommand extends Command<int> {
     console.section('Locating bundletool...');
     String? bundletoolPath = argResults?['bundletool'] as String?;
     bundletoolPath ??= config.bundletoolPath;
-    
+
     bundletoolPath = await converter.findBundletool(customPath: bundletoolPath);
-    
+
     if (bundletoolPath == null) {
       console.warning('Bundletool not found automatically');
       bundletoolPath = console.prompt('Enter path to bundletool.jar');
-      
+
       if (bundletoolPath.isEmpty || !await File(bundletoolPath).exists()) {
         console.error('Bundletool not found');
         return 1;
       }
     }
-    
+
     console.success('Found bundletool: ${p.basename(bundletoolPath)}');
 
     // Find key.properties
     console.section('Loading keystore configuration...');
     String keyPropertiesPath = argResults?['key-properties'] as String? ?? '';
-    
+
     if (keyPropertiesPath.isEmpty) {
       keyPropertiesPath = p.join(projectRoot, config.keystorePath);
     }
-    
+
     if (!await File(keyPropertiesPath).exists()) {
       console.warning('key.properties not found at: $keyPropertiesPath');
       keyPropertiesPath = console.prompt('Enter path to key.properties');
-      
-      if (keyPropertiesPath.isEmpty || !await File(keyPropertiesPath).exists()) {
+
+      if (keyPropertiesPath.isEmpty ||
+          !await File(keyPropertiesPath).exists()) {
         console.error('key.properties not found');
         return 1;
       }
     }
 
     // Parse key.properties
-    final keystoreConfig = await converter.parseKeyProperties(keyPropertiesPath);
+    final keystoreConfig = await converter.parseKeyProperties(
+      keyPropertiesPath,
+    );
     if (keystoreConfig == null || !keystoreConfig.isValid) {
       console.error('Invalid key.properties file');
       return 1;

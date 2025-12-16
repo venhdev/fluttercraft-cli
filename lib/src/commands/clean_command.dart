@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 
 import '../core/build_config.dart';
+import '../core/build_flags.dart';
 import '../core/flutter_runner.dart';
 import '../utils/console.dart';
 
@@ -21,12 +22,7 @@ class CleanCommand extends Command<int> {
         help: 'Only remove dist folder, skip flutter clean',
         defaultsTo: false,
       )
-      ..addFlag(
-        'yes',
-        abbr: 'y',
-        help: 'Skip confirmation',
-        defaultsTo: false,
-      );
+      ..addFlag('yes', abbr: 'y', help: 'Skip confirmation', defaultsTo: false);
   }
 
   @override
@@ -50,25 +46,23 @@ class CleanCommand extends Command<int> {
         buildType: 'aab',
         targetDart: 'lib/main.dart',
         outputPath: 'dist',
-        useDartDefine: false,
-        needClean: false,
-        needBuildRunner: false,
+        flags: BuildFlags.defaults,
         useFvm: false,
         useShorebird: false,
         shorebirdNoConfirm: true,
         keystorePath: 'android/key.properties',
       );
     }
-    
+
     final flutterRunner = FlutterRunner(projectRoot: projectRoot);
     final distDir = Directory(config.absoluteOutputPath);
 
     // Show what will be cleaned
     console.section('Clean Targets');
-    
+
     final distExists = await distDir.exists();
     console.keyValue('Dist folder', distExists ? distDir.path : '(not found)');
-    
+
     if (argResults?['dist-only'] != true) {
       console.keyValue('Flutter clean', 'Yes');
     }
@@ -87,7 +81,7 @@ class CleanCommand extends Command<int> {
       if (argResults?['dist-only'] != true) {
         console.section('Running flutter clean...');
         final result = await flutterRunner.clean(useFvm: config.useFvm);
-        
+
         if (result.success) {
           console.success('Flutter clean completed');
         } else {

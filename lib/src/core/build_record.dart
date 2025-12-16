@@ -104,10 +104,7 @@ class BuildHistory {
     }
 
     final file = File(historyPath);
-    await file.writeAsString(
-      '${record.toJsonLine()}\n',
-      mode: FileMode.append,
-    );
+    await file.writeAsString('${record.toJsonLine()}\n', mode: FileMode.append);
   }
 
   /// Read all records from history
@@ -154,4 +151,3 @@ class BuildHistory {
     return records.where((r) => r.status == status).toList();
   }
 }
-

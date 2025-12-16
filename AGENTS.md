@@ -31,3 +31,4 @@ For each version `x.x.x`, create:
 
 - **ALWAYS** use `fvm dart` instead of `dart`
 - Run test with `--reporter=json > test/test_output.json`
+- Run analyze `fvm dart analyze 2>&1 | Select-String -Pattern "error|warning" | Select-Object -First 50`

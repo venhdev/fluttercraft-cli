@@ -6,15 +6,12 @@ import 'package:path/path.dart' as p;
 class Logger {
   final String logDirectory;
   final String appName;
-  
+
   IOSink? _currentLogSink;
   String? _currentLogPath;
   final List<String> _logBuffer = [];
 
-  Logger({
-    required this.logDirectory,
-    this.appName = 'build',
-  });
+  Logger({required this.logDirectory, this.appName = 'build'});
 
   /// Initialize logger and create log directory if needed
   Future<void> init() async {
@@ -27,33 +24,35 @@ class Logger {
   /// Start a new log session
   Future<String> startSession({String? version}) async {
     await init();
-    
+
     // Latest log (always overwritten)
     final latestLogPath = p.join(logDirectory, '$appName-latest.log');
-    
+
     // Create archive log with timestamp and version
-    final timestamp = DateTime.now().toIso8601String()
-        .replaceAll(':', '-')
-        .replaceAll('T', '_')
-        .split('.')[0];
-    
+    final timestamp =
+        DateTime.now()
+            .toIso8601String()
+            .replaceAll(':', '-')
+            .replaceAll('T', '_')
+            .split('.')[0];
+
     final versionSuffix = version != null ? '-$version' : '';
     final archiveLogPath = p.join(
-      logDirectory, 
-      '$appName$versionSuffix-$timestamp.log'
+      logDirectory,
+      '$appName$versionSuffix-$timestamp.log',
     );
-    
+
     // Open latest log for writing
     _currentLogPath = latestLogPath;
     _currentLogSink = File(latestLogPath).openWrite();
-    
+
     // Write header
     _writeHeader(version);
-    
+
     // Store archive path for later
     _logBuffer.clear();
     _logBuffer.add('Archive: $archiveLogPath');
-    
+
     return archiveLogPath;
   }
 
@@ -71,7 +70,8 @@ class Logger {
 
   /// Log a message
   void log(String message) {
-    final timestamp = DateTime.now().toIso8601String().split('T')[1].split('.')[0];
+    final timestamp =
+        DateTime.now().toIso8601String().split('T')[1].split('.')[0];
     final line = '[$timestamp] $message';
     _currentLogSink?.writeln(line);
     _logBuffer.add(line);
@@ -131,12 +131,12 @@ class Logger {
 ════════════════════════════════════════════════════════════════
 ''';
     _currentLogSink?.write(footer);
-    
+
     // Close the sink
     await _currentLogSink?.flush();
     await _currentLogSink?.close();
     _currentLogSink = null;
-    
+
     // Copy to archive if we have an archive path
     if (_logBuffer.isNotEmpty && _currentLogPath != null) {
       final archivePath = _logBuffer.first.replaceFirst('Archive: ', '');

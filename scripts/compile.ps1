@@ -3,7 +3,7 @@
 
 param(
     [string]$Target = "windows",
-    [string]$Version = "0.0.3",
+    [string]$Version = "0.1.1",
     [switch]$Help
 )
 

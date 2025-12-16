@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:test/test.dart';
 import 'package:fluttercraft/src/core/build_config.dart';
 import '../test_helper.dart';
@@ -11,7 +9,9 @@ void main() {
     late Future<void> Function() cleanup;
 
     setUp(() async {
-      (tempDir, cleanup) = TestHelper.createTempDirWithCleanup('noconfirm_test_');
+      (tempDir, cleanup) = TestHelper.createTempDirWithCleanup(
+        'noconfirm_test_',
+      );
     });
 
     tearDown(() async {
@@ -19,7 +19,11 @@ void main() {
     });
 
     test('parses no_confirm: true from shared config', () async {
-      await TestHelper.copyTestFile('v0.1.0', 'fluttercraft-test.yaml', '$tempDir/fluttercraft.yaml');
+      await TestHelper.copyTestFile(
+        'v0.1.0',
+        'fluttercraft-test.yaml',
+        '$tempDir/fluttercraft.yaml',
+      );
 
       final config = await BuildConfig.load(projectRoot: tempDir);
       expect(config.shorebirdNoConfirm, true);

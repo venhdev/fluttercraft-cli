@@ -12,57 +12,74 @@ class FlutterRunner {
     required this.projectRoot,
     ProcessRunner? processRunner,
     Console? console,
-  })  : _processRunner = processRunner ?? ProcessRunner(),
-        _console = console ?? Console();
+  }) : _processRunner = processRunner ?? ProcessRunner(),
+       _console = console ?? Console();
 
   /// Run flutter clean
   Future<ProcessResult> clean({bool useFvm = false}) async {
     _console.section('Cleaning project...');
-    
+
     if (useFvm) {
-      return _processRunner.run('fvm', ['flutter', 'clean'],
-          workingDirectory: projectRoot);
+      return _processRunner.run('fvm', [
+        'flutter',
+        'clean',
+      ], workingDirectory: projectRoot);
     }
-    return _processRunner.run('flutter', ['clean'],
-        workingDirectory: projectRoot);
+    return _processRunner.run('flutter', [
+      'clean',
+    ], workingDirectory: projectRoot);
   }
 
   /// Run pub get
   Future<ProcessResult> pubGet({bool useFvm = false}) async {
     _console.info('Running pub get...');
-    
+
     if (useFvm) {
-      return _processRunner.run('fvm', ['flutter', 'pub', 'get'],
-          workingDirectory: projectRoot);
+      return _processRunner.run('fvm', [
+        'flutter',
+        'pub',
+        'get',
+      ], workingDirectory: projectRoot);
     }
-    return _processRunner.run('flutter', ['pub', 'get'],
-        workingDirectory: projectRoot);
+    return _processRunner.run('flutter', [
+      'pub',
+      'get',
+    ], workingDirectory: projectRoot);
   }
 
   /// Run build_runner
   Future<ProcessResult> buildRunner({bool useFvm = false}) async {
     _console.section('Running build_runner...');
-    
-    final args = ['run', 'build_runner', 'build', '--delete-conflicting-outputs'];
-    
+
+    final args = [
+      'run',
+      'build_runner',
+      'build',
+      '--delete-conflicting-outputs',
+    ];
+
     if (useFvm) {
-      return _processRunner.run('fvm', ['dart', ...args],
-          workingDirectory: projectRoot);
+      return _processRunner.run('fvm', [
+        'dart',
+        ...args,
+      ], workingDirectory: projectRoot);
     }
-    return _processRunner.run('dart', args,
-        workingDirectory: projectRoot);
+    return _processRunner.run('dart', args, workingDirectory: projectRoot);
   }
 
   /// Build Flutter app
   Future<ProcessResult> build(BuildConfig config) async {
     _console.section('Building ${config.buildType.toUpperCase()}...');
-    
+
     // Determine platform from build type
     final platform = _getPlatform(config.buildType);
-    
+
     // Build flutter args (exclude --release for Shorebird per official docs)
-    final flutterArgs = _buildFlutterArgs(config, forShorebird: config.useShorebird);
-    
+    final flutterArgs = _buildFlutterArgs(
+      config,
+      forShorebird: config.useShorebird,
+    );
+
     if (config.useShorebird) {
       return _buildWithShorebird(config, flutterArgs);
     } else if (config.useFvm) {
@@ -75,8 +92,11 @@ class FlutterRunner {
   /// Get the full build command for logging
   String getBuildCommand(BuildConfig config) {
     final platform = _getPlatform(config.buildType);
-    final flutterArgs = _buildFlutterArgs(config, forShorebird: config.useShorebird);
-    
+    final flutterArgs = _buildFlutterArgs(
+      config,
+      forShorebird: config.useShorebird,
+    );
+
     if (config.useShorebird) {
       final sbArgs = <String>['shorebird', 'release', 'android'];
       if (config.buildType == 'apk') {
@@ -113,32 +133,39 @@ class FlutterRunner {
   }
 
   /// Build flutter command arguments
-  /// 
+  ///
   /// When [forShorebird] is true, excludes --release flag per Shorebird docs:
   /// "never add --release | --debug | --profile when using shorebird"
-  List<String> _buildFlutterArgs(BuildConfig config, {bool forShorebird = false}) {
+  List<String> _buildFlutterArgs(
+    BuildConfig config, {
+    bool forShorebird = false,
+  }) {
     final args = <String>[];
-    
+
     // Only add --release for non-Shorebird builds
     if (!forShorebird) {
       args.add('--release');
     }
-    
+
     if (config.flavor != null && config.flavor!.isNotEmpty) {
       args.add('--flavor=${config.flavor}');
     }
-    
+
     if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
       args.add('--target=${config.targetDart}');
     }
-    
+
     args.add('--build-name=${config.buildName}');
     args.add('--build-number=${config.buildNumber}');
-    
-    if (config.envPath != null && config.envPath!.isNotEmpty) {
-      args.add('--dart-define-from-file=${config.envPath}');
+
+    // Add dart defines if enabled
+    if (config.shouldAddDartDefine) {
+      final dartDefines = config.finalDartDefine;
+      for (final entry in dartDefines.entries) {
+        args.add('--dart-define=${entry.key}=${entry.value}');
+      }
     }
-    
+
     return args;
   }
 
@@ -148,9 +175,9 @@ class FlutterRunner {
     List<String> flutterArgs,
   ) async {
     _console.info('Using Shorebird for build');
-    
+
     final sbArgs = <String>['release', 'android'];
-    
+
     // Add artifact type
     if (config.buildType == 'apk') {
       sbArgs.addAll(['--artifact', 'apk']);
@@ -158,29 +185,37 @@ class FlutterRunner {
     } else {
       _console.info('Shorebird → building AAB (default)');
     }
-    
+
     // Manual artifact override
-    if (config.shorebirdArtifact != null && config.shorebirdArtifact!.isNotEmpty) {
+    if (config.shorebirdArtifact != null &&
+        config.shorebirdArtifact!.isNotEmpty) {
       // Remove any existing artifact args
-      sbArgs.removeWhere((arg) => arg == '--artifact' || arg == 'apk' || arg == 'aab');
+      sbArgs.removeWhere(
+        (arg) => arg == '--artifact' || arg == 'apk' || arg == 'aab',
+      );
       sbArgs.addAll(['--artifact', config.shorebirdArtifact!]);
-      _console.info('Shorebird → using manual artifact: ${config.shorebirdArtifact}');
+      _console.info(
+        'Shorebird → using manual artifact: ${config.shorebirdArtifact}',
+      );
     }
-    
+
     if (config.shorebirdNoConfirm) {
       sbArgs.add('--no-confirm');
     }
-    
+
     if (config.flutterVersion != null && config.flutterVersion!.isNotEmpty) {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
-    
+
     // Add flutter args after --
     sbArgs.add('--');
     sbArgs.addAll(flutterArgs);
-    
-    return _processRunner.run('shorebird', sbArgs,
-        workingDirectory: projectRoot);
+
+    return _processRunner.run(
+      'shorebird',
+      sbArgs,
+      workingDirectory: projectRoot,
+    );
   }
 
   /// Build with FVM
@@ -189,10 +224,9 @@ class FlutterRunner {
     List<String> flutterArgs,
   ) async {
     _console.info('Using FVM for build');
-    
+
     final args = ['flutter', 'build', platform, ...flutterArgs];
-    return _processRunner.run('fvm', args,
-        workingDirectory: projectRoot);
+    return _processRunner.run('fvm', args, workingDirectory: projectRoot);
   }
 
   /// Build with plain Flutter
@@ -201,8 +235,7 @@ class FlutterRunner {
     List<String> flutterArgs,
   ) async {
     final args = ['build', platform, ...flutterArgs];
-    return _processRunner.run('flutter', args,
-        workingDirectory: projectRoot);
+    return _processRunner.run('flutter', args, workingDirectory: projectRoot);
   }
 
   /// Check if Flutter is available

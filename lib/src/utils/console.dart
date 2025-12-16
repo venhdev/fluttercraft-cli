@@ -5,7 +5,7 @@ class _AnsiColors {
   static const String reset = '\x1B[0m';
   static const String bold = '\x1B[1m';
   static const String dim = '\x1B[2m';
-  
+
   // Foreground colors
   static const String red = '\x1B[31m';
   static const String green = '\x1B[32m';
@@ -89,7 +89,9 @@ class Console {
   /// Print a key-value pair
   void keyValue(String key, String value, {int keyWidth = 16}) {
     final paddedKey = key.padRight(keyWidth);
-    print('  ${_colorize(paddedKey, _AnsiColors.blue)}: ${_colorize(value, _AnsiColors.white)}');
+    print(
+      '  ${_colorize(paddedKey, _AnsiColors.blue)}: ${_colorize(value, _AnsiColors.white)}',
+    );
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -106,14 +108,15 @@ class Console {
     print(_colorize(topBorder, _AnsiColors.cyan));
     print(_colorize('║ ${title.padRight(width - 4)} ║', _AnsiColors.cyan));
     print(_colorize(divider, _AnsiColors.cyan));
-    
+
     for (final line in lines) {
-      final truncated = line.length > width - 4 
-          ? '${line.substring(0, width - 7)}...' 
-          : line;
-      print(_colorize('║ ${truncated.padRight(width - 4)} ║', _AnsiColors.cyan));
+      final truncated =
+          line.length > width - 4 ? '${line.substring(0, width - 7)}...' : line;
+      print(
+        _colorize('║ ${truncated.padRight(width - 4)} ║', _AnsiColors.cyan),
+      );
     }
-    
+
     print(_colorize(bottomBorder, _AnsiColors.cyan));
   }
 
@@ -128,11 +131,11 @@ class Console {
     print(_colorize(topBorder, _AnsiColors.cyan));
     print(_colorize('║ ${title.padRight(width - 4)} ║', _AnsiColors.cyan));
     print(_colorize(divider, _AnsiColors.cyan));
-    
+
     for (final option in options) {
       print(_colorize('║   ${option.padRight(width - 6)} ║', _AnsiColors.cyan));
     }
-    
+
     print(_colorize(bottomBorder, _AnsiColors.cyan));
     blank();
   }
@@ -167,7 +170,7 @@ class Console {
     } else {
       stdout.write(_colorize('? $message: ', _AnsiColors.cyan));
     }
-    
+
     final input = stdin.readLineSync()?.trim() ?? '';
     return input.isEmpty && defaultValue != null ? defaultValue : input;
   }
@@ -176,9 +179,9 @@ class Console {
   bool confirm(String message, {bool defaultValue = true}) {
     final defaultStr = defaultValue ? 'Y/n' : 'y/N';
     stdout.write(_colorize('? $message ($defaultStr): ', _AnsiColors.cyan));
-    
+
     final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
-    
+
     if (input.isEmpty) return defaultValue;
     return input == 'y' || input == 'yes';
   }
@@ -186,23 +189,29 @@ class Console {
   /// Prompt for choice selection
   int choose(String message, List<String> options, {int defaultIndex = 0}) {
     print(_colorize('\n? $message', _AnsiColors.cyan));
-    
+
     for (var i = 0; i < options.length; i++) {
       final marker = i == defaultIndex ? '>' : ' ';
-      print(_colorize('  $marker $i. ${options[i]}', 
-          i == defaultIndex ? _AnsiColors.green : _AnsiColors.white));
+      print(
+        _colorize(
+          '  $marker $i. ${options[i]}',
+          i == defaultIndex ? _AnsiColors.green : _AnsiColors.white,
+        ),
+      );
     }
-    
-    stdout.write(_colorize('Enter choice [0-${options.length - 1}]: ', _AnsiColors.cyan));
+
+    stdout.write(
+      _colorize('Enter choice [0-${options.length - 1}]: ', _AnsiColors.cyan),
+    );
     final input = stdin.readLineSync()?.trim() ?? '';
-    
+
     if (input.isEmpty) return defaultIndex;
-    
+
     final choice = int.tryParse(input);
     if (choice != null && choice >= 0 && choice < options.length) {
       return choice;
     }
-    
+
     warning('Invalid choice, using default: ${options[defaultIndex]}');
     return defaultIndex;
   }
@@ -220,15 +229,32 @@ class Console {
     required Duration duration,
   }) {
     blank();
-    print(_colorize('═══════════════════════════════════════════', _AnsiColors.green));
-    print(_colorize('  BUILD COMPLETE', '${_AnsiColors.bold}${_AnsiColors.green}'));
-    print(_colorize('═══════════════════════════════════════════', _AnsiColors.green));
+    print(
+      _colorize(
+        '═══════════════════════════════════════════',
+        _AnsiColors.green,
+      ),
+    );
+    print(
+      _colorize('  BUILD COMPLETE', '${_AnsiColors.bold}${_AnsiColors.green}'),
+    );
+    print(
+      _colorize(
+        '═══════════════════════════════════════════',
+        _AnsiColors.green,
+      ),
+    );
     keyValue('App Name', appName);
     keyValue('Version', version);
     keyValue('Build Type', buildType);
     keyValue('Output', outputPath);
     keyValue('Duration', '${duration.inSeconds}s');
-    print(_colorize('═══════════════════════════════════════════', _AnsiColors.green));
+    print(
+      _colorize(
+        '═══════════════════════════════════════════',
+        _AnsiColors.green,
+      ),
+    );
     blank();
   }
 }

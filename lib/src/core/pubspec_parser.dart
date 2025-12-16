@@ -54,7 +54,7 @@ class PubspecParser {
 
       // Extract version (e.g., "1.2.3+45" or "1.2.3")
       final versionString = yaml['version']?.toString() ?? '1.0.0+1';
-      
+
       // Parse version string
       final parsed = _parseVersion(versionString);
 
@@ -76,7 +76,7 @@ class PubspecParser {
       final parts = version.split('+');
       return (buildName: parts[0], buildNumber: parts[1]);
     }
-    
+
     // Handle "1.2.3" format (no build number)
     return (buildName: version, buildNumber: '1');
   }
@@ -90,7 +90,7 @@ class PubspecParser {
 
     try {
       var content = await file.readAsString();
-      
+
       // Replace version line using regex
       final versionRegex = RegExp(r'^version:\s*.+$', multiLine: true);
       if (versionRegex.hasMatch(content)) {
@@ -98,7 +98,7 @@ class PubspecParser {
         await file.writeAsString(content);
         return true;
       }
-      
+
       return false;
     } catch (e) {
       return false;

@@ -43,10 +43,10 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.aliases, hasLength(1));
       expect(config.aliases.containsKey('test'), true);
-      
+
       final testAlias = config.aliases['test']!;
       expect(testAlias.name, 'test');
       expect(testAlias.commands, hasLength(1));
@@ -67,15 +67,18 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.aliases, hasLength(1));
       expect(config.aliases.containsKey('gen-icon'), true);
-      
+
       final genIconAlias = config.aliases['gen-icon']!;
       expect(genIconAlias.name, 'gen-icon');
       expect(genIconAlias.commands, hasLength(2));
       expect(genIconAlias.commands[0], 'fvm flutter pub get');
-      expect(genIconAlias.commands[1], 'fvm flutter pub run flutter_launcher_icons');
+      expect(
+        genIconAlias.commands[1],
+        'fvm flutter pub run flutter_launcher_icons',
+      );
     });
 
     test('parses multiple aliases', () async {
@@ -100,15 +103,15 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.aliases, hasLength(3));
       expect(config.aliases.containsKey('gen-icon'), true);
       expect(config.aliases.containsKey('brn'), true);
       expect(config.aliases.containsKey('test-all'), true);
-      
+
       final brnAlias = config.aliases['brn']!;
       expect(brnAlias.commands, hasLength(2));
-      
+
       final testAllAlias = config.aliases['test-all']!;
       expect(testAllAlias.commands, hasLength(2));
       expect(testAllAlias.commands[0], 'fvm flutter test');
@@ -175,12 +178,15 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.aliases, hasLength(1));
       final complexAlias = config.aliases['complex']!;
       expect(complexAlias.commands, hasLength(3));
       expect(complexAlias.commands[0], 'echo "Hello World"');
-      expect(complexAlias.commands[1], 'fvm flutter build apk --release --target=lib/main.dart');
+      expect(
+        complexAlias.commands[1],
+        'fvm flutter build apk --release --target=lib/main.dart',
+      );
       expect(complexAlias.commands[2], "echo 'Single quotes work too'");
     });
 
@@ -200,7 +206,7 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       final orderedAlias = config.aliases['ordered']!;
       expect(orderedAlias.commands[0], 'echo "First"');
       expect(orderedAlias.commands[1], 'echo "Second"');
@@ -227,7 +233,7 @@ alias:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.aliases, hasLength(3));
       expect(config.aliases.containsKey('gen-icon'), true);
       expect(config.aliases.containsKey('build_runner'), true);

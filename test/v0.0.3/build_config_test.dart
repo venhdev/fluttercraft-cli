@@ -18,8 +18,10 @@ void main() {
     });
 
     test('returns default config when file does not exist', () async {
-      final config = await BuildConfig.load(configPath: '$tempDir/nonexistent.yaml');
-      
+      final config = await BuildConfig.load(
+        configPath: '$tempDir/nonexistent.yaml',
+      );
+
       expect(config.appName, 'app'); // default
       expect(config.buildName, '1.0.0'); // default
       expect(config.useFvm, false); // default
@@ -90,10 +92,10 @@ bundletool:
       expect(config.flavor, 'staging');
       expect(config.targetDart, 'lib/main_staging.dart');
       expect(config.outputPath, 'build/output');
-      expect(config.envPath, '.env.staging');
-      expect(config.useDartDefine, true);
-      expect(config.needClean, true);
-      expect(config.needBuildRunner, true);
+      // Note: envPath was removed in new format
+      expect(config.shouldAddDartDefine, true);
+      expect(config.shouldClean, true);
+      expect(config.shouldBuildRunner, true);
       expect(config.useFvm, true);
       expect(config.flutterVersion, '3.24.0');
       expect(config.useShorebird, true);
@@ -160,16 +162,16 @@ fvm:
 ''');
 
       // Change to temp directory to test detection
-      
+
       // Load config with implicit projectRoot via configPath (but FVM version detection needs root)
       // Since we provided configPath, BuildConfig splits it? No.
       // We need to pass projectRoot for FVM detection.
-      
+
       final config = await BuildConfig.load(
-        configPath: configFile.path, 
+        configPath: configFile.path,
         projectRoot: tempDir,
       );
-      
+
       expect(config.useFvm, true);
       expect(config.flutterVersion, '3.35.3');
     });
@@ -193,10 +195,9 @@ fvm:
 ''');
 
       final config = await BuildConfig.load(configPath: configFile.path);
-      
+
       expect(config.useFvm, true);
       expect(config.flutterVersion, '3.24.0'); // Should use explicit version
     });
   });
 }
-

@@ -41,7 +41,7 @@ void main() {
       );
 
       final jsonLine = record.toJsonLine();
-      
+
       expect(jsonLine, contains('"id":"abc123"'));
       expect(jsonLine, contains('"status":"success"'));
       expect(jsonLine, contains('"cmd":"test command"'));
@@ -121,21 +121,27 @@ void main() {
     });
 
     test('readAll returns all appended records', () async {
-      await history.append(BuildRecord.success(
-        id: 'build-1',
-        cmd: 'cmd 1',
-        duration: const Duration(seconds: 1),
-      ));
-      await history.append(BuildRecord.failed(
-        id: 'build-2',
-        cmd: 'cmd 2',
-        duration: const Duration(seconds: 2),
-      ));
-      await history.append(BuildRecord.success(
-        id: 'build-3',
-        cmd: 'cmd 3',
-        duration: const Duration(seconds: 3),
-      ));
+      await history.append(
+        BuildRecord.success(
+          id: 'build-1',
+          cmd: 'cmd 1',
+          duration: const Duration(seconds: 1),
+        ),
+      );
+      await history.append(
+        BuildRecord.failed(
+          id: 'build-2',
+          cmd: 'cmd 2',
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      await history.append(
+        BuildRecord.success(
+          id: 'build-3',
+          cmd: 'cmd 3',
+          duration: const Duration(seconds: 3),
+        ),
+      );
 
       final records = await history.readAll();
 
@@ -146,16 +152,20 @@ void main() {
     });
 
     test('lastBuild returns most recent record', () async {
-      await history.append(BuildRecord.success(
-        id: 'first',
-        cmd: 'cmd',
-        duration: const Duration(seconds: 1),
-      ));
-      await history.append(BuildRecord.failed(
-        id: 'last',
-        cmd: 'cmd',
-        duration: const Duration(seconds: 1),
-      ));
+      await history.append(
+        BuildRecord.success(
+          id: 'first',
+          cmd: 'cmd',
+          duration: const Duration(seconds: 1),
+        ),
+      );
+      await history.append(
+        BuildRecord.failed(
+          id: 'last',
+          cmd: 'cmd',
+          duration: const Duration(seconds: 1),
+        ),
+      );
 
       final last = await history.lastBuild();
 
@@ -170,11 +180,13 @@ void main() {
 
     test('recentBuilds returns limited results in reverse order', () async {
       for (var i = 1; i <= 15; i++) {
-        await history.append(BuildRecord.success(
-          id: 'build-$i',
-          cmd: 'cmd',
-          duration: const Duration(seconds: 1),
-        ));
+        await history.append(
+          BuildRecord.success(
+            id: 'build-$i',
+            cmd: 'cmd',
+            duration: const Duration(seconds: 1),
+          ),
+        );
       }
 
       final recent = await history.recentBuilds(limit: 5);
@@ -185,21 +197,27 @@ void main() {
     });
 
     test('filterByStatus returns only matching records', () async {
-      await history.append(BuildRecord.success(
-        id: 's1',
-        cmd: 'cmd',
-        duration: const Duration(seconds: 1),
-      ));
-      await history.append(BuildRecord.failed(
-        id: 'f1',
-        cmd: 'cmd',
-        duration: const Duration(seconds: 1),
-      ));
-      await history.append(BuildRecord.success(
-        id: 's2',
-        cmd: 'cmd',
-        duration: const Duration(seconds: 1),
-      ));
+      await history.append(
+        BuildRecord.success(
+          id: 's1',
+          cmd: 'cmd',
+          duration: const Duration(seconds: 1),
+        ),
+      );
+      await history.append(
+        BuildRecord.failed(
+          id: 'f1',
+          cmd: 'cmd',
+          duration: const Duration(seconds: 1),
+        ),
+      );
+      await history.append(
+        BuildRecord.success(
+          id: 's2',
+          cmd: 'cmd',
+          duration: const Duration(seconds: 1),
+        ),
+      );
 
       final successes = await history.filterByStatus('success');
       final failures = await history.filterByStatus('failed');
@@ -210,4 +228,3 @@ void main() {
     });
   });
 }
-

@@ -1,3 +1,8 @@
+## 0.1.1 (2025-12-16)
+
+- **refactor**: Downgraded SDK constraint from 3.9.2 to 3.7.0 for broader compatibility
+- **fix**: Resolved parallel test execution failures and improved `run` command exit code handling
+
 ## 0.1.0 (2025-12-15)
 
 ### ⚠️ Breaking Changes

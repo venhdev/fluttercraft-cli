@@ -18,7 +18,8 @@ class BuildCommand extends Command<int> {
   final String name = 'build';
 
   @override
-  final String description = 'Build Flutter app (APK/AAB/IPA) with version management';
+  final String description =
+      'Build Flutter app (APK/AAB/IPA) with version management';
 
   BuildCommand() {
     argParser
@@ -44,17 +45,14 @@ class BuildCommand extends Command<int> {
         abbr: 'v',
         help: 'Set version directly (e.g., 1.2.3)',
       )
-      ..addOption(
-        'build-number',
-        help: 'Set build number directly',
-      );
+      ..addOption('build-number', help: 'Set build number directly');
   }
 
   @override
   Future<int> run() async {
     final console = Console();
     final projectRoot = Directory.current.path;
-    
+
     console.header('fluttercraft CLI');
 
     // Generate build ID for logging
@@ -93,30 +91,32 @@ class BuildCommand extends Command<int> {
       flavor: config.flavor,
       targetDart: config.targetDart,
       outputPath: config.outputPath,
-      envPath: config.envPath,
-      useDartDefine: config.useDartDefine,
-      needClean: config.needClean,
-      needBuildRunner: config.needBuildRunner,
+      flags: config.flags,
+      globalDartDefine: config.globalDartDefine,
+      dartDefine: config.dartDefine,
       useFvm: config.useFvm,
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
+      shorebirdAppId: config.shorebirdAppId,
       shorebirdArtifact: config.shorebirdArtifact,
       shorebirdNoConfirm: config.shorebirdNoConfirm,
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
+      flavors: config.flavors,
+      aliases: config.aliases,
     );
 
     // Get current version
-    // Priority: buildcraft.yaml > pubspec.yaml (if buildcraft.yaml has custom values)
+    // Priority: fluttercraft.yaml > pubspec.yaml (if fluttercraft.yaml has custom values)
     final pubspec = await pubspecParser.parse();
     final configVersion = config.fullVersion;
     final pubspecVersion = pubspec?.fullVersion;
-    
-    // Use buildcraft.yaml version if it's not the default (1.0.0+1)
+
+    // Use fluttercraft.yaml version if it's not the default (1.0.0+1)
     // Otherwise fall back to pubspec.yaml
     String versionToUse;
     if (configVersion != '1.0.0+1') {
-      // buildcraft.yaml has custom version - use it
+      // fluttercraft.yaml has custom version - use it
       versionToUse = configVersion;
     } else if (pubspecVersion != null) {
       // Use pubspec.yaml version
@@ -125,7 +125,7 @@ class BuildCommand extends Command<int> {
       // Fall back to config default
       versionToUse = configVersion;
     }
-    
+
     var currentVersion = SemanticVersion.parse(versionToUse);
 
     // Handle version from command line
@@ -135,22 +135,29 @@ class BuildCommand extends Command<int> {
       // Interactive version bump
       console.section('Version Management');
       console.keyValue('Current Version', currentVersion.fullVersion);
-      
+
       final bumpOptions = versionManager.getBumpOptions(currentVersion);
-      final bumpChoice = console.choose('Select version increment:', bumpOptions);
+      final bumpChoice = console.choose(
+        'Select version increment:',
+        bumpOptions,
+      );
       final bump = versionManager.bumpFromChoice(bumpChoice);
       currentVersion = versionManager.applyBump(currentVersion, bump);
     }
 
     // Handle build number from command line
     if (argResults?['build-number'] != null) {
-      currentVersion.buildNumber = int.parse(argResults!['build-number'] as String);
+      currentVersion.buildNumber = int.parse(
+        argResults!['build-number'] as String,
+      );
     } else if (argResults?['no-confirm'] != true) {
       // Interactive build number
-      final buildNumOptions = versionManager.getBuildNumberOptions(currentVersion);
+      final buildNumOptions = versionManager.getBuildNumberOptions(
+        currentVersion,
+      );
       final buildNumChoice = console.choose('Build number:', buildNumOptions);
       final action = versionManager.buildNumberActionFromChoice(buildNumChoice);
-      
+
       if (action == BuildNumberAction.custom) {
         final customNum = console.prompt('Enter build number');
         currentVersion = versionManager.applyBuildNumber(
@@ -159,7 +166,10 @@ class BuildCommand extends Command<int> {
           customNumber: int.tryParse(customNum) ?? currentVersion.buildNumber,
         );
       } else {
-        currentVersion = versionManager.applyBuildNumber(currentVersion, action);
+        currentVersion = versionManager.applyBuildNumber(
+          currentVersion,
+          action,
+        );
       }
     }
 
@@ -173,24 +183,26 @@ class BuildCommand extends Command<int> {
       flavor: config.flavor,
       targetDart: config.targetDart,
       outputPath: config.outputPath,
-      envPath: config.envPath,
-      useDartDefine: config.useDartDefine,
-      needClean: config.needClean,
-      needBuildRunner: config.needBuildRunner,
+      flags: config.flags,
+      globalDartDefine: config.globalDartDefine,
+      dartDefine: config.dartDefine,
       useFvm: config.useFvm,
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
+      shorebirdAppId: config.shorebirdAppId,
       shorebirdArtifact: config.shorebirdArtifact,
       shorebirdNoConfirm: config.shorebirdNoConfirm,
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
+      flavors: config.flavors,
+      aliases: config.aliases,
     );
 
     // Start logging
     await logger.startSession(version: currentVersion.fullVersion);
     logger.info('Build started');
     logger.info('Build ID: $buildId');
-    
+
     // Log full build configuration
     logger.section('Build Configuration');
     logger.info('App Name: ${buildConfig.appName}');
@@ -199,18 +211,28 @@ class BuildCommand extends Command<int> {
     logger.info('Flavor: ${buildConfig.flavor ?? "(none)"}');
     logger.info('Target: ${buildConfig.targetDart}');
     logger.info('Output Path: ${buildConfig.absoluteOutputPath}');
-    logger.info('Env Path: ${buildConfig.envPath ?? "(none)"}');
-    
+
     logger.section('Build Flags');
-    logger.info('Use Dart Define: ${buildConfig.useDartDefine}');
-    logger.info('Need Clean: ${buildConfig.needClean}');
-    logger.info('Need Build Runner: ${buildConfig.needBuildRunner}');
-    
+    logger.info('Should Add Dart Define: ${buildConfig.shouldAddDartDefine}');
+    logger.info('Should Clean: ${buildConfig.shouldClean}');
+    logger.info('Should Build Runner: ${buildConfig.shouldBuildRunner}');
+
+    // Log dart define if enabled
+    if (buildConfig.shouldAddDartDefine) {
+      logger.section('Dart Define');
+      final finalDefines = buildConfig.finalDartDefine;
+      for (final entry in finalDefines.entries) {
+        logger.info('${entry.key}: ${entry.value}');
+      }
+    }
+
     logger.section('Integrations');
     logger.info('Use FVM: ${buildConfig.useFvm}');
     logger.info('Flutter Version: ${buildConfig.flutterVersion ?? "(auto)"}');
     logger.info('Use Shorebird: ${buildConfig.useShorebird}');
-    logger.info('Shorebird Artifact: ${buildConfig.shorebirdArtifact ?? "(default)"}');
+    logger.info(
+      'Shorebird Artifact: ${buildConfig.shorebirdArtifact ?? "(default)"}',
+    );
     logger.info('Shorebird Auto Confirm: ${buildConfig.shorebirdNoConfirm}');
 
     // Get full build command for JSONL record
@@ -228,7 +250,7 @@ class BuildCommand extends Command<int> {
     console.keyValue('Use Shorebird', buildConfig.useShorebird.toString());
     console.keyValue('Build ID', buildId);
     console.blank();
-    
+
     // Show the full command that will be executed
     console.section('Build Command');
     console.info('The following command will be executed:');
@@ -239,11 +261,11 @@ class BuildCommand extends Command<int> {
     // Confirmation with edit option
     if (argResults?['no-confirm'] != true) {
       var currentCmd = buildCmd;
-      
+
       while (true) {
         stdout.write('\nProceed with build? (y/n/e to edit): ');
         final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
-        
+
         if (input == 'n' || input == 'no') {
           console.warning('Build cancelled by user.');
           await logger.endSession(success: false);
@@ -257,7 +279,9 @@ class BuildCommand extends Command<int> {
           console.info('Current command:');
           console.info('  $currentCmd');
           console.blank();
-          stdout.write('Enter modified command (or press Enter to keep current): ');
+          stdout.write(
+            'Enter modified command (or press Enter to keep current): ',
+          );
           final edited = stdin.readLineSync()?.trim() ?? '';
           if (edited.isNotEmpty) {
             currentCmd = edited;
@@ -275,9 +299,11 @@ class BuildCommand extends Command<int> {
 
     try {
       // Clean if requested
-      if (argResults?['clean'] == true || buildConfig.needClean) {
+      if (argResults?['clean'] == true || buildConfig.shouldClean) {
         logger.section('Cleaning');
-        final cleanResult = await flutterRunner.clean(useFvm: buildConfig.useFvm);
+        final cleanResult = await flutterRunner.clean(
+          useFvm: buildConfig.useFvm,
+        );
         logger.output(cleanResult.stdout);
         if (!cleanResult.success) {
           console.error('Clean failed');
@@ -286,9 +312,11 @@ class BuildCommand extends Command<int> {
       }
 
       // Build runner if needed
-      if (buildConfig.needBuildRunner) {
+      if (buildConfig.shouldBuildRunner) {
         logger.section('Build Runner');
-        final brResult = await flutterRunner.buildRunner(useFvm: buildConfig.useFvm);
+        final brResult = await flutterRunner.buildRunner(
+          useFvm: buildConfig.useFvm,
+        );
         logger.output(brResult.stdout);
         if (!brResult.success) {
           console.error('Build runner failed');
@@ -308,10 +336,10 @@ class BuildCommand extends Command<int> {
       if (!buildResult.success) {
         console.error('Build failed!');
         logger.error('Build failed with exit code: ${buildResult.exitCode}');
-        
+
         final endTime = DateTime.now();
         final duration = endTime.difference(startTime);
-        
+
         // Record failed build
         final record = BuildRecord.failed(
           id: buildId,
@@ -319,7 +347,7 @@ class BuildCommand extends Command<int> {
           duration: duration,
         );
         await history.append(record);
-        
+
         await logger.endSession(success: false, duration: duration);
         return 1;
       }
@@ -368,10 +396,10 @@ class BuildCommand extends Command<int> {
     } catch (e) {
       console.error('Build failed: $e');
       logger.error('Exception: $e');
-      
+
       final endTime = DateTime.now();
       final duration = endTime.difference(startTime);
-      
+
       // Record failed build
       final record = BuildRecord.failed(
         id: buildId,
@@ -379,7 +407,7 @@ class BuildCommand extends Command<int> {
         duration: duration,
       );
       await history.append(record);
-      
+
       await logger.endSession(success: false, duration: duration);
       return 1;
     }
@@ -394,4 +422,3 @@ class BuildCommand extends Command<int> {
         '-$random';
   }
 }
-
