@@ -1,7 +1,16 @@
 ## 0.1.1 (2025-12-16)
 
-- **refactor**: Downgraded SDK constraint from 3.9.2 to 3.7.0 for broader compatibility
-- **fix**: Resolved parallel test execution failures and improved `run` command exit code handling
+### ⚠️ Breaking: New YAML Structure
+- `build_defaults` anchor for inheritance
+- `environments` section (groups fvm, shorebird, bundletool)
+- Renamed flags: `use_*` → `should_*`
+
+### ✨ New Features
+- **Build Flavors** - dev/staging/prod overrides
+- **Explicit Dart Define** - global + flavor merging
+- **No Color Mode** - `environments.no_color`
+
+See [detailed changes](plans/v0.1.1/changed/CHANGES.md) for migration guide.
 
 ## 0.1.0 (2025-12-15)
 

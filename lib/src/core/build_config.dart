@@ -62,6 +62,9 @@ class BuildConfig {
   final String? bundletoolPath;
   final String keystorePath;
 
+  // Console settings
+  final bool noColor;
+
   // Flavors (parsed but stored for reference)
   final Map<String, FlavorConfig> flavors;
 
@@ -88,6 +91,7 @@ class BuildConfig {
     required this.shorebirdNoConfirm,
     this.bundletoolPath,
     required this.keystorePath,
+    this.noColor = false,
     this.flavors = const {},
     this.aliases = const {},
   });
@@ -330,6 +334,9 @@ class BuildConfig {
       'android/key.properties',
     );
 
+    // Console settings
+    final noColor = _getBool(environments, 'no_color', null) ?? false;
+
     // ─────────────────────────────────────────────────────────────────
     // Parse paths section
     // ─────────────────────────────────────────────────────────────────
@@ -366,6 +373,7 @@ class BuildConfig {
       shorebirdNoConfirm: shorebirdNoConfirm,
       bundletoolPath: bundletoolPath,
       keystorePath: keystorePath,
+      noColor: noColor,
       flavors: flavors,
       aliases: aliases,
     );

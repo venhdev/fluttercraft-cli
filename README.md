@@ -8,6 +8,8 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 - **Streamlined Build Process** - Build, version, and deploy in one flow
 - **Seamless Integrations** - FVM, Shorebird, auto-determine versions and context
 - **Custom Command Aliases** - Define reusable command sequences via `flc run <alias>`
+- **Build Flavors** - Define dev/staging/prod with overrides (v0.1.1)
+- **Explicit Dart Define** - Merge global + flavor dart defines (v0.1.1)
 - **Edit Before Build** - Modify build command before execution (v0.1.0)
 - **Reload Config** - Hot-reload configuration in shell mode (v0.1.0)
 
@@ -103,48 +105,119 @@ The CLI works without `fluttercraft.yaml`:
 - Uses sensible defaults
 - Run `fluttercraft gen` to create config file
 
-### `fluttercraft.yaml`
+### `fluttercraft.yaml` (v0.1.1+)
 
 ```yaml
-app:
-  name: testapp
-
-build:
-  name: 1.0.1
-  number: 10
-  type: apk
-  flavor: null
+# Base configuration (anchor for inheritance)
+build_defaults: &build_defaults
+  app_name: myapp
+  name: 1.0.0
+  number: 1
+  type: aab
   target: lib/main.dart
 
+  # Dart defines (when should_add_dart_define = true)
+  global_dart_define:
+    APP_NAME: myapp
+  dart_define: {}
+
+  flags:
+    should_add_dart_define: false
+    should_clean: false
+    should_build_runner: false
+
+# Active build (inherits from build_defaults)
+build:
+  <<: *build_defaults
+  flavor: null  # null | dev | staging | prod
+
+# Flavor overrides
+flavors:
+  dev:
+    flags:
+      should_add_dart_define: true
+    dart_define:
+      IS_DEV: true
+      LOG_LEVEL: debug
+
+  staging:
+    name: 1.0.0-rc
+    flags:
+      should_add_dart_define: true
+      should_clean: true
+    dart_define:
+      IS_STAGING: true
+
+  prod:
+    flags:
+      should_add_dart_define: true
+      should_clean: true
+      should_build_runner: true
+    dart_define:
+      IS_PROD: true
+
+# Environment tools
+environments:
+  fvm:
+    enabled: true
+    version: null  # Auto-detected from .fvmrc if null
+
+  shorebird:
+    enabled: false
+    app_id: null   # Auto-detected from shorebird.yaml
+    artifact: null
+    no_confirm: true
+
+  bundletool:
+    path: null
+    keystore: android/key.properties
+
+  no_color: false  # Disable console colors
+
+# Output paths
 paths:
-  output: dist
-  env: ./.env
+  output: dist  # becomes dist/<flavor>/ when flavor is set
 
-flags:
-  use_dart_define: false
-  need_clean: false
-  need_build_runner: false
-
-fvm:
-  enabled: true
-  version: null  # Auto-detected from .fvmrc if null
-
-shorebird:
-  enabled: false
-  app_id: null   # Auto-detected from shorebird.yaml
-  artifact: null
-  no_confirm: true  # Skip confirmation prompts
-
+# Custom command aliases
 alias:
   gen-icon:
     cmds:
       - fvm flutter pub get
       - fvm flutter pub run flutter_launcher_icons
-  brn:
-    cmds:
-      - fvm flutter pub get
-      - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
+
+## Build Flavors (v0.1.1+)
+
+Define flavor-specific overrides in the `flavors` section:
+
+```yaml
+build:
+  <<: *build_defaults
+  flavor: dev  # Switch between: null | dev | staging | prod
+
+flavors:
+  dev:
+    flags:
+      should_add_dart_define: true
+    dart_define:
+      IS_DEV: true
+      API_URL: https://dev.api.com
+
+  prod:
+    flags:
+      should_add_dart_define: true
+      should_clean: true
+    dart_define:
+      IS_PROD: true
+      API_URL: https://api.com
+```
+
+**Flavor Overrides:**
+- `name` / `number` - Override version per flavor
+- `flags` - Override build flags per flavor
+- `dart_define` - Merges with `global_dart_define` + base `dart_define`
+
+**Output Path:** When flavor is set, output becomes `dist/<flavor>/`
 
 ## Custom Command Aliases
 

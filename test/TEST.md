@@ -30,6 +30,14 @@ test/
 │   ├── alias_config_test.dart
 │   ├── run_command_test.dart
 │   └── README.md
+├── v0.1.0/                   # v0.1.0 tests
+├── v0.1.1/                   # v0.1.1 tests (flavors, dart_define, no_color)
+│   ├── new_yaml_format_test.dart
+│   ├── flavor_resolution_test.dart
+│   ├── dart_define_test.dart
+│   ├── build_flags_test.dart
+│   ├── flavor_config_test.dart
+│   └── README.md
 └── TEST.md                   # This file
 ```
 

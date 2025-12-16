@@ -26,6 +26,9 @@ For each version `x.x.x`, create:
 3. Implement following the plan, write tests for new features
 4. Update task status as you progress
 5. Update documentation after completion
+   5.1. Add `plans/v{x.x.x}_task.md`
+   5.2. Add `plans/v{x.x.x}_implementation_plan.md`
+   5.3. Add `plans/v{x.x.x}_changes.md`
 
 ## Notice
 

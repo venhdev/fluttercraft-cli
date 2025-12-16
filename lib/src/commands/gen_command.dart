@@ -191,6 +191,9 @@ environments:
     # Path to key.properties file
     keystore: android/key.properties
 
+  # Disable colors in console output
+  no_color: false
+
 # ══════════════════════════════════════════════════════════════════════════════
 # OUTPUT PATHS
 # ══════════════════════════════════════════════════════════════════════════════

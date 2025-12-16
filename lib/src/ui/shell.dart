@@ -83,9 +83,10 @@ class Shell {
         console.info('flc v$appVersion');
         return;
 
-      case 'context':
-      case 'ctx':
-        _showContext();
+      case 'info':
+      case '-i':
+        final verbose = args.contains('-v') || args.contains('--verbose');
+        _showInfo(verbose: verbose);
         return;
 
       case 'reload':
@@ -136,7 +137,7 @@ class Shell {
     console.keyValue('exit, quit, q', 'Exit the shell');
     console.keyValue('clear, cls, c', 'Clear the screen');
     console.keyValue('version, v', 'Show CLI version');
-    console.keyValue('context, ctx', 'Show loaded context');
+    console.keyValue('info, -i', 'Show project info (use -v for verbose)');
     console.keyValue('reload, r', 'Reload configuration from disk');
 
     if (_commands.isNotEmpty) {
@@ -158,10 +159,8 @@ class Shell {
     }
   }
 
-  /// Show loaded context info
-  void _showContext() {
-    console.section('Runtime Context');
-
+  /// Show project info (default or verbose)
+  void _showInfo({bool verbose = false}) {
     if (appContext == null) {
       console.warning('No context loaded.');
       console.info('Context is loaded automatically when shell starts.');
@@ -169,37 +168,114 @@ class Shell {
     }
 
     final ctx = appContext!;
+    const kw = 20; // key width for alignment
 
-    // Application Info
+    // ─────────────────────────────────────────────────────────────────
+    // APPLICATION
+    // ─────────────────────────────────────────────────────────────────
     console.section('Application');
-    console.keyValue('App Name', ctx.appName);
-    console.keyValue('Version', ctx.version);
+    console.keyValue('App Name', ctx.appName, keyWidth: kw);
+    console.keyValue('Version', ctx.version, keyWidth: kw);
 
-    // Build Configuration
+    // ─────────────────────────────────────────────────────────────────
+    // BUILD CONFIGURATION (consolidated section)
+    // ─────────────────────────────────────────────────────────────────
     console.section('Build Configuration');
-    console.keyValue('Build Type', ctx.buildType);
+
+    // Core build settings
+    console.keyValue('Build Type', ctx.buildType, keyWidth: kw);
     console.keyValue(
       'Flavor',
       (ctx.flavor == null || ctx.flavor!.isEmpty) ? '(none)' : ctx.flavor!,
+      keyWidth: kw,
     );
-    console.keyValue('Output Path', ctx.outputPath);
+    console.keyValue('Output Path', ctx.outputPath, keyWidth: kw);
 
-    // Tools & Integrations
-    console.section('Tools & Integrations');
-    console.keyValue('Use FVM', ctx.useFvm.toString());
-    console.keyValue('Use Shorebird', ctx.useShorebird.toString());
+    // FVM sub-section
+    console.subSection('FVM');
+    console.keyValue('Enabled', ctx.useFvm.toString(), keyWidth: kw);
+    if (verbose && ctx.useFvm) {
+      console.keyValue(
+        'Flutter Version',
+        ctx.flutterVersion ?? '(auto-detected)',
+        keyWidth: kw,
+      );
+    }
 
-    // Project Info
-    console.section('Project');
-    console.keyValue('Project Root', ctx.projectRoot);
+    // Shorebird sub-section
+    console.subSection('Shorebird');
+    console.keyValue('Enabled', ctx.useShorebird.toString(), keyWidth: kw);
+    if (verbose && ctx.useShorebird) {
+      console.keyValue(
+        'App ID',
+        ctx.shorebirdAppId ?? '(from shorebird.yaml)',
+        keyWidth: kw,
+      );
+      if (ctx.shorebirdArtifact != null) {
+        console.keyValue('Artifact', ctx.shorebirdArtifact!, keyWidth: kw);
+      }
+      console.keyValue('No Confirm', ctx.shorebirdNoConfirm.toString(), keyWidth: kw);
+    }
 
-    // Context Metadata
-    console.section('Context Metadata');
-    console.keyValue('Loaded At', ctx.loadedAt.toString());
-    console.keyValue('Context Age', '${ctx.age.inSeconds}s');
+    // Verbose: Build flags
+    if (verbose) {
+      console.subSection('Build Flags');
+      console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw);
+      console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw);
+      console.keyValue('Should Add Dart Define', ctx.shouldAddDartDefine.toString(), keyWidth: kw);
+    }
 
-    if (ctx.isStale) {
-      console.warning('Context is stale (>5 min). Run "reload" to refresh.');
+    // Verbose: Paths
+    if (verbose) {
+      console.subSection('Paths');
+      console.keyValue('Target', ctx.targetDart, keyWidth: kw);
+      console.keyValue('Keystore', ctx.keystorePath, keyWidth: kw);
+      if (ctx.bundletoolPath != null) {
+        console.keyValue('Bundletool', ctx.bundletoolPath!, keyWidth: kw);
+      }
+      console.keyValue('Project Root', ctx.projectRoot, keyWidth: kw);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // VERBOSE-ONLY SECTIONS
+    // ─────────────────────────────────────────────────────────────────
+    if (verbose) {
+      // Dart defines (only if present)
+      if (ctx.finalDartDefine.isNotEmpty) {
+        console.section('Dart Define');
+        for (final entry in ctx.finalDartDefine.entries) {
+          console.keyValue(entry.key, entry.value.toString(), keyWidth: kw);
+        }
+      }
+
+      // Flavors (only if defined)
+      if (ctx.flavors.isNotEmpty) {
+        console.section('Flavors');
+        console.keyValue('Available', ctx.flavors.keys.join(', '), keyWidth: kw);
+      }
+
+      // Aliases (only if defined)
+      if (ctx.aliases.isNotEmpty) {
+        console.section('Aliases');
+        console.keyValue('Defined', ctx.aliases.keys.join(', '), keyWidth: kw);
+      }
+
+      // Console settings
+      console.section('Console');
+      console.keyValue('No Color', ctx.noColor.toString(), keyWidth: kw);
+
+      // Context metadata
+      console.section('Context Metadata');
+      console.keyValue('Loaded At', ctx.loadedAt.toString(), keyWidth: kw);
+      console.keyValue('Context Age', '${ctx.age.inSeconds}s', keyWidth: kw);
+
+      if (ctx.isStale) {
+        console.warning('Context is stale (>5 min). Run "reload" to refresh.');
+      }
+    } else {
+      // Hint for verbose mode
+      console.blank();
+      console.info('Use "info -v" for detailed configuration.');
     }
   }
 

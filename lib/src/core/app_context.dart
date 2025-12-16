@@ -86,6 +86,48 @@ class AppContext {
   /// Whether to use Shorebird
   bool get useShorebird => config.useShorebird;
 
+  // ─────────────────────────────────────────────────────────────────
+  // Verbose info getters (for info -v command)
+  // ─────────────────────────────────────────────────────────────────
+
+  /// FVM Flutter version (from .fvmrc or config)
+  String? get flutterVersion => config.flutterVersion;
+
+  /// Shorebird app ID (from shorebird.yaml or config)
+  String? get shorebirdAppId => config.shorebirdAppId;
+
+  /// Shorebird artifact type
+  String? get shorebirdArtifact => config.shorebirdArtifact;
+
+  /// Shorebird no confirm flag
+  bool get shorebirdNoConfirm => config.shorebirdNoConfirm;
+
+  /// Build flags
+  bool get shouldClean => config.shouldClean;
+  bool get shouldBuildRunner => config.shouldBuildRunner;
+  bool get shouldAddDartDefine => config.shouldAddDartDefine;
+
+  /// Merged dart defines (global + flavor-specific)
+  Map<String, dynamic> get finalDartDefine => config.finalDartDefine;
+
+  /// Target dart file
+  String get targetDart => config.targetDart;
+
+  /// Bundletool path
+  String? get bundletoolPath => config.bundletoolPath;
+
+  /// Keystore path
+  String get keystorePath => config.keystorePath;
+
+  /// Available flavors
+  Map<String, dynamic> get flavors => config.flavors;
+
+  /// Command aliases
+  Map<String, dynamic> get aliases => config.aliases;
+
+  /// No color setting
+  bool get noColor => config.noColor;
+
   /// Check if pubspec exists
   bool get hasPubspec => pubspecInfo != null;
 

@@ -86,6 +86,16 @@ class Console {
     print(_colorize('▸ $message', '${_AnsiColors.bold}${_AnsiColors.white}'));
   }
 
+  /// Print a section title without leading blank line (compact)
+  void sectionCompact(String message) {
+    print(_colorize('▸ $message', '${_AnsiColors.bold}${_AnsiColors.white}'));
+  }
+
+  /// Print a sub-section title (indented, dimmer)
+  void subSection(String message) {
+    print(_colorize('  ┄ $message', '${_AnsiColors.dim}${_AnsiColors.white}'));
+  }
+
   /// Print a key-value pair
   void keyValue(String key, String value, {int keyWidth = 16}) {
     final paddedKey = key.padRight(keyWidth);
