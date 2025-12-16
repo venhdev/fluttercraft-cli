@@ -78,8 +78,7 @@ void main(List<String> arguments) async {
       // Register run command with AppContext
       shell.registerCommand('run', (args) async {
         final runCmd = RunCommand(appContext);
-        await runCmd.execute(args);
-        return 0;
+        return await runCmd.execute(args);
       });
       
       final exitCode = await shell.run();
@@ -106,8 +105,8 @@ Future<void> _runSingleCommand(CommandRegistry registry, List<String> arguments)
     try {
       final appContext = await AppContext.load();
       final runCmd = RunCommand(appContext);
-      await runCmd.execute(arguments.sublist(1));
-      exit(0);
+      final exitCode = await runCmd.execute(arguments.sublist(1));
+      exit(exitCode);
     } catch (e) {
       print('Error: $e');
       exit(1);

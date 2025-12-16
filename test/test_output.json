@@ -1,0 +1,324 @@
+{"protocolVersion":"0.1.1","runnerVersion":"1.28.0","pid":15964,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"test\\v0.0.1\\mobile_build_cli_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading test\\v0.0.1\\mobile_build_cli_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":1}
+{"suite":{"id":2,"platform":"vm","path":"test\\v0.0.3\\build_config_test.dart"},"type":"suite","time":7}
+{"test":{"id":3,"name":"loading test\\v0.0.3\\build_config_test.dart","suiteID":2,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":7}
+{"suite":{"id":4,"platform":"vm","path":"test\\v0.0.3\\build_logger_test.dart"},"type":"suite","time":7}
+{"test":{"id":5,"name":"loading test\\v0.0.3\\build_logger_test.dart","suiteID":4,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":7}
+{"suite":{"id":6,"platform":"vm","path":"test\\v0.0.3\\build_record_test.dart"},"type":"suite","time":7}
+{"test":{"id":7,"name":"loading test\\v0.0.3\\build_record_test.dart","suiteID":6,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":7}
+{"suite":{"id":8,"platform":"vm","path":"test\\v0.0.6\\alias_config_test.dart"},"type":"suite","time":8}
+{"test":{"id":9,"name":"loading test\\v0.0.6\\alias_config_test.dart","suiteID":8,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":8}
+{"suite":{"id":10,"platform":"vm","path":"test\\v0.0.6\\run_command_test.dart"},"type":"suite","time":8}
+{"test":{"id":11,"name":"loading test\\v0.0.6\\run_command_test.dart","suiteID":10,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":8}
+{"count":8,"time":10,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":449}
+{"group":{"id":12,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":6,"line":null,"column":null,"url":null},"type":"group","time":454}
+{"group":{"id":13,"suiteID":0,"parentID":12,"name":"SemanticVersion","metadata":{"skip":false,"skipReason":null},"testCount":5,"line":5,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"group","time":455}
+{"test":{"id":14,"name":"SemanticVersion parses version without build number","suiteID":0,"groupIDs":[12,13],"metadata":{"skip":false,"skipReason":null},"line":6,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":455}
+{"testID":5,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":461}
+{"group":{"id":15,"suiteID":4,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":8,"line":null,"column":null,"url":null},"type":"group","time":462}
+{"group":{"id":16,"suiteID":4,"parentID":15,"name":"BuildLogger","metadata":{"skip":false,"skipReason":null},"testCount":8,"line":7,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"group","time":462}
+{"test":{"id":17,"name":"BuildLogger init creates .fluttercraft and logs directories","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":22,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":463}
+{"testID":3,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":468}
+{"group":{"id":18,"suiteID":2,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":8,"line":null,"column":null,"url":null},"type":"group","time":468}
+{"group":{"id":19,"suiteID":2,"parentID":18,"name":"BuildConfig","metadata":{"skip":false,"skipReason":null},"testCount":8,"line":7,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"group","time":468}
+{"test":{"id":20,"name":"BuildConfig returns default config when file does not exist","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":20,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":469}
+{"testID":14,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":474}
+{"test":{"id":21,"name":"SemanticVersion parses version with build number","suiteID":0,"groupIDs":[12,13],"metadata":{"skip":false,"skipReason":null},"line":14,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":475}
+{"testID":21,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":476}
+{"test":{"id":22,"name":"SemanticVersion increments patch version","suiteID":0,"groupIDs":[12,13],"metadata":{"skip":false,"skipReason":null},"line":22,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":476}
+{"testID":22,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":477}
+{"test":{"id":23,"name":"SemanticVersion increments minor version","suiteID":0,"groupIDs":[12,13],"metadata":{"skip":false,"skipReason":null},"line":28,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":478}
+{"testID":23,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":479}
+{"test":{"id":24,"name":"SemanticVersion increments major version","suiteID":0,"groupIDs":[12,13],"metadata":{"skip":false,"skipReason":null},"line":34,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":479}
+{"testID":24,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":480}
+{"group":{"id":25,"suiteID":0,"parentID":12,"name":"VersionManager","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":41,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"group","time":481}
+{"test":{"id":26,"name":"VersionManager applies patch bump","suiteID":0,"groupIDs":[12,25],"metadata":{"skip":false,"skipReason":null},"line":42,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.1/mobile_build_cli_test.dart"},"type":"testStart","time":481}
+{"testID":26,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":482}
+{"suite":{"id":27,"platform":"vm","path":"test\\v0.1.0\\config_no_confirm_test.dart"},"type":"suite","time":488}
+{"test":{"id":28,"name":"loading test\\v0.1.0\\config_no_confirm_test.dart","suiteID":27,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":489}
+{"testID":17,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":498}
+{"test":{"id":29,"name":"BuildLogger startSession creates both log files","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":29,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":499}
+{"testID":7,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":503}
+{"group":{"id":30,"suiteID":6,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":12,"line":null,"column":null,"url":null},"type":"group","time":503}
+{"group":{"id":31,"suiteID":6,"parentID":30,"name":"BuildRecord","metadata":{"skip":false,"skipReason":null},"testCount":5,"line":7,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"group","time":504}
+{"test":{"id":32,"name":"BuildRecord success factory creates record with status success","suiteID":6,"groupIDs":[30,31],"metadata":{"skip":false,"skipReason":null},"line":8,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":504}
+{"testID":20,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":505}
+{"test":{"id":33,"name":"BuildConfig parses minimal config with defaults","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":28,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":505}
+{"testID":9,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":513}
+{"group":{"id":34,"suiteID":8,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":10,"line":null,"column":null,"url":null},"type":"group","time":514}
+{"group":{"id":35,"suiteID":8,"parentID":34,"name":"BuildConfig - Alias Parsing","metadata":{"skip":false,"skipReason":null},"testCount":10,"line":7,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"group","time":514}
+{"test":{"id":36,"name":"BuildConfig - Alias Parsing parses empty alias section","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":20,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":514}
+{"testID":32,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":522}
+{"test":{"id":37,"name":"BuildRecord failed factory creates record with status failed","suiteID":6,"groupIDs":[30,31],"metadata":{"skip":false,"skipReason":null},"line":23,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":523}
+{"testID":37,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":524}
+{"test":{"id":38,"name":"BuildRecord toJsonLine produces valid JSON","suiteID":6,"groupIDs":[30,31],"metadata":{"skip":false,"skipReason":null},"line":36,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":524}
+{"testID":29,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":525}
+{"test":{"id":39,"name":"BuildLogger log writes to both files","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":38,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":525}
+{"testID":38,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":529}
+{"test":{"id":40,"name":"BuildRecord fromJson parses JSON correctly","suiteID":6,"groupIDs":[30,31],"metadata":{"skip":false,"skipReason":null},"line":52,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":530}
+{"testID":40,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":537}
+{"test":{"id":41,"name":"BuildRecord toMap and fromJson are inverse operations","suiteID":6,"groupIDs":[30,31],"metadata":{"skip":false,"skipReason":null},"line":70,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":537}
+{"testID":41,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":538}
+{"group":{"id":42,"suiteID":6,"parentID":30,"name":"BuildHistory","metadata":{"skip":false,"skipReason":null},"testCount":7,"line":87,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"group","time":539}
+{"test":{"id":43,"name":"BuildHistory append creates history file and writes record","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":102,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":539}
+{"testID":39,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":540}
+{"test":{"id":44,"name":"BuildLogger endSession writes footer with build status","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":59,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":540}
+{"testID":33,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":546}
+{"test":{"id":45,"name":"BuildConfig parses full config correctly","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":48,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":547}
+{"testID":44,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":547}
+{"test":{"id":46,"name":"BuildLogger failed build shows FAILED in footer","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":75,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":547}
+{"testID":46,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":553}
+{"test":{"id":47,"name":"BuildLogger section writes separator with title","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":83,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":554}
+{"testID":45,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":560}
+{"testID":47,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":560}
+{"test":{"id":48,"name":"BuildConfig fullVersion combines buildName and buildNumber","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":106,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":560}
+{"test":{"id":49,"name":"BuildLogger output splits and logs each line","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":93,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":560}
+{"testID":43,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":563}
+{"test":{"id":50,"name":"BuildHistory readAll returns empty list when no history","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":118,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":564}
+{"testID":48,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":564}
+{"test":{"id":51,"name":"BuildConfig fullAppName includes shorebird suffix when enabled","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":118,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":565}
+{"testID":50,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":567}
+{"testID":49,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":567}
+{"test":{"id":52,"name":"BuildHistory readAll returns all appended records","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":123,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":567}
+{"test":{"id":53,"name":"BuildLogger buildLogPath uses build ID","suiteID":4,"groupIDs":[15,16],"metadata":{"skip":false,"skipReason":null},"line":104,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_logger_test.dart"},"type":"testStart","time":568}
+{"testID":53,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":570}
+{"testID":51,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":570}
+{"suite":{"id":54,"platform":"vm","path":"test\\v0.1.0\\shorebird_args_test.dart"},"type":"suite","time":571}
+{"test":{"id":55,"name":"loading test\\v0.1.0\\shorebird_args_test.dart","suiteID":54,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":571}
+{"test":{"id":56,"name":"BuildConfig throws ConfigParseException for empty file","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":134,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":572}
+{"testID":11,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":580}
+{"group":{"id":57,"suiteID":10,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":12,"line":null,"column":null,"url":null},"type":"group","time":580}
+{"group":{"id":58,"suiteID":10,"parentID":57,"name":"RunCommand - Integration Tests","metadata":{"skip":false,"skipReason":null},"testCount":12,"line":9,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"group","time":580}
+{"group":{"id":59,"suiteID":10,"parentID":58,"name":"RunCommand - Integration Tests List Aliases","metadata":{"skip":false,"skipReason":null},"testCount":3,"line":46,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"group","time":581}
+{"test":{"id":60,"name":"RunCommand - Integration Tests List Aliases lists aliases when --list flag is provided","suiteID":10,"groupIDs":[57,58,59],"metadata":{"skip":false,"skipReason":null},"line":47,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":581}
+{"testID":36,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":581}
+{"testID":56,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":582}
+{"testID":52,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":582}
+{"test":{"id":61,"name":"BuildConfig - Alias Parsing parses single alias with single command","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":33,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":583}
+{"test":{"id":62,"name":"BuildConfig auto-detects FVM version from .fvmrc when version is null","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":144,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":583}
+{"test":{"id":63,"name":"BuildHistory lastBuild returns most recent record","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":148,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":583}
+{"testID":63,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":589}
+{"test":{"id":64,"name":"BuildHistory lastBuild returns null when no history","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":166,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":590}
+{"testID":62,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":590}
+{"test":{"id":65,"name":"BuildConfig uses explicit version when provided even if .fvmrc exists","suiteID":2,"groupIDs":[18,19],"metadata":{"skip":false,"skipReason":null},"line":177,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_config_test.dart"},"type":"testStart","time":591}
+{"testID":61,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":591}
+{"test":{"id":66,"name":"BuildConfig - Alias Parsing parses single alias with multiple commands","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":56,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":591}
+{"testID":64,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":592}
+{"test":{"id":67,"name":"BuildHistory recentBuilds returns limited results in reverse order","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":171,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":592}
+{"testID":65,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":595}
+{"testID":66,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":595}
+{"test":{"id":68,"name":"BuildConfig - Alias Parsing parses multiple aliases","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":81,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":596}
+{"testID":68,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":600}
+{"test":{"id":69,"name":"BuildConfig - Alias Parsing handles config without alias section","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":118,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":601}
+{"testID":69,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":607}
+{"test":{"id":70,"name":"BuildConfig - Alias Parsing ignores alias with no cmds field","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":133,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":607}
+{"testID":67,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":608}
+{"test":{"id":71,"name":"BuildHistory filterByStatus returns only matching records","suiteID":6,"groupIDs":[30,42],"metadata":{"skip":false,"skipReason":null},"line":187,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.3/build_record_test.dart"},"type":"testStart","time":608}
+{"testID":70,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":611}
+{"test":{"id":72,"name":"BuildConfig - Alias Parsing ignores alias with empty cmds list","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":148,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":612}
+{"testID":71,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":615}
+{"testID":72,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":616}
+{"test":{"id":73,"name":"BuildConfig - Alias Parsing handles complex command strings","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":163,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":616}
+{"testID":73,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":621}
+{"test":{"id":74,"name":"BuildConfig - Alias Parsing preserves command order","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":187,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":621}
+{"testID":74,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":625}
+{"test":{"id":75,"name":"BuildConfig - Alias Parsing handles aliases with special characters in names","suiteID":8,"groupIDs":[34,35],"metadata":{"skip":false,"skipReason":null},"line":211,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/alias_config_test.dart"},"type":"testStart","time":626}
+{"testID":75,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":630}
+{"testID":60,"messageType":"print","message":"","type":"print","time":641}
+{"testID":60,"messageType":"print","message":"ℹ Available aliases:","type":"print","time":642}
+{"testID":60,"messageType":"print","message":"","type":"print","time":642}
+{"testID":60,"messageType":"print","message":"✔   simple","type":"print","time":642}
+{"testID":60,"messageType":"print","message":"      → echo \"Hello from test\"","type":"print","time":642}
+{"testID":60,"messageType":"print","message":"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"✔   multi","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → echo \"First command\"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → echo \"Second command\"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → echo \"Third command\"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"✔   args","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → echo \"test\" \"multiple\" \"args\"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"✔   get","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → fvm dart pub get","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"✔   doctor","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"      → fvm flutter doctor","type":"print","time":643}
+{"testID":60,"messageType":"print","message":"","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"✔   check","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm dart pub get","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm flutter doctor","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"✔   invalid","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → this_command_does_not_exist_xyz_12345","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"✔   gen-icon","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm flutter pub get","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm flutter pub run flutter_launcher_icons","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"✔   brn","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm flutter pub get","type":"print","time":644}
+{"testID":60,"messageType":"print","message":"      → fvm flutter packages pub run build_runner build --delete-conflicting-outputs","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"✔   test","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"      → echo \"test\"","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"✔   build","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"      → echo \"build\"","type":"print","time":645}
+{"testID":60,"messageType":"print","message":"","type":"print","time":645}
+{"testID":60,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":648}
+{"test":{"id":76,"name":"RunCommand - Integration Tests List Aliases lists aliases when -l flag is provided","suiteID":10,"groupIDs":[57,58,59],"metadata":{"skip":false,"skipReason":null},"line":55,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":648}
+{"testID":28,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":656}
+{"group":{"id":77,"suiteID":27,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":5,"line":null,"column":null,"url":null},"type":"group","time":656}
+{"group":{"id":78,"suiteID":27,"parentID":77,"name":"Config no_confirm Parsing","metadata":{"skip":false,"skipReason":null},"testCount":5,"line":9,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"group","time":656}
+{"test":{"id":79,"name":"Config no_confirm Parsing parses no_confirm: true from shared config","suiteID":27,"groupIDs":[77,78],"metadata":{"skip":false,"skipReason":null},"line":21,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"testStart","time":656}
+{"testID":76,"messageType":"print","message":"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"ℹ Available aliases:","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"✔   simple","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"      → echo \"Hello from test\"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"✔   multi","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"      → echo \"First command\"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"      → echo \"Second command\"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"      → echo \"Third command\"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"✔   args","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"      → echo \"test\" \"multiple\" \"args\"","type":"print","time":657}
+{"testID":76,"messageType":"print","message":"","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"✔   get","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"      → fvm dart pub get","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"✔   doctor","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"      → fvm flutter doctor","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"✔   check","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"      → fvm dart pub get","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"      → fvm flutter doctor","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"","type":"print","time":658}
+{"testID":76,"messageType":"print","message":"✔   invalid","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → this_command_does_not_exist_xyz_12345","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"✔   gen-icon","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → fvm flutter pub get","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → fvm flutter pub run flutter_launcher_icons","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"✔   brn","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → fvm flutter pub get","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → fvm flutter packages pub run build_runner build --delete-conflicting-outputs","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"✔   test","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → echo \"test\"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"✔   build","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"      → echo \"build\"","type":"print","time":659}
+{"testID":76,"messageType":"print","message":"","type":"print","time":659}
+{"testID":76,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":660}
+{"test":{"id":80,"name":"RunCommand - Integration Tests List Aliases shows message when no aliases are defined","suiteID":10,"groupIDs":[57,58,59],"metadata":{"skip":false,"skipReason":null},"line":62,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":660}
+{"testID":80,"messageType":"print","message":"ℹ No aliases defined in fluttercraft.yaml","type":"print","time":665}
+{"testID":80,"messageType":"print","message":"","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"ℹ Add aliases in the \"alias\" section of your config:","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"  alias:","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"    gen-icon:","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"      cmds:","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"        - fvm flutter pub get","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"        - fvm flutter pub run flutter_launcher_icons","type":"print","time":666}
+{"testID":80,"messageType":"print","message":"","type":"print","time":666}
+{"testID":80,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":666}
+{"group":{"id":81,"suiteID":10,"parentID":58,"name":"RunCommand - Integration Tests Alias Execution","metadata":{"skip":false,"skipReason":null},"testCount":7,"line":73,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"group","time":667}
+{"test":{"id":82,"name":"RunCommand - Integration Tests Alias Execution shows error when no alias name is provided","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":false,"skipReason":null},"line":74,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":667}
+{"testID":82,"messageType":"print","message":"✖ Usage: flc run <alias> or flc run --list","type":"print","time":672}
+{"testID":82,"messageType":"print","message":"ℹ Run \"flc run --list\" to see available aliases","type":"print","time":672}
+{"testID":82,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":673}
+{"test":{"id":83,"name":"RunCommand - Integration Tests Alias Execution executes single simple command successfully","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":false,"skipReason":null},"line":81,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":673}
+{"testID":83,"messageType":"print","message":"","type":"print","time":678}
+{"testID":83,"messageType":"print","message":"","type":"print","time":678}
+{"testID":83,"messageType":"print","message":"\u001b[1m═══ Running alias: simple ═══","type":"print","time":678}
+{"testID":83,"messageType":"print","message":"","type":"print","time":678}
+{"testID":83,"messageType":"print","message":"","type":"print","time":678}
+{"testID":83,"messageType":"print","message":"▸ [1/1] echo \"Hello from test\"","type":"print","time":678}
+"Hello from test"
+{"testID":55,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":709}
+{"group":{"id":84,"suiteID":54,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":4,"line":null,"column":null,"url":null},"type":"group","time":709}
+{"group":{"id":85,"suiteID":54,"parentID":84,"name":"Shorebird Build Args","metadata":{"skip":false,"skipReason":null},"testCount":4,"line":13,"column":3,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/shorebird_args_test.dart"},"type":"group","time":710}
+{"test":{"id":86,"name":"Shorebird Build Args does NOT include --release when using Shorebird","suiteID":54,"groupIDs":[84,85],"metadata":{"skip":false,"skipReason":null},"line":25,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/shorebird_args_test.dart"},"type":"testStart","time":710}
+{"testID":79,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":710}
+{"test":{"id":87,"name":"Config no_confirm Parsing parses no_confirm: false correctly","suiteID":27,"groupIDs":[77,78],"metadata":{"skip":false,"skipReason":null},"line":28,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"testStart","time":710}
+{"testID":83,"messageType":"print","message":"","type":"print","time":713}
+{"testID":83,"messageType":"print","message":"✔ ✓ Alias \"simple\" completed successfully","type":"print","time":713}
+{"testID":83,"messageType":"print","message":"","type":"print","time":713}
+{"testID":83,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":714}
+{"test":{"id":88,"name":"RunCommand - Integration Tests Alias Execution executes multiple commands in sequence","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":false,"skipReason":null},"line":89,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":715}
+{"testID":87,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":718}
+{"test":{"id":89,"name":"Config no_confirm Parsing defaults to true when no_confirm is not specified","suiteID":27,"groupIDs":[77,78],"metadata":{"skip":false,"skipReason":null},"line":41,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"testStart","time":719}
+{"testID":88,"messageType":"print","message":"","type":"print","time":721}
+{"testID":88,"messageType":"print","message":"","type":"print","time":721}
+{"testID":88,"messageType":"print","message":"\u001b[1m═══ Running alias: multi ═══","type":"print","time":721}
+{"testID":88,"messageType":"print","message":"","type":"print","time":721}
+{"testID":88,"messageType":"print","message":"","type":"print","time":721}
+{"testID":88,"messageType":"print","message":"▸ [1/3] echo \"First command\"","type":"print","time":721}
+{"testID":89,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":722}
+{"test":{"id":90,"name":"Config no_confirm Parsing defaults to true when shorebird section is missing","suiteID":27,"groupIDs":[77,78],"metadata":{"skip":false,"skipReason":null},"line":53,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"testStart","time":722}
+{"testID":90,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":727}
+{"test":{"id":91,"name":"Config no_confirm Parsing defaults to true when config file does not exist","suiteID":27,"groupIDs":[77,78],"metadata":{"skip":false,"skipReason":null},"line":63,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/config_no_confirm_test.dart"},"type":"testStart","time":727}
+{"testID":91,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":729}
+"First command"
+{"testID":88,"messageType":"print","message":"","type":"print","time":742}
+{"testID":88,"messageType":"print","message":"","type":"print","time":742}
+{"testID":88,"messageType":"print","message":"▸ [2/3] echo \"Second command\"","type":"print","time":742}
+"Second command"
+{"testID":88,"messageType":"print","message":"","type":"print","time":761}
+{"testID":88,"messageType":"print","message":"","type":"print","time":761}
+{"testID":88,"messageType":"print","message":"▸ [3/3] echo \"Third command\"","type":"print","time":761}
+{"testID":86,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":767}
+{"test":{"id":92,"name":"Shorebird Build Args DOES include --release when NOT using Shorebird","suiteID":54,"groupIDs":[84,85],"metadata":{"skip":false,"skipReason":null},"line":46,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/shorebird_args_test.dart"},"type":"testStart","time":767}
+{"testID":92,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":774}
+{"test":{"id":93,"name":"Shorebird Build Args includes --no-confirm when no_confirm is true","suiteID":54,"groupIDs":[84,85],"metadata":{"skip":false,"skipReason":null},"line":70,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/shorebird_args_test.dart"},"type":"testStart","time":775}
+"Third command"
+{"testID":93,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":780}
+{"test":{"id":94,"name":"Shorebird Build Args does NOT include --no-confirm when no_confirm is false","suiteID":54,"groupIDs":[84,85],"metadata":{"skip":false,"skipReason":null},"line":82,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.1.0/shorebird_args_test.dart"},"type":"testStart","time":780}
+{"testID":88,"messageType":"print","message":"","type":"print","time":780}
+{"testID":88,"messageType":"print","message":"✔ ✓ Alias \"multi\" completed successfully","type":"print","time":781}
+{"testID":88,"messageType":"print","message":"","type":"print","time":781}
+{"testID":88,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":781}
+{"test":{"id":95,"name":"RunCommand - Integration Tests Alias Execution executes commands with arguments","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":false,"skipReason":null},"line":96,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":782}
+{"testID":94,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":783}
+{"testID":95,"messageType":"print","message":"","type":"print","time":786}
+{"testID":95,"messageType":"print","message":"","type":"print","time":786}
+{"testID":95,"messageType":"print","message":"\u001b[1m═══ Running alias: args ═══","type":"print","time":786}
+{"testID":95,"messageType":"print","message":"","type":"print","time":786}
+{"testID":95,"messageType":"print","message":"","type":"print","time":786}
+{"testID":95,"messageType":"print","message":"▸ [1/1] echo \"test\" \"multiple\" \"args\"","type":"print","time":786}
+test multiple args
+{"testID":95,"messageType":"print","message":"","type":"print","time":804}
+{"testID":95,"messageType":"print","message":"✔ ✓ Alias \"args\" completed successfully","type":"print","time":805}
+{"testID":95,"messageType":"print","message":"","type":"print","time":805}
+{"testID":95,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":806}
+{"test":{"id":96,"name":"RunCommand - Integration Tests Alias Execution executes fvm dart pub get","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":true,"skipReason":"Requires fvm to be installed - run manually"},"line":103,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":806}
+{"testID":96,"messageType":"skip","message":"Skip: Requires fvm to be installed - run manually","type":"print","time":806}
+{"testID":96,"result":"success","skipped":true,"hidden":false,"type":"testDone","time":806}
+{"test":{"id":97,"name":"RunCommand - Integration Tests Alias Execution executes fvm flutter doctor","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":true,"skipReason":"Requires fvm and flutter to be installed - run manually"},"line":120,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":807}
+{"testID":97,"messageType":"skip","message":"Skip: Requires fvm and flutter to be installed - run manually","type":"print","time":807}
+{"testID":97,"result":"success","skipped":true,"hidden":false,"type":"testDone","time":807}
+{"test":{"id":98,"name":"RunCommand - Integration Tests Alias Execution combines fvm dart pub get and fvm flutter doctor","suiteID":10,"groupIDs":[57,58,81],"metadata":{"skip":true,"skipReason":"Requires fvm and flutter to be installed - run manually"},"line":127,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":807}
+{"testID":98,"messageType":"skip","message":"Skip: Requires fvm and flutter to be installed - run manually","type":"print","time":807}
+{"testID":98,"result":"success","skipped":true,"hidden":false,"type":"testDone","time":807}
+{"group":{"id":99,"suiteID":10,"parentID":58,"name":"RunCommand - Integration Tests Error Handling","metadata":{"skip":false,"skipReason":null},"testCount":2,"line":144,"column":5,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"group","time":807}
+{"test":{"id":100,"name":"RunCommand - Integration Tests Error Handling handles nonexistent alias gracefully","suiteID":10,"groupIDs":[57,58,99],"metadata":{"skip":false,"skipReason":null},"line":145,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":807}
+{"testID":100,"messageType":"print","message":"✖ Alias \"nonexistent\" not found","type":"print","time":812}
+{"testID":100,"messageType":"print","message":"ℹ Run \"flc run --list\" to see available aliases","type":"print","time":812}
+{"testID":100,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":812}
+{"test":{"id":101,"name":"RunCommand - Integration Tests Error Handling handles invalid command gracefully","suiteID":10,"groupIDs":[57,58,99],"metadata":{"skip":false,"skipReason":null},"line":153,"column":7,"url":"file:///C:/src/self/flutter-dart/cli/fluttercraft/test/v0.0.6/run_command_test.dart"},"type":"testStart","time":813}
+{"testID":101,"messageType":"print","message":"","type":"print","time":816}
+{"testID":101,"messageType":"print","message":"","type":"print","time":816}
+{"testID":101,"messageType":"print","message":"\u001b[1m═══ Running alias: invalid ═══","type":"print","time":817}
+{"testID":101,"messageType":"print","message":"","type":"print","time":817}
+{"testID":101,"messageType":"print","message":"","type":"print","time":817}
+{"testID":101,"messageType":"print","message":"▸ [1/1] this_command_does_not_exist_xyz_12345","type":"print","time":817}
+{"testID":101,"messageType":"print","message":"","type":"print","time":838}
+{"testID":101,"messageType":"print","message":"✖ Command failed with exit code 1","type":"print","time":838}
+{"testID":101,"messageType":"print","message":"✖ Alias \"invalid\" execution stopped","type":"print","time":838}
+{"testID":101,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":839}
+{"success":true,"type":"done","time":843}

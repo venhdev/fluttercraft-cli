@@ -21,15 +21,8 @@ void main() {
     test('parses no_confirm: true from shared config', () async {
       await TestHelper.copyTestFile('v0.1.0', 'fluttercraft-test.yaml', '$tempDir/fluttercraft.yaml');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
-
-      try {
-        final config = await BuildConfig.load();
-        expect(config.shorebirdNoConfirm, true);
-      } finally {
-        Directory.current = originalDir;
-      }
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      expect(config.shorebirdNoConfirm, true);
     });
 
     test('parses no_confirm: false correctly', () async {
@@ -41,15 +34,8 @@ shorebird:
   no_confirm: false
 ''');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
-
-      try {
-        final config = await BuildConfig.load();
-        expect(config.shorebirdNoConfirm, false);
-      } finally {
-        Directory.current = originalDir;
-      }
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      expect(config.shorebirdNoConfirm, false);
     });
 
     test('defaults to true when no_confirm is not specified', () async {
@@ -60,15 +46,8 @@ shorebird:
   enabled: true
 ''');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
-
-      try {
-        final config = await BuildConfig.load();
-        expect(config.shorebirdNoConfirm, true);
-      } finally {
-        Directory.current = originalDir;
-      }
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      expect(config.shorebirdNoConfirm, true);
     });
 
     test('defaults to true when shorebird section is missing', () async {
@@ -77,15 +56,8 @@ app:
   name: testapp
 ''');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
-
-      try {
-        final config = await BuildConfig.load();
-        expect(config.shorebirdNoConfirm, true);
-      } finally {
-        Directory.current = originalDir;
-      }
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      expect(config.shorebirdNoConfirm, true);
     });
 
     test('defaults to true when config file does not exist', () async {

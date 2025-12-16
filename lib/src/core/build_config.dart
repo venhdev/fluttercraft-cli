@@ -87,15 +87,16 @@ class BuildConfig {
   static Future<BuildConfig> load({
     String? configPath,
     PubspecInfo? pubspecInfo,
+    String? projectRoot,
   }) async {
-    final projectRoot = Directory.current.path;
-    final path = configPath ?? p.join(projectRoot, 'fluttercraft.yaml');
+    final root = projectRoot ?? Directory.current.path;
+    final path = configPath ?? p.join(root, 'fluttercraft.yaml');
     
     final file = File(path);
     if (!await file.exists()) {
       // Return default config with pubspec fallback
       return BuildConfig(
-        projectRoot: projectRoot,
+        projectRoot: root,
         appName: pubspecInfo?.name ?? 'app',
         buildName: pubspecInfo?.buildName ?? '1.0.0',
         buildNumber: pubspecInfo != null 
@@ -121,7 +122,7 @@ class BuildConfig {
       throw ConfigParseException('fluttercraft.yaml is empty or invalid');
     }
     
-    return _parseYaml(yaml, projectRoot);
+    return _parseYaml(yaml, root);
   }
 
   /// Parse YAML map into BuildConfig

@@ -41,7 +41,10 @@ class AppContext {
     final hasConfigFile = await File(configPath).exists();
     
     // Load config with pubspec fallback
-    final config = await BuildConfig.load(pubspecInfo: pubspecInfo);
+    final config = await BuildConfig.load(
+      pubspecInfo: pubspecInfo,
+      projectRoot: root,
+    );
     
     return AppContext._(
       config: config,

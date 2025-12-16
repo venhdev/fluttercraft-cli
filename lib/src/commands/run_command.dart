@@ -14,29 +14,29 @@ class RunCommand {
       : _console = Console(),
         _runner = ProcessRunner();
   
-  Future<void> execute(List<String> args) async {
+  Future<int> execute(List<String> args) async {
     // Parse flags
     final showList = args.contains('--list') || args.contains('-l');
     final showHelp = args.contains('--help') || args.contains('-h');
     
     if (showHelp) {
       _printHelp();
-      return;
+      return 0;
     }
     
     if (showList) {
       _listAliases();
-      return;
+      return 0;
     }
     
     if (args.isEmpty) {
       _console.error('Usage: flc run <alias> or flc run --list');
       _console.info('Run "flc run --list" to see available aliases');
-      return;
+      return 1;
     }
     
     final aliasName = args[0];
-    await _runAlias(aliasName);
+    return _runAlias(aliasName);
   }
   
   void _printHelp() {
@@ -79,13 +79,13 @@ class RunCommand {
     }
   }
   
-  Future<void> _runAlias(String name) async {
+  Future<int> _runAlias(String name) async {
     final alias = context.config.aliases[name];
     
     if (alias == null) {
       _console.error('Alias "$name" not found');
       _console.info('Run "flc run --list" to see available aliases');
-      exit(1);
+      return 1;
     }
     
     _console.blank();
@@ -99,7 +99,7 @@ class RunCommand {
       final parts = _parseCommand(cmd);
       if (parts.isEmpty) {
         _console.error('Invalid command: $cmd');
-        exit(1);
+        return 1;
       }
       
       final command = parts[0];
@@ -116,7 +116,7 @@ class RunCommand {
         _console.blank();
         _console.error('Command failed with exit code ${result.exitCode}');
         _console.error('Alias "$name" execution stopped');
-        exit(result.exitCode);
+        return result.exitCode;
       }
       
       _console.blank();
@@ -124,6 +124,7 @@ class RunCommand {
     
     _console.success('✓ Alias "$name" completed successfully');
     _console.blank();
+    return 0;
   }
   
   /// Parse command string into command and arguments

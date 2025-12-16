@@ -26,26 +26,20 @@ void main() {
       // Copy shared test config
       await TestHelper.copyTestFile('v0.1.0', 'fluttercraft-test.yaml', '$tempDir/fluttercraft.yaml');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
+      // Use projectRoot injection
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      final runner = FlutterRunner(projectRoot: tempDir);
+      final command = runner.getBuildCommand(config);
 
-      try {
-        final config = await BuildConfig.load();
-        final runner = FlutterRunner(projectRoot: tempDir);
-        final command = runner.getBuildCommand(config);
-
-        expect(config.useShorebird, true);
-        expect(command.contains('shorebird release'), true);
-        
-        // Split command to check flutter args part (after --)
-        final parts = command.split('--');
-        if (parts.length > 1) {
-          final flutterArgs = parts.sublist(1).join('--');
-          expect(flutterArgs.contains('--release'), false,
-              reason: 'Shorebird builds should NOT include --release flag');
-        }
-      } finally {
-        Directory.current = originalDir;
+      expect(config.useShorebird, true);
+      expect(command.contains('shorebird release'), true);
+      
+      // Split command to check flutter args part (after --)
+      final parts = command.split('--');
+      if (parts.length > 1) {
+        final flutterArgs = parts.sublist(1).join('--');
+        expect(flutterArgs.contains('--release'), false,
+            reason: 'Shorebird builds should NOT include --release flag');
       }
     });
 
@@ -63,38 +57,26 @@ fvm:
   enabled: false
 ''');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
+      // Use projectRoot injection
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      final runner = FlutterRunner(projectRoot: tempDir);
+      final command = runner.getBuildCommand(config);
 
-      try {
-        final config = await BuildConfig.load();
-        final runner = FlutterRunner(projectRoot: tempDir);
-        final command = runner.getBuildCommand(config);
-
-        expect(config.useShorebird, false);
-        expect(command.contains('--release'), true,
-            reason: 'Non-Shorebird builds SHOULD include --release flag');
-      } finally {
-        Directory.current = originalDir;
-      }
+      expect(config.useShorebird, false);
+      expect(command.contains('--release'), true,
+          reason: 'Non-Shorebird builds SHOULD include --release flag');
     });
 
     test('includes --no-confirm when no_confirm is true', () async {
       await TestHelper.copyTestFile('v0.1.0', 'fluttercraft-test.yaml', '$tempDir/fluttercraft.yaml');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
+      // Use projectRoot injection
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      final runner = FlutterRunner(projectRoot: tempDir);
+      final command = runner.getBuildCommand(config);
 
-      try {
-        final config = await BuildConfig.load();
-        final runner = FlutterRunner(projectRoot: tempDir);
-        final command = runner.getBuildCommand(config);
-
-        expect(config.shorebirdNoConfirm, true);
-        expect(command.contains('--no-confirm'), true);
-      } finally {
-        Directory.current = originalDir;
-      }
+      expect(config.shorebirdNoConfirm, true);
+      expect(command.contains('--no-confirm'), true);
     });
 
     test('does NOT include --no-confirm when no_confirm is false', () async {
@@ -106,19 +88,13 @@ shorebird:
   no_confirm: false
 ''');
 
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
+      // Use projectRoot injection
+      final config = await BuildConfig.load(projectRoot: tempDir);
+      final runner = FlutterRunner(projectRoot: tempDir);
+      final command = runner.getBuildCommand(config);
 
-      try {
-        final config = await BuildConfig.load();
-        final runner = FlutterRunner(projectRoot: tempDir);
-        final command = runner.getBuildCommand(config);
-
-        expect(config.shorebirdNoConfirm, false);
-        expect(command.contains('--no-confirm'), false);
-      } finally {
-        Directory.current = originalDir;
-      }
+      expect(config.shorebirdNoConfirm, false);
+      expect(command.contains('--no-confirm'), false);
     });
   });
 }

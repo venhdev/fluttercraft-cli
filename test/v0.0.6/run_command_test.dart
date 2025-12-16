@@ -29,30 +29,18 @@ void main() {
         configPath,
       );
       
-      // Change to temp directory
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
       
-      try {
-        return await AppContext.load();
-      } finally {
-        Directory.current = originalDir;
-      }
+      // Load context with tempDir as project root
+      return await AppContext.load(projectRoot: tempDir);
     }
 
     /// Create test context with custom YAML content
     Future<AppContext> createTestContext(String yamlContent) async {
       await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', yamlContent);
       
-      // Change to temp directory
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
       
-      try {
-        return await AppContext.load();
-      } finally {
-        Directory.current = originalDir;
-      }
+      // Load context with tempDir as project root
+      return await AppContext.load(projectRoot: tempDir);
     }
 
     group('List Aliases', () {
@@ -60,21 +48,15 @@ void main() {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        // Should complete without error
-        await expectLater(
-          runCmd.execute(['--list']),
-          completes,
-        );
+        // Should return 0
+        expect(await runCmd.execute(['--list']), 0);
       });
 
       test('lists aliases when -l flag is provided', () async {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute(['-l']),
-          completes,
-        );
+        expect(await runCmd.execute(['-l']), 0);
       });
 
       test('shows message when no aliases are defined', () async {
@@ -84,10 +66,7 @@ app:
 ''');
 
         final runCmd = RunCommand(context);
-        await expectLater(
-          runCmd.execute(['--list']),
-          completes,
-        );
+        expect(await runCmd.execute(['--list']), 0);
       });
     });
 
@@ -96,10 +75,7 @@ app:
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute([]),
-          completes,
-        );
+        expect(await runCmd.execute([]), 1);
       });
 
       test('executes single simple command successfully', () async {
@@ -107,30 +83,21 @@ app:
         final runCmd = RunCommand(context);
         
         // This will actually execute the echo command
-        await expectLater(
-          runCmd.execute(['simple']),
-          completes,
-        );
+        expect(await runCmd.execute(['simple']), 0);
       });
 
       test('executes multiple commands in sequence', () async {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute(['multi']),
-          completes,
-        );
+        expect(await runCmd.execute(['multi']), 0);
       });
 
       test('executes commands with arguments', () async {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute(['args']),
-          completes,
-        );
+        expect(await runCmd.execute(['args']), 0);
       });
 
       test('executes fvm dart pub get', () async {
@@ -147,20 +114,14 @@ environment:
         final runCmd = RunCommand(context);
         
         // This will execute fvm dart pub get
-        await expectLater(
-          runCmd.execute(['get']),
-          completes,
-        );
+        expect(await runCmd.execute(['get']), 0);
       }, skip: 'Requires fvm to be installed - run manually');
 
       test('executes fvm flutter doctor', () async {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute(['doctor']),
-          completes,
-        );
+        expect(await runCmd.execute(['doctor']), 0);
       }, skip: 'Requires fvm and flutter to be installed - run manually');
 
       test('combines fvm dart pub get and fvm flutter doctor', () async {
@@ -176,10 +137,7 @@ environment:
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        await expectLater(
-          runCmd.execute(['check']),
-          completes,
-        );
+        expect(await runCmd.execute(['check']), 0);
       }, skip: 'Requires fvm and flutter to be installed - run manually');
     });
 
@@ -188,23 +146,16 @@ environment:
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        // Should exit with error message (but not throw in test)
-        // The exit() call will terminate the process in real usage
-        expect(
-          () async => await runCmd.execute(['nonexistent']),
-          throwsA(anything), // Will throw because exit() is called
-        );
+        // Should return 1
+        expect(await runCmd.execute(['nonexistent']), 1);
       });
 
       test('handles invalid command gracefully', () async {
         final context = await createTestContextFromSharedConfig();
         final runCmd = RunCommand(context);
         
-        // Should handle the error and exit
-        expect(
-          () async => await runCmd.execute(['invalid']),
-          throwsA(anything),
-        );
+        // Should return 1
+        expect(await runCmd.execute(['invalid']), 1);
       });
     });
   });

@@ -160,17 +160,18 @@ fvm:
 ''');
 
       // Change to temp directory to test detection
-      final originalDir = Directory.current;
-      Directory.current = tempDir;
-
-      try {
-        final config = await BuildConfig.load(configPath: configFile.path);
-        
-        expect(config.useFvm, true);
-        expect(config.flutterVersion, '3.35.3');
-      } finally {
-        Directory.current = originalDir;
-      }
+      
+      // Load config with implicit projectRoot via configPath (but FVM version detection needs root)
+      // Since we provided configPath, BuildConfig splits it? No.
+      // We need to pass projectRoot for FVM detection.
+      
+      final config = await BuildConfig.load(
+        configPath: configFile.path, 
+        projectRoot: tempDir,
+      );
+      
+      expect(config.useFvm, true);
+      expect(config.flutterVersion, '3.35.3');
     });
 
     test('uses explicit version when provided even if .fvmrc exists', () async {

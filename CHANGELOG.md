@@ -6,7 +6,7 @@
 ### ✨ New Features
 - **Edit before build** - Type `e` at confirmation to modify the build command interactively
 - **Reload command** - Added `reload`/`r` command in shell to hot-reload config from disk
-- **Improved help** - Shorebird-style help format with proper sections
+- **Improved help** - Updated help format with proper sections
 
 ### 🐛 Bug Fixes
 - **fix**: Removed `--release` flag from Shorebird builds (per official docs: "never add --release when using shorebird")
