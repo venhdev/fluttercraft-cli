@@ -47,6 +47,10 @@ class BuildConfig {
   final Map<String, dynamic> globalDartDefine;
   final Map<String, dynamic> dartDefine;
 
+  // Dart define from file
+  final String? globalDartDefineFromFile;
+  final String? dartDefineFromFile;
+
   // FVM integration
   final bool useFvm;
   final String? flutterVersion;
@@ -83,6 +87,8 @@ class BuildConfig {
     required this.flags,
     this.globalDartDefine = const {},
     this.dartDefine = const {},
+    this.globalDartDefineFromFile,
+    this.dartDefineFromFile,
     required this.useFvm,
     this.flutterVersion,
     required this.useShorebird,
@@ -129,6 +135,19 @@ class BuildConfig {
 
     // Merge: global_dart_define + dart_define (dart_define takes precedence)
     return {...globalDartDefine, ...dartDefine};
+  }
+
+  /// Final dart define from file path
+  ///
+  /// Returns flavor-specific path if set, otherwise returns global path.
+  /// Only returns a value if shouldAddDartDefine is true.
+  String? get finalDartDefineFromFile {
+    if (!flags.shouldAddDartDefine) {
+      return null;
+    }
+
+    // Flavor-specific overrides global
+    return dartDefineFromFile ?? globalDartDefineFromFile;
   }
 
   /// Load configuration from fluttercraft.yaml
@@ -251,6 +270,14 @@ class BuildConfig {
     );
 
     // ─────────────────────────────────────────────────────────────────
+    // Parse dart_define_from_file
+    // ─────────────────────────────────────────────────────────────────
+    final globalDartDefineFromFile = _getStringOrNull(buildDefaults, 'dart_define_from_file') ??
+        _getStringOrNull(build, 'dart_define_from_file');
+    var dartDefineFromFile = _getStringOrNull(build, 'dart_define_from_file') ??
+        _getStringOrNull(buildDefaults, 'dart_define_from_file');
+
+    // ─────────────────────────────────────────────────────────────────
     // Parse flavors
     // ─────────────────────────────────────────────────────────────────
     final flavorsYaml = yaml['flavors'] as YamlMap?;
@@ -300,6 +327,11 @@ class BuildConfig {
 
       // Merge dart_define (flavor takes precedence)
       dartDefine = {...dartDefine, ...flavorConfig.dartDefine};
+
+      // Override dart_define_from_file if flavor specifies it
+      if (flavorConfig.dartDefineFromFile != null) {
+        dartDefineFromFile = flavorConfig.dartDefineFromFile;
+      }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -365,6 +397,8 @@ class BuildConfig {
       ),
       globalDartDefine: globalDartDefine,
       dartDefine: dartDefine,
+      globalDartDefineFromFile: globalDartDefineFromFile,
+      dartDefineFromFile: dartDefineFromFile,
       useFvm: useFvm,
       flutterVersion: flutterVersion,
       useShorebird: useShorebird,

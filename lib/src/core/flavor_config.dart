@@ -18,6 +18,9 @@ class FlavorConfig {
   /// Flavor-specific dart defines (merged with global_dart_define)
   final Map<String, dynamic> dartDefine;
 
+  /// Flavor-specific dart define from file (overrides global)
+  final String? dartDefineFromFile;
+
   /// Flag overrides (null means use default)
   final bool? shouldAddDartDefine;
   final bool? shouldClean;
@@ -28,6 +31,7 @@ class FlavorConfig {
     this.versionName,
     this.buildNumber,
     this.dartDefine = const {},
+    this.dartDefineFromFile,
     this.shouldAddDartDefine,
     this.shouldClean,
     this.shouldBuildRunner,
@@ -70,11 +74,15 @@ class FlavorConfig {
     final shouldClean = _getBoolOrNull(flags, 'should_clean');
     final shouldBuildRunner = _getBoolOrNull(flags, 'should_build_runner');
 
+    // Parse dart_define_from_file
+    final dartDefineFromFile = yaml['dart_define_from_file']?.toString();
+
     return FlavorConfig(
       name: name,
       versionName: versionName,
       buildNumber: buildNumber,
       dartDefine: dartDefine,
+      dartDefineFromFile: dartDefineFromFile,
       shouldAddDartDefine: shouldAddDartDefine,
       shouldClean: shouldClean,
       shouldBuildRunner: shouldBuildRunner,

@@ -61,10 +61,15 @@ build:
   type: aab
   flavor: dev # dev | staging | prod
 
+# Global dart defines from file
+dart_define_from_file: .env
+
 flavors:
   dev:
     dart_define:
       IS_DEV: true
+    # Override with flavor-specific env
+    dart_define_from_file: .env.dev
   prod:
     flags:
       should_clean: true
@@ -86,4 +91,3 @@ Logs are stored in `.fluttercraft/`.
 ## License
 
 MIT
-

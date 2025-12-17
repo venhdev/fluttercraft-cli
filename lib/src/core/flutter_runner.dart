@@ -164,6 +164,11 @@ class FlutterRunner {
       for (final entry in dartDefines.entries) {
         args.add('--dart-define=${entry.key}=${entry.value}');
       }
+
+      // Add dart-define-from-file if specified
+      if (config.finalDartDefineFromFile != null) {
+        args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      }
     }
 
     return args;

@@ -1,175 +1,83 @@
-# Testing Guide for AI Agents
+# Testing Guide
 
-## TestHelper Summary
-
-### `test/test_helper.dart` - Core Test Utilities
-
-**Key Features:**
-
-- ✅ `getTestPath()` - Resolve test resource paths
-- ✅ `testFileExists()` - Check if test resource exists
-- ✅ `readYamlFile()` - Read and parse YAML test configs
-- ✅ `copyTestFile()` - Copy test resources to temp directories
-- ✅ `createTempDirWithCleanup()` - Auto-cleanup temp directories
-- ✅ `writeFile()` - Write file with path handling
-
-**Always use TestHelper instead of manual file operations!**
-
----
-
-## Test Structure
-
-```
-test/
-├── test_helper.dart          # Shared test utilities
-├── v0.0.1/                   # Version-specific tests
-├── v0.0.2/
-├── v0.0.3/
-├── v0.0.6/
-│   ├── fluttercraft-test.yaml  # Shared test config
-│   ├── alias_config_test.dart
-│   ├── run_command_test.dart
-│   └── README.md
-├── v0.1.0/                   # v0.1.0 tests
-├── v0.1.1/                   # v0.1.1 tests (flavors, dart_define, no_color)
-│   ├── new_yaml_format_test.dart
-│   ├── flavor_resolution_test.dart
-│   ├── dart_define_test.dart
-│   ├── build_flags_test.dart
-│   ├── flavor_config_test.dart
-│   └── README.md
-└── TEST.md                   # This file
-```
-
-## Using TestHelper
-
-**Always use `test_helper.dart` utilities instead of manual file operations.**
-
-### Common Patterns
-
-#### 1. Setup/Teardown with Temp Directory
-```dart
-late String tempDir;
-late Future<void> Function() cleanup;
-
-setUp(() async {
-  (tempDir, cleanup) = TestHelper.createTempDirWithCleanup('my_test_');
-});
-
-tearDown(() async {
-  await cleanup();
-});
-```
-
-#### 2. Read Test Resource Files
-```dart
-// Read YAML config
-final config = TestHelper.readYamlFile('v0.0.6', 'fluttercraft-test.yaml');
-
-// Copy test file to temp dir
-await TestHelper.copyTestFile('v0.0.6', 'fluttercraft-test.yaml', '$tempDir/config.yaml');
-```
-
-#### 3. Create Test Files
-```dart
-// Write file
-await TestHelper.writeFile(tempDir, 'config.yaml', yamlContent);
-
-// Write pubspec.yaml
-await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
-name: testapp
-version: 1.0.0
-
-environment:
-  sdk: ^3.0.0
-''');
-```
-
-#### 4. Check File Existence
-```dart
-// Check test resource
-if (TestHelper.testFileExists('v0.0.6', 'config.yaml')) { ... }
-```
-
-## Test Organization
-
-### Version-Specific Tests
-- Create `test/v{x.x.x}/` directory for each version
-- Include version-specific test configs in the version directory
-- Add `README.md` in version directory explaining tests
-
-### Shared Test Configs
-- Store reusable test configs in version directories (e.g., `fluttercraft-test.yaml`)
-- Document all test configs in version `README.md`
-- Use `TestHelper.copyTestFile()` to use configs in tests
-
-### Test Naming
-- `{feature}_test.dart` for feature tests
-- `{component}_config_test.dart` for config parsing tests
-- Group related tests with `group()` blocks
-
-## Running Tests
+## Quick Start: Adding New Tests
 
 ```bash
-# All tests
-fvm dart test
+# 1. Create version directory
+mkdir test/v{x.x.x}/
 
-# Specific version
-fvm dart test test/v0.0.6/
+# 2. Write test using temp files pattern
+# See example below
 
-# Specific file
-fvm dart test test/v0.0.6/alias_config_test.dart
+# 3. Run tests
+fvm dart test test/v{x.x.x}/
 
-# With coverage
-fvm dart test --coverage
-
-# Verbose output
-fvm dart test --reporter expanded
+# 4. Update this guide if new patterns emerge
 ```
 
-## Best Practices
-
-1. **Use TestHelper** - Don't write manual file operations
-2. **Clean up** - Always use `createTempDirWithCleanup()` for temp directories
-3. **Shared configs** - Centralize test data in YAML files
-4. **Document** - Update version README when adding tests
-5. **Skip manual tests** - Mark tests requiring external tools with `skip:`
-
-## Example Test Structure
+## Standard Test Pattern
 
 ```dart
+import 'dart:io';
 import 'package:test/test.dart';
-import '../test_helper.dart';
+import 'package:fluttercraft/src/core/build_config.dart';
 
 void main() {
-  group('MyFeature', () {
+  group('MyFeature (v{x.x.x})', () {
     late String tempDir;
-    late Future<void> Function() cleanup;
 
     setUp(() async {
-      (tempDir, cleanup) = TestHelper.createTempDirWithCleanup('my_test_');
+      tempDir = Directory.systemTemp.createTempSync('test_').path;
     });
 
     tearDown(() async {
-      await cleanup();
+      try {
+        await Directory(tempDir).delete(recursive: true);
+      } catch (_) {}
     });
 
     test('does something', () async {
-      // Use TestHelper methods
-      await TestHelper.writeFile(tempDir, 'test.txt', 'content');
-      final content = await TestHelper.readFile(tempDir, 'test.txt');
+      final configFile = File('$tempDir/fluttercraft.yaml');
+      await configFile.writeAsString('''
+build_defaults: &build_defaults
+  app_name: testapp
+  # ... your config
+build:
+  <<: *build_defaults
+''');
+
+      final config = await BuildConfig.load(configPath: configFile.path);
       
-      expect(content, 'content');
+      expect(config.appName, equals('testapp'));
     });
   });
 }
 ```
 
-## Adding New Tests
+## Test Structure
 
-1. Create version directory: `test/v{x.x.x}/`
-2. Add test configs if needed
-3. Write tests using TestHelper
-4. Update version README
-5. Run tests: `fvm dart test test/v{x.x.x}/`
-6. Update this guide if adding new patterns
+```
+test/
+├── v0.1.1/    # Flavors, dart_define, build_defaults
+├── v0.1.2/    # dart_define_from_file
+└── TEST.md    # This file
+```
+
+## Running Tests
+
+```bash
+fvm dart test                        # All tests
+fvm dart test test/v0.1.2/           # Specific version
+fvm dart analyze                     # Check for issues
+```
+
+## Best Practices
+
+✅ **Use temp directories** - Auto-cleanup with `Directory.systemTemp.createTempSync()`  
+✅ **Write inline YAML** - No external test files needed  
+✅ **Group by version** - Create `test/v{x.x.x}/` for each release  
+✅ **Test edge cases** - Null values, overrides, flag interactions  
+
+❌ **Don't** use manual file operations  
+❌ **Don't** skip cleanup in tearDown  
+❌ **Don't** test external tools (mark with `skip:`)

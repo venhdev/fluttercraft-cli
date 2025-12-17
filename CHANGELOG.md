@@ -1,3 +1,18 @@
+## 0.1.2 (2025-12-17)
+
+### ✨ New Features
+- **dart_define_from_file support** - Configure `--dart-define-from-file` parameter in `fluttercraft.yaml`
+  - Global configuration in `build_defaults.dart_define_from_file`
+  - Flavor-specific overrides via `flavors.<flavor>.dart_define_from_file`  
+  - Supports `.env`, `.env.dev`, `.json` file formats
+  - Automatically included in build command when `should_add_dart_define: true`
+
+### 🔧 Updates
+- **gen command** - Updated `flc gen` to include `dart_define_from_file` examples in generated config
+- **YAML structure** - Added `dart_define_from_file: null` to build_defaults section
+
+---
+
 ## 0.1.1 (2025-12-16)
 
 ### ⚠️ Breaking: New YAML Structure
@@ -74,4 +89,3 @@ dart pub global activate fluttercraft
 ## 1.0.0
 
 - Initial version.
-

@@ -115,6 +115,11 @@ build_defaults: &build_defaults
   # Flavor/build-specific dart defines (merged with global)
   dart_define: {}
 
+  # Path to .env or .json file for dart defines (optional)
+  # Can be overridden by flavor-specific dart_define_from_file
+  # Example: .env, .env.dev, config.json
+  dart_define_from_file: null
+
   # ────────────────────────────────────────────────────────────────────────────
   # Build Flags
   # ────────────────────────────────────────────────────────────────────────────
@@ -138,7 +143,7 @@ build:
 
 # ══════════════════════════════════════════════════════════════════════════════
 # FLAVOR OVERRIDES
-# Each flavor can override: name, number, flags, dart_define
+# Each flavor can override: name, number, flags, dart_define, dart_define_from_file
 # ══════════════════════════════════════════════════════════════════════════════
 flavors:
   dev:
@@ -147,6 +152,8 @@ flavors:
     dart_define:
       IS_DEV: true
       LOG_LEVEL: debug
+    # Override with flavor-specific env file (optional)
+    # dart_define_from_file: .env.dev
 
   staging:
     name: $buildName-rc
