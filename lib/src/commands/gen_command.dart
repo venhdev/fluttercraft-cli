@@ -107,10 +107,9 @@ build_defaults: &build_defaults
   target: lib/main.dart
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Dart Define - Always applied when should_add_dart_define = true
+  # Dart Define - Always added to build command
   # ────────────────────────────────────────────────────────────────────────────
-  global_dart_define:
-    APP_NAME: $appName
+  global_dart_define: {}
 
   # Flavor/build-specific dart defines (merged with global)
   dart_define: {}
@@ -124,8 +123,8 @@ build_defaults: &build_defaults
   # Build Flags
   # ────────────────────────────────────────────────────────────────────────────
   flags:
-    # Use dart-define (combines global_dart_define + dart_define)
-    should_add_dart_define: false
+    # Prompt for custom dart-define values during build
+    should_prompt_dart_define: false
     # Run flutter clean before build
     should_clean: false
     # Run build_runner before build
@@ -148,7 +147,7 @@ build:
 flavors:
   dev:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: false
     dart_define:
       IS_DEV: true
       LOG_LEVEL: debug
@@ -158,14 +157,14 @@ flavors:
   staging:
     name: $buildName-rc
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: false
       should_clean: true
     dart_define:
       IS_STAGING: true
 
   prod:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: false
       should_clean: true
       should_build_runner: true
     dart_define:

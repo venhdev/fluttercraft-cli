@@ -27,7 +27,7 @@ build_defaults: &build_defaults
   name: 1.0.0
   number: 1
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
     should_clean: false
     should_build_runner: false
 
@@ -38,7 +38,7 @@ build:
 flavors:
   dev:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
     dart_define:
       IS_DEV: true
       LOG_LEVEL: debug
@@ -47,7 +47,7 @@ flavors:
         final config = await BuildConfig.load(configPath: configFile.path);
 
         expect(config.flavor, 'dev');
-        expect(config.shouldAddDartDefine, true); // overridden by flavor
+        expect(config.shouldPromptDartDefine, true); // overridden by flavor
         expect(config.shouldClean, false); // not overridden
         expect(config.dartDefine['IS_DEV'], true);
         expect(config.dartDefine['LOG_LEVEL'], 'debug');
@@ -70,7 +70,7 @@ flavors:
     name: 1.0.0-rc.1
     number: 99
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
       should_clean: true
     dart_define:
       IS_STAGING: true
@@ -81,7 +81,7 @@ flavors:
         expect(config.flavor, 'staging');
         expect(config.buildName, '1.0.0-rc.1'); // overridden
         expect(config.buildNumber, 99); // overridden
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, true);
         expect(config.dartDefine['IS_STAGING'], true);
       });
@@ -94,7 +94,7 @@ build_defaults: &build_defaults
   name: 1.0.0
   number: 1
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
     should_clean: false
     should_build_runner: false
 
@@ -105,7 +105,7 @@ build:
 flavors:
   prod:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
       should_clean: true
       should_build_runner: true
     dart_define:
@@ -115,7 +115,7 @@ flavors:
         final config = await BuildConfig.load(configPath: configFile.path);
 
         expect(config.flavor, 'prod');
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, true);
         expect(config.shouldBuildRunner, true);
         expect(config.dartDefine['IS_PROD'], true);
@@ -157,7 +157,7 @@ build_defaults: &build_defaults
   name: 1.0.0
   number: 1
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
 
 build:
   <<: *build_defaults
@@ -166,13 +166,13 @@ build:
 flavors:
   dev:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
 ''');
 
         final config = await BuildConfig.load(configPath: configFile.path);
 
         expect(config.flavor, isNull);
-        expect(config.shouldAddDartDefine, false); // no override applied
+        expect(config.shouldPromptDartDefine, false); // no override applied
       });
 
       test('empty string flavor treated as null', () async {
@@ -266,7 +266,7 @@ build_defaults: &build_defaults
   type: aab
   target: lib/main.dart
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
     should_clean: false
     should_build_runner: false
 
@@ -288,7 +288,7 @@ flavors:
         expect(config.buildNumber, 1);
         expect(config.buildType, 'aab');
         expect(config.targetDart, 'lib/main.dart');
-        expect(config.shouldAddDartDefine, false);
+        expect(config.shouldPromptDartDefine, false);
         expect(config.shouldBuildRunner, false);
 
         // This should be overridden

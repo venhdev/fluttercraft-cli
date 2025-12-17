@@ -158,17 +158,15 @@ class FlutterRunner {
     args.add('--build-name=${config.buildName}');
     args.add('--build-number=${config.buildNumber}');
 
-    // Add dart defines if enabled
-    if (config.shouldAddDartDefine) {
-      final dartDefines = config.finalDartDefine;
-      for (final entry in dartDefines.entries) {
-        args.add('--dart-define=${entry.key}=${entry.value}');
-      }
+    // Always add dart defines from config
+    final dartDefines = config.finalDartDefine;
+    for (final entry in dartDefines.entries) {
+      args.add('--dart-define=${entry.key}=${entry.value}');
+    }
 
-      // Add dart-define-from-file if specified
-      if (config.finalDartDefineFromFile != null) {
-        args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
-      }
+    // Add dart-define-from-file if specified
+    if (config.finalDartDefineFromFile != null) {
+      args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
     }
 
     return args;

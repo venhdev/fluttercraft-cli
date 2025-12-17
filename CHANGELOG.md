@@ -1,3 +1,31 @@
+## 0.1.4 (2025-12-17)
+
+### ⚠️ Breaking: Renamed Flag
+- **`should_add_dart_define`** → **`should_prompt_dart_define`**
+  - Config-defined `global_dart_define` + `dart_define` now **always** apply to builds
+  - Flag now only controls interactive prompting for custom dart-defines at build time
+
+### ✨ New Features
+- **Interactive dart-define input** - When `should_prompt_dart_define: true`, prompts for custom `KEY=VALUE` pairs during build
+- **Always apply config dart-defines** - `global_dart_define` and `dart_define` values are always included in build commands
+
+### 🔧 Technical Changes
+- Removed conditional guards from `finalDartDefine` and `finalDartDefineFromFile` getters
+- Added interactive input loop in `build_command.dart`
+- Updated `gen` command template with new flag name
+
+---
+
+## 0.1.3 (2025-12-17)
+
+### 🔧 Enhancements
+- **Shell UI** - Added `dart_define_from_file` display in `info -v` command
+  - Shows file path in "Dart Define" section when configured
+  - Helps users understand where dart define values are sourced from
+  - Display format: `From File    .env.prod` (shown before individual defines)
+
+---
+
 ## 0.1.2 (2025-12-17)
 
 ### ✨ New Features
@@ -5,7 +33,7 @@
   - Global configuration in `build_defaults.dart_define_from_file`
   - Flavor-specific overrides via `flavors.<flavor>.dart_define_from_file`  
   - Supports `.env`, `.env.dev`, `.json` file formats
-  - Automatically included in build command when `should_add_dart_define: true`
+  - Automatically included in build command
 
 ### 🔧 Updates
 - **gen command** - Updated `flc gen` to include `dart_define_from_file` examples in generated config

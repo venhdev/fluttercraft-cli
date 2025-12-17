@@ -9,7 +9,7 @@ build_defaults: &build_defaults
   target: lib/main.dart
   
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
     should_clean: false
     should_build_runner: false
 

@@ -11,7 +11,7 @@ void main() {
 name: 1.0.0-rc.1
 number: 99
 flags:
-  should_add_dart_define: true
+  should_prompt_dart_define: true
   should_clean: true
   should_build_runner: true
 dart_define:
@@ -24,7 +24,7 @@ dart_define:
         expect(config.name, 'staging');
         expect(config.versionName, '1.0.0-rc.1');
         expect(config.buildNumber, 99);
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, true);
         expect(config.shouldBuildRunner, true);
         expect(config.dartDefine['IS_STAGING'], true);
@@ -34,7 +34,7 @@ dart_define:
       test('parses flavor with only flags', () {
         final yamlContent = '''
 flags:
-  should_add_dart_define: true
+  should_prompt_dart_define: true
 ''';
         final yaml = loadYaml(yamlContent) as YamlMap;
         final config = FlavorConfig.fromYaml('dev', yaml);
@@ -42,7 +42,7 @@ flags:
         expect(config.name, 'dev');
         expect(config.versionName, isNull);
         expect(config.buildNumber, isNull);
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, isNull);
         expect(config.shouldBuildRunner, isNull);
         expect(config.dartDefine, isEmpty);
@@ -58,7 +58,7 @@ dart_define:
 
         expect(config.name, 'test');
         expect(config.dartDefine['MY_KEY'], 'my_value');
-        expect(config.shouldAddDartDefine, isNull);
+        expect(config.shouldPromptDartDefine, isNull);
       });
 
       test('parses flavor with version override only', () {
@@ -148,14 +148,14 @@ dart_define:
       test('parses all flags correctly', () {
         final yamlContent = '''
 flags:
-  should_add_dart_define: true
+  should_prompt_dart_define: true
   should_clean: false
   should_build_runner: true
 ''';
         final yaml = loadYaml(yamlContent) as YamlMap;
         final config = FlavorConfig.fromYaml('test', yaml);
 
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, false);
         expect(config.shouldBuildRunner, true);
       });
@@ -168,7 +168,7 @@ flags:
         final yaml = loadYaml(yamlContent) as YamlMap;
         final config = FlavorConfig.fromYaml('test', yaml);
 
-        expect(config.shouldAddDartDefine, isNull);
+        expect(config.shouldPromptDartDefine, isNull);
         expect(config.shouldClean, true);
         expect(config.shouldBuildRunner, isNull);
       });
@@ -181,7 +181,7 @@ dart_define:
         final yaml = loadYaml(yamlContent) as YamlMap;
         final config = FlavorConfig.fromYaml('test', yaml);
 
-        expect(config.shouldAddDartDefine, isNull);
+        expect(config.shouldPromptDartDefine, isNull);
         expect(config.shouldClean, isNull);
         expect(config.shouldBuildRunner, isNull);
       });

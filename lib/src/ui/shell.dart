@@ -222,7 +222,7 @@ class Shell {
       console.subSection('Build Flags');
       console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw);
       console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw);
-      console.keyValue('Should Add Dart Define', ctx.shouldAddDartDefine.toString(), keyWidth: kw);
+      console.keyValue('Prompt Dart Define', ctx.shouldPromptDartDefine.toString(), keyWidth: kw);
     }
 
     // Verbose: Paths
@@ -243,6 +243,12 @@ class Shell {
       // Dart defines (only if present)
       if (ctx.finalDartDefine.isNotEmpty) {
         console.section('Dart Define');
+        
+        // Show dart_define_from_file source first if specified
+        if (ctx.dartDefineFromFile != null) {
+          console.keyValue('From File', ctx.dartDefineFromFile!, keyWidth: kw);
+        }
+        
         for (final entry in ctx.finalDartDefine.entries) {
           console.keyValue(entry.key, entry.value.toString(), keyWidth: kw);
         }

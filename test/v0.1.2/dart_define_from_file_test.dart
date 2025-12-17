@@ -20,7 +20,7 @@ void main() {
         expect(config.finalDartDefineFromFile, equals('.env'));
       });
 
-      test('respects should_add_dart_define flag', () async {
+      test('respects should_prompt_dart_define flag', () async {
         final config = await BuildConfig.load(configPath: configPath);
         
         // Flag is true in our config, so should return value
@@ -77,7 +77,7 @@ void main() {
       test('parses flags correctly', () async {
         final config = await BuildConfig.load(configPath: configPath);
         
-        expect(config.shouldAddDartDefine, isTrue);
+        expect(config.shouldPromptDartDefine, isTrue);
         expect(config.shouldClean, isFalse);
         expect(config.shouldBuildRunner, isFalse);
       });

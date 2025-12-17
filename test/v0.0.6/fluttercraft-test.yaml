@@ -1,9 +1,16 @@
 # Test Configuration for v0.0.6 Alias Tests
 # This file contains reusable test configurations
 
-# Basic app config
-app:
-  name: testapp
+# Build defaults with anchor
+build_defaults: &build_defaults
+  app_name: testapp
+  name: 1.0.0
+  number: 1
+  type: aab
+
+build:
+  <<: *build_defaults
+  flavor: null
 
 # Test aliases for various scenarios
 alias:

@@ -22,7 +22,7 @@ class FlavorConfig {
   final String? dartDefineFromFile;
 
   /// Flag overrides (null means use default)
-  final bool? shouldAddDartDefine;
+  final bool? shouldPromptDartDefine;
   final bool? shouldClean;
   final bool? shouldBuildRunner;
 
@@ -32,7 +32,7 @@ class FlavorConfig {
     this.buildNumber,
     this.dartDefine = const {},
     this.dartDefineFromFile,
-    this.shouldAddDartDefine,
+    this.shouldPromptDartDefine,
     this.shouldClean,
     this.shouldBuildRunner,
   });
@@ -70,7 +70,7 @@ class FlavorConfig {
 
     // Parse flags
     final flags = yaml['flags'] as YamlMap?;
-    final shouldAddDartDefine = _getBoolOrNull(flags, 'should_add_dart_define');
+    final shouldPromptDartDefine = _getBoolOrNull(flags, 'should_prompt_dart_define');
     final shouldClean = _getBoolOrNull(flags, 'should_clean');
     final shouldBuildRunner = _getBoolOrNull(flags, 'should_build_runner');
 
@@ -83,7 +83,7 @@ class FlavorConfig {
       buildNumber: buildNumber,
       dartDefine: dartDefine,
       dartDefineFromFile: dartDefineFromFile,
-      shouldAddDartDefine: shouldAddDartDefine,
+      shouldPromptDartDefine: shouldPromptDartDefine,
       shouldClean: shouldClean,
       shouldBuildRunner: shouldBuildRunner,
     );

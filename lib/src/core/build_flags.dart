@@ -2,8 +2,8 @@
 ///
 /// Extracted from build config to support flavor overrides
 class BuildFlags {
-  /// Use dart-define (combines global_dart_define + dart_define)
-  final bool shouldAddDartDefine;
+  /// Prompt user for custom dart-define values during build
+  final bool shouldPromptDartDefine;
 
   /// Run flutter clean before build
   final bool shouldClean;
@@ -12,7 +12,7 @@ class BuildFlags {
   final bool shouldBuildRunner;
 
   const BuildFlags({
-    this.shouldAddDartDefine = false,
+    this.shouldPromptDartDefine = false,
     this.shouldClean = false,
     this.shouldBuildRunner = false,
   });
@@ -22,12 +22,12 @@ class BuildFlags {
 
   /// Merge with flavor overrides (flavor values take precedence if non-null)
   BuildFlags mergeWith({
-    bool? shouldAddDartDefine,
+    bool? shouldPromptDartDefine,
     bool? shouldClean,
     bool? shouldBuildRunner,
   }) {
     return BuildFlags(
-      shouldAddDartDefine: shouldAddDartDefine ?? this.shouldAddDartDefine,
+      shouldPromptDartDefine: shouldPromptDartDefine ?? this.shouldPromptDartDefine,
       shouldClean: shouldClean ?? this.shouldClean,
       shouldBuildRunner: shouldBuildRunner ?? this.shouldBuildRunner,
     );
@@ -35,6 +35,6 @@ class BuildFlags {
 
   @override
   String toString() {
-    return 'BuildFlags(shouldAddDartDefine: $shouldAddDartDefine, shouldClean: $shouldClean, shouldBuildRunner: $shouldBuildRunner)';
+    return 'BuildFlags(shouldPromptDartDefine: $shouldPromptDartDefine, shouldClean: $shouldClean, shouldBuildRunner: $shouldBuildRunner)';
   }
 }

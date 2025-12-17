@@ -105,10 +105,13 @@ class AppContext {
   /// Build flags
   bool get shouldClean => config.shouldClean;
   bool get shouldBuildRunner => config.shouldBuildRunner;
-  bool get shouldAddDartDefine => config.shouldAddDartDefine;
+  bool get shouldPromptDartDefine => config.shouldPromptDartDefine;
 
   /// Merged dart defines (global + flavor-specific)
   Map<String, dynamic> get finalDartDefine => config.finalDartDefine;
+
+  /// Dart define from file path (if specified)
+  String? get dartDefineFromFile => config.finalDartDefineFromFile;
 
   /// Target dart file
   String get targetDart => config.targetDart;

@@ -55,27 +55,28 @@ Run `flc gen` to create a starter file.
 
 ```yaml
 # Simplified Example
-build:
+build_defaults: &build_defaults
   app_name: myapp
   name: 1.0.0
   type: aab
-  flavor: dev # dev | staging | prod
+  dart_define_from_file: .env
 
-# Global dart defines from file
-dart_define_from_file: .env
+build:
+  <<: *build_defaults
+  flavor: dev # dev | staging | prod
 
 flavors:
   dev:
     dart_define:
       IS_DEV: true
-    # Override with flavor-specific env
     dart_define_from_file: .env.dev
   prod:
     flags:
       should_clean: true
 
-fvm:
-  enabled: true # Auto-detects version from .fvmrc
+environments:
+  fvm:
+    enabled: true # Auto-detects version from .fvmrc
 
 alias:
   gen-assets:

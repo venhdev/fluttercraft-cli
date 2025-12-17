@@ -12,7 +12,7 @@ build_defaults: &build_defaults
   dart_define_from_file: .env
   
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
     should_clean: false
     should_build_runner: false
 

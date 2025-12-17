@@ -28,7 +28,7 @@ build_defaults: &build_defaults
     APP_NAME: myapp
     API_VERSION: v1
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -49,7 +49,7 @@ build_defaults: &build_defaults
   global_dart_define:
     MY_KEY: my_value
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -61,7 +61,7 @@ build:
         expect(config.finalDartDefine['MY_KEY'], 'my_value');
       });
 
-      test('finalDartDefine is empty when should_add_dart_define is false', () async {
+      test('finalDartDefine returns values regardless of should_prompt_dart_define flag', () async {
         final configFile = File('$tempDir/fluttercraft.yaml');
         await configFile.writeAsString('''
 build_defaults: &build_defaults
@@ -69,7 +69,7 @@ build_defaults: &build_defaults
   global_dart_define:
     MY_KEY: my_value
   flags:
-    should_add_dart_define: false
+    should_prompt_dart_define: false
 
 build:
   <<: *build_defaults
@@ -78,7 +78,10 @@ build:
 
         final config = await BuildConfig.load(configPath: configFile.path);
 
-        expect(config.finalDartDefine, isEmpty);
+        // v0.1.4+: finalDartDefine always returns values
+        // Flag only controls interactive prompting, not config-defined dart-defines
+        expect(config.finalDartDefine, isNotEmpty);
+        expect(config.finalDartDefine['MY_KEY'], 'my_value');
       });
     });
 
@@ -94,7 +97,7 @@ build_defaults: &build_defaults
   dart_define:
     BUILD_KEY: build_value
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -120,7 +123,7 @@ build_defaults: &build_defaults
   dart_define:
     MY_KEY: local_override
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -144,7 +147,7 @@ build_defaults: &build_defaults
   dart_define:
     ENV: default
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -153,7 +156,7 @@ build:
 flavors:
   dev:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
     dart_define:
       ENV: development
       IS_DEV: true
@@ -177,7 +180,7 @@ build_defaults: &build_defaults
   dart_define:
     STRING_VAL: "hello world"
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -198,7 +201,7 @@ build_defaults: &build_defaults
     BOOL_TRUE: true
     BOOL_FALSE: false
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -220,7 +223,7 @@ build_defaults: &build_defaults
     INT_VAL: 42
     DOUBLE_VAL: 3.14
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -242,7 +245,7 @@ build_defaults: &build_defaults
     NESTED:
       key: value
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -271,7 +274,7 @@ build_defaults: &build_defaults
       - item1
       - item2
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -299,7 +302,7 @@ build_defaults: &build_defaults
   app_name: myapp
   dart_define: {}
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -318,7 +321,7 @@ build:
 build_defaults: &build_defaults
   app_name: myapp
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults

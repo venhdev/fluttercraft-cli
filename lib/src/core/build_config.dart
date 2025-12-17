@@ -106,8 +106,8 @@ class BuildConfig {
   // Convenience getters for backward compatibility
   // ─────────────────────────────────────────────────────────────────
 
-  /// Whether to add dart defines to build command
-  bool get shouldAddDartDefine => flags.shouldAddDartDefine;
+  /// Whether to prompt for custom dart defines during build
+  bool get shouldPromptDartDefine => flags.shouldPromptDartDefine;
 
   /// Whether to run flutter clean before build
   bool get shouldClean => flags.shouldClean;
@@ -115,24 +115,10 @@ class BuildConfig {
   /// Whether to run build_runner before build
   bool get shouldBuildRunner => flags.shouldBuildRunner;
 
-  // Legacy getters (deprecated, use flags.* instead)
-  @Deprecated('Use shouldAddDartDefine instead')
-  bool get useDartDefine => flags.shouldAddDartDefine;
-
-  @Deprecated('Use shouldClean instead')
-  bool get needClean => flags.shouldClean;
-
-  @Deprecated('Use shouldBuildRunner instead')
-  bool get needBuildRunner => flags.shouldBuildRunner;
-
   /// Final dart define map (merged global + flavor-specific)
   ///
-  /// Only returns values if shouldAddDartDefine is true
+  /// Always returns merged values - config-defined dart-defines always apply
   Map<String, dynamic> get finalDartDefine {
-    if (!flags.shouldAddDartDefine) {
-      return {};
-    }
-
     // Merge: global_dart_define + dart_define (dart_define takes precedence)
     return {...globalDartDefine, ...dartDefine};
   }
@@ -140,12 +126,8 @@ class BuildConfig {
   /// Final dart define from file path
   ///
   /// Returns flavor-specific path if set, otherwise returns global path.
-  /// Only returns a value if shouldAddDartDefine is true.
+  /// Always returns a value if configured - config-defined paths always apply.
   String? get finalDartDefineFromFile {
-    if (!flags.shouldAddDartDefine) {
-      return null;
-    }
-
     // Flavor-specific overrides global
     return dartDefineFromFile ?? globalDartDefineFromFile;
   }
@@ -191,24 +173,7 @@ class BuildConfig {
       throw ConfigParseException('fluttercraft.yaml is empty or invalid');
     }
 
-    return _parseYaml(yaml, root);
-  }
-
-  /// Parse YAML map into BuildConfig
-  ///
-  /// Supports both new format (v0.1.1+) and legacy format
-  static BuildConfig _parseYaml(YamlMap yaml, String projectRoot) {
-    // Check for new format (has build_defaults or environments)
-    final hasNewFormat =
-        yaml.containsKey('build_defaults') ||
-        yaml.containsKey('environments') ||
-        yaml.containsKey('flavors');
-
-    if (hasNewFormat) {
-      return _parseNewFormat(yaml, projectRoot);
-    } else {
-      return _parseLegacyFormat(yaml, projectRoot);
-    }
+    return _parseNewFormat(yaml, root);
   }
 
   /// Parse new YAML format (v0.1.1+)
@@ -247,8 +212,8 @@ class BuildConfig {
     final buildFlags = build?['flags'] as YamlMap?;
     final defaultFlags = buildDefaults?['flags'] as YamlMap?;
 
-    var shouldAddDartDefine = _getBool(buildFlags, 'should_add_dart_define', null) ??
-        _getBool(defaultFlags, 'should_add_dart_define', null) ??
+    var shouldPromptDartDefine = _getBool(buildFlags, 'should_prompt_dart_define', null) ??
+        _getBool(defaultFlags, 'should_prompt_dart_define', null) ??
         false;
     var shouldClean = _getBool(buildFlags, 'should_clean', null) ??
         _getBool(defaultFlags, 'should_clean', null) ??
@@ -314,9 +279,8 @@ class BuildConfig {
         buildNumber = flavorConfig.buildNumber!;
       }
 
-      // Apply flag overrides
-      if (flavorConfig.shouldAddDartDefine != null) {
-        shouldAddDartDefine = flavorConfig.shouldAddDartDefine!;
+      if (flavorConfig.shouldPromptDartDefine != null) {
+        shouldPromptDartDefine = flavorConfig.shouldPromptDartDefine!;
       }
       if (flavorConfig.shouldClean != null) {
         shouldClean = flavorConfig.shouldClean!;
@@ -391,7 +355,7 @@ class BuildConfig {
       targetDart: targetDart,
       outputPath: outputPath,
       flags: BuildFlags(
-        shouldAddDartDefine: shouldAddDartDefine,
+        shouldPromptDartDefine: shouldPromptDartDefine,
         shouldClean: shouldClean,
         shouldBuildRunner: shouldBuildRunner,
       ),
@@ -409,88 +373,6 @@ class BuildConfig {
       keystorePath: keystorePath,
       noColor: noColor,
       flavors: flavors,
-      aliases: aliases,
-    );
-  }
-
-  /// Parse legacy YAML format (pre-v0.1.1)
-  /// Kept for backward compatibility during migration period
-  static BuildConfig _parseLegacyFormat(YamlMap yaml, String projectRoot) {
-    // App section
-    final app = yaml['app'] as YamlMap?;
-    final appName = _getString(app, 'name', 'app');
-
-    // Build section
-    final build = yaml['build'] as YamlMap?;
-    final buildName = _getString(build, 'name', '1.0.0');
-    final buildNumber = _getInt(build, 'number', null) ?? 1;
-    final buildType = _getString(build, 'type', 'aab');
-    final flavor = _getStringOrNull(build, 'flavor');
-    final targetDart = _getString(build, 'target', 'lib/main.dart');
-
-    // Paths section
-    final paths = yaml['paths'] as YamlMap?;
-    final outputPath = _getString(paths, 'output', 'dist');
-
-    // Flags section (legacy names)
-    final flags = yaml['flags'] as YamlMap?;
-    final useDartDefine = _getBool(flags, 'use_dart_define', null) ?? false;
-    final needClean = _getBool(flags, 'need_clean', null) ?? false;
-    final needBuildRunner = _getBool(flags, 'need_build_runner', null) ?? false;
-
-    // FVM section (legacy: top-level)
-    final fvm = yaml['fvm'] as YamlMap?;
-    final useFvm = _getBool(fvm, 'enabled', null) ?? false;
-    var flutterVersion = _getStringOrNull(fvm, 'version');
-    if (useFvm && flutterVersion == null) {
-      flutterVersion = detectFvmVersion(projectRoot);
-    }
-
-    // Shorebird section (legacy: top-level)
-    final shorebird = yaml['shorebird'] as YamlMap?;
-    final useShorebird = _getBool(shorebird, 'enabled', null) ?? false;
-    var shorebirdAppId = _getStringOrNull(shorebird, 'app_id');
-    final shorebirdArtifact = _getStringOrNull(shorebird, 'artifact');
-    final shorebirdNoConfirm = _getBool(shorebird, 'no_confirm', null) ?? true;
-    if (useShorebird && shorebirdAppId == null) {
-      shorebirdAppId = detectShorebirdAppId(projectRoot);
-    }
-
-    // Bundletool section (legacy: top-level)
-    final bundletool = yaml['bundletool'] as YamlMap?;
-    final bundletoolPath = _getStringOrNull(bundletool, 'path');
-    final keystorePath = _getString(
-      bundletool,
-      'keystore',
-      'android/key.properties',
-    );
-
-    // Alias section
-    final aliasMap = yaml['alias'] as YamlMap?;
-    final aliases = _parseAliases(aliasMap);
-
-    return BuildConfig(
-      projectRoot: projectRoot,
-      appName: appName,
-      buildName: buildName,
-      buildNumber: buildNumber,
-      buildType: buildType,
-      flavor: flavor,
-      targetDart: targetDart,
-      outputPath: outputPath,
-      flags: BuildFlags(
-        shouldAddDartDefine: useDartDefine,
-        shouldClean: needClean,
-        shouldBuildRunner: needBuildRunner,
-      ),
-      useFvm: useFvm,
-      flutterVersion: flutterVersion,
-      useShorebird: useShorebird,
-      shorebirdAppId: shorebirdAppId,
-      shorebirdArtifact: shorebirdArtifact,
-      shorebirdNoConfirm: shorebirdNoConfirm,
-      bundletoolPath: bundletoolPath,
-      keystorePath: keystorePath,
       aliases: aliases,
     );
   }

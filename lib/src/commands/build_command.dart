@@ -213,12 +213,12 @@ class BuildCommand extends Command<int> {
     logger.info('Output Path: ${buildConfig.absoluteOutputPath}');
 
     logger.section('Build Flags');
-    logger.info('Should Add Dart Define: ${buildConfig.shouldAddDartDefine}');
+    logger.info('Prompt Dart Define: ${buildConfig.shouldPromptDartDefine}');
     logger.info('Should Clean: ${buildConfig.shouldClean}');
     logger.info('Should Build Runner: ${buildConfig.shouldBuildRunner}');
 
-    // Log dart define if enabled
-    if (buildConfig.shouldAddDartDefine) {
+    // Log dart define (always logged now since they always apply)
+    if (buildConfig.finalDartDefine.isNotEmpty) {
       logger.section('Dart Define');
       final finalDefines = buildConfig.finalDartDefine;
       for (final entry in finalDefines.entries) {
@@ -257,6 +257,40 @@ class BuildCommand extends Command<int> {
     console.blank();
     console.info('  $buildCmd');
     console.blank();
+
+    // Interactive dart-define input (if flag is enabled)
+    final customDartDefines = <String>[];
+    if (buildConfig.shouldPromptDartDefine && argResults?['no-confirm'] != true) {
+      console.section('Custom Dart Defines');
+      console.info('Enter custom dart-define values (format: KEY=VALUE)');
+      console.info('Press Enter on empty line to finish.');
+      console.blank();
+
+      while (true) {
+        stdout.write('dart-define> ');
+        final input = stdin.readLineSync()?.trim() ?? '';
+
+        if (input.isEmpty) break;
+
+        if (input.contains('=')) {
+          customDartDefines.add(input);
+          console.success('Added: --dart-define=$input');
+        } else {
+          console.warning('Invalid format. Use KEY=VALUE');
+        }
+      }
+
+      // Append custom dart defines to build command
+      if (customDartDefines.isNotEmpty) {
+        for (final define in customDartDefines) {
+          buildCmd += ' --dart-define=$define';
+        }
+        console.blank();
+        console.info('Updated command:');
+        console.info('  $buildCmd');
+        console.blank();
+      }
+    }
 
     // Confirmation with edit option
     if (argResults?['no-confirm'] != true) {

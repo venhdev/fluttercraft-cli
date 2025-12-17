@@ -16,7 +16,7 @@ build_defaults: &build_defaults
     BUILD_KEY: build_value
   
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
     should_clean: false
     should_build_runner: false
 
@@ -27,7 +27,7 @@ build:
 flavors:
   dev:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
     dart_define:
       IS_DEV: true
       LOG_LEVEL: debug
@@ -36,14 +36,14 @@ flavors:
   staging:
     name: 1.0.0-rc
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
       should_clean: true
     dart_define:
       IS_STAGING: true
   
   prod:
     flags:
-      should_add_dart_define: true
+      should_prompt_dart_define: true
       should_clean: true
       should_build_runner: true
     dart_define:

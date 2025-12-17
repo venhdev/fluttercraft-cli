@@ -29,7 +29,7 @@ build_defaults: &build_defaults
   type: apk
   target: lib/main_dev.dart
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
     should_clean: false
     should_build_runner: true
 
@@ -45,7 +45,7 @@ build:
         expect(config.buildNumber, 10);
         expect(config.buildType, 'apk');
         expect(config.targetDart, 'lib/main_dev.dart');
-        expect(config.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
         expect(config.shouldClean, false);
         expect(config.shouldBuildRunner, true);
       });
@@ -227,13 +227,13 @@ paths:
     });
 
     group('flags with new names', () {
-      test('parses should_add_dart_define flag', () async {
+      test('parses should_prompt_dart_define flag', () async {
         final configFile = File('$tempDir/fluttercraft.yaml');
         await configFile.writeAsString('''
 build_defaults: &build_defaults
   app_name: testapp
   flags:
-    should_add_dart_define: true
+    should_prompt_dart_define: true
 
 build:
   <<: *build_defaults
@@ -242,8 +242,8 @@ build:
 
         final config = await BuildConfig.load(configPath: configFile.path);
 
-        expect(config.shouldAddDartDefine, true);
-        expect(config.flags.shouldAddDartDefine, true);
+        expect(config.shouldPromptDartDefine, true);
+        expect(config.flags.shouldPromptDartDefine, true);
       });
 
       test('parses should_clean flag', () async {
@@ -297,7 +297,7 @@ build:
 
         final config = await BuildConfig.load(configPath: configFile.path);
 
-        expect(config.shouldAddDartDefine, false);
+        expect(config.shouldPromptDartDefine, false);
         expect(config.shouldClean, false);
         expect(config.shouldBuildRunner, false);
       });
