@@ -1,0 +1,41 @@
+# fluttercraft.yaml - Test Configuration for v0.1.2
+# Tests: dart_define_from_file support
+
+build_defaults: &build_defaults
+  app_name: testapp
+  name: 1.0.0
+  number: 1
+  type: aab
+  target: lib/main.dart
+  
+  # Global dart define from file
+  dart_define_from_file: .env
+  
+  flags:
+    should_add_dart_define: true
+    should_clean: false
+    should_build_runner: false
+
+build:
+  <<: *build_defaults
+  flavor: null
+
+flavors:
+  dev:
+    dart_define_from_file: .env.dev
+    dart_define:
+      IS_DEV: true
+  
+  prod:
+    dart_define_from_file: .env.prod
+    flags:
+      should_clean: true
+
+environments:
+  fvm:
+    enabled: false
+  shorebird:
+    enabled: false
+
+paths:
+  output: dist

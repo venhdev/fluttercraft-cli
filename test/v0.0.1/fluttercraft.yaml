@@ -1,0 +1,24 @@
+# Legacy format config for v0.0.1 tests
+app:
+  name: mobile_build_test
+
+build:
+  name: 1.0.0
+  number: 1
+  type: aab
+  flavor: null
+  target: lib/main.dart
+
+paths:
+  output: dist
+
+flags:
+  use_dart_define: false
+  need_clean: false
+  need_build_runner: false
+
+fvm:
+  enabled: false
+
+shorebird:
+  enabled: false
