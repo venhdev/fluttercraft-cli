@@ -1,3 +1,167 @@
+## 0.2.4 (2025-12-30)
+
+### 🐛 Critical Bug Fixes
+- **Edited Command Execution** - Fixed critical bug where manually edited build commands were never executed
+  - Commands edited via `(e)dit command` option were validated and displayed but ignored during execution
+  - Code was rebuilding commands from config instead of using the edited version
+  - Now properly detects edited commands and executes them as provided by user
+  - Added `buildFromCommand()` method in FlutterRunner for raw command execution
+  - Shows "Final Command" section before execution so users see exactly what will run
+
+### ✨ Enhancements
+- **Command Execution Transparency** - Show final command immediately before execution
+  - Displays "(Custom edited command - not generated from config)" when applicable
+  - Logs whether command was manually edited by user in build log
+  - Helps users verify the exact command being executed
+
+- **Improved dart_define_from_file Debugging** - Enhanced validation and logging
+  - Shows both configured path and resolved absolute path
+  - Displays clear warning if file not found: "⚠ File not found!"
+  - Explains that missing file will not be included in build command
+  - Provides actionable guidance: "Create the file or update fluttercraft.yaml to fix this"
+
+---
+
+## 0.2.3 (2025-12-30)
+
+### 🐛 Bug Fixes
+- **Shorebird Error Detection** - Fixed false success reporting when Shorebird commands fail
+  - Now detects Shorebird error patterns ("Missing argument", "Usage: shorebird") even when exit code is 0
+  - Prevents misleading "BUILD COMPLETE" message when build actually failed
+  - Shows appropriate error message: "Build failed: Shorebird command error detected"
+
+### ✨ Enhancements
+- **Command Edit Validation** - Added validation when manually editing build commands
+  - Warns if `--build-name` is missing from Flutter arguments (after `--`)
+  - Warns if `--build-number` is missing from Flutter arguments (after `--`)
+  - Validates presence of `--` separator for Shorebird commands
+  - Helps prevent accidental removal of required flags when adding custom arguments
+
+- **dart_define_from_file Visibility** - Enhanced logging and validation
+  - Now displays `dart_define_from_file` path in build log and console output
+  - Shows file existence status (✓ or ✗ NOT FOUND) in console
+  - Displays source: "(from flavor)" or "(from defaults)" when flavor is active
+  - Validates file existence and warns if configured file is missing
+  - Helps users verify configuration is loaded correctly and catch missing files early
+
+---
+
+## 0.2.2 (2025-12-22)
+
+### 🐛 Bug Fixes
+- **Shorebird Command Structure** - Fixed incorrect `--` separator placement in Shorebird commands
+  - Corrected per official Shorebird documentation: only management flags (`--artifact`, `--no-confirm`, `--flutter-version`) go before `--`
+  - All Flutter build flags (`--build-name`, `--build-number`, `--flavor`, `--target`, `--dart-define`, `--dart-define-from-file`) now correctly placed after `--` separator
+  - Removed duplicate flags that were appearing both before and after `--`
+  - **Before (incorrect)**: `shorebird release android --artifact=apk --build-name=1.0.0 -- --build-name=1.0.0 --dart-define=foo=bar`
+  - **After (correct)**: `shorebird release android --artifact=apk --no-confirm --flutter-version=3.35.3 -- --build-name=1.0.0 --build-number=1 --dart-define-from-file=.env`
+
+---
+
+## 0.2.1 (2025-12-22)
+
+### ✨ New Features
+- **Dual Config Loading** - Support for both separate `fluttercraft.yaml` and embedded `pubspec.yaml` configuration
+  - **Priority Chain**: `fluttercraft.yaml` (highest) → `pubspec.yaml` with `fluttercraft:` section → sensible defaults
+  - **Config Source Tracking**: New `configSource` field in `AppContext` shows where config was loaded from
+  - **No Auto-Generation**: Tool works with intelligent defaults when no config exists - no file creation
+  - **Embedded Config Example**: Added `doc/examples/pubspec_embedded.yaml` showing how to embed config in `pubspec.yaml`
+
+### ⚠️ BREAKING CHANGES
+- **Root Key Requirement**: All config files (both `fluttercraft.yaml` and embedded) MUST now have `fluttercraft:` as root key
+  
+  **Old Format (No longer supported):**
+  ```yaml
+  build_defaults: &build_defaults
+    platform: aab
+  build:
+    <<: *build_defaults
+  ```
+  
+  **New Format (Required):**
+  ```yaml
+  fluttercraft:
+    build_defaults: &build_defaults
+      platform: aab
+    build:
+      <<: *build_defaults
+  ```
+
+### 🔄 Migration Guide
+**Option 1: Auto-regenerate (Recommended)**
+```bash
+fluttercraft gen -f
+```
+
+**Option 2: Manual Update**
+1. Add `fluttercraft:` at the beginning of your `fluttercraft.yaml`
+2. Indent all existing content by 2 spaces
+
+### 🛠️ Improvements
+- **Clear Error Messages**: Helpful error messages with migration guidance when root key is missing
+- **YAML Anchors**: Continue to work correctly with the new indented structure
+- **Consistent Structure**: Same format whether using separate file or embedded config
+
+---
+
+## 0.2.0 (2025-12-22)
+
+### 🎨 UI Improvements
+- **Rich CLI Output**: Enhanced shell UI with colored borders, spinner animations, and better formatted tables.
+- **Improved Summary**: Build summary now shows detailed information in a styled box.
+
+### 🛠️ Fixes
+- **Platform Handling**: Replaced deprecated `buildType` with `platform` internally.
+- **Console Colors**: Fixed potential crash with undefined colors in prompts.
+- **Validation**: Added explicit validation for supported platforms (Mobile only for now).
+
+---
+
+## 0.1.9 (2025-12-21)
+
+### 🧹 Housekeeping
+- **Removed Legacy Config**: Removed obsolete `.buildenv` system and related documentation scripts (`gen-buildenv.ps1`, `build.ps1`, `buildenv.base`).
+- **Documentation**: Updated `doc/proj_structure.md` to accurately reflect the current project structure, including new core modules and tests.
+
+---
+
+## 0.1.8 (2025-12-19)
+
+### 🐛 Bug Fixes
+- **Shorebird Integration**: Fixed missing `--flutter-version` flag in Shorebird command generation when FVM is used.
+- **Config UI**: Fixed `info -v` not displaying `dart_define_from_file` when the dart define map is empty.
+
+---
+
+## 0.1.7 (2025-12-19)
+
+### ✨ New Features
+- **Run Aliases** - Enhanced `run` command:
+  - **Direct Execution** - Run aliases directly in shell (e.g. `> my_alias`)
+  - **Runtime Parameters** - Support for `{0}` (positional) and `{key}` (named) placeholders.
+  - **Preview** - Shows command preview before execution
+  - **Auto-list** - `flc run` lists available aliases
+
+---
+
+## 0.1.6 (2025-12-18)
+
+### ✨ New Features
+- **No Review Option** - Added `no_review` config and CLI flag to skip final build confirmation
+  - `build --no-review` or `build -y` skips the "Do you want to proceed?" prompt
+  - Configurable via `build.no_review: true` in `fluttercraft.yaml`
+
+---
+
+## 0.1.5 (2025-12-18)
+
+### 🔧 Improvements
+- **Output path** - Changed default from `dist/` to `.fluttercraft/dist/`
+- **Auto gitignore** - `flc gen` now adds `.fluttercraft/` to `.gitignore`
+- **Console edge cases** - `choose()` now handles empty options and invalid defaultIndex
+
+---
+
 ## 0.1.4 (2025-12-17)
 
 ### ⚠️ Breaking: Renamed Flag

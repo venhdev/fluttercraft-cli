@@ -6,6 +6,10 @@ import 'package:path/path.dart' as p;
 import 'pubspec_parser.dart';
 import 'build_flags.dart';
 import 'flavor_config.dart';
+import 'helpers/yaml_helpers.dart';
+import 'helpers/dart_define_parser.dart';
+import 'helpers/alias_parser.dart';
+import 'helpers/environment_detectors.dart';
 
 /// Custom command alias definition
 class CommandAlias {
@@ -31,11 +35,13 @@ class BuildConfig {
   final String appName;
 
   // Core build settings
-  final String buildName;
-  final int buildNumber;
-  final String buildType;
+  final String? buildName;
+  final int? buildNumber;
+  final String platform;
   final String? flavor;
   final String targetDart;
+  final bool noReview;
+  final List<String> args;
 
   // Paths
   final String outputPath;
@@ -78,11 +84,12 @@ class BuildConfig {
   BuildConfig({
     required this.projectRoot,
     required this.appName,
-    required this.buildName,
-    required this.buildNumber,
-    required this.buildType,
+    this.buildName,
+    this.buildNumber,
+    required this.platform,
     this.flavor,
     required this.targetDart,
+    this.noReview = false,
     required this.outputPath,
     required this.flags,
     this.globalDartDefine = const {},
@@ -100,6 +107,7 @@ class BuildConfig {
     this.noColor = false,
     this.flavors = const {},
     this.aliases = const {},
+    this.args = const [],
   });
 
   // ─────────────────────────────────────────────────────────────────
@@ -132,79 +140,168 @@ class BuildConfig {
     return dartDefineFromFile ?? globalDartDefineFromFile;
   }
 
-  /// Load configuration from fluttercraft.yaml
+  /// Load configuration from fluttercraft.yaml or embedded pubspec.yaml
   ///
-  /// If [pubspecInfo] is provided and fluttercraft.yaml doesn't exist,
-  /// creates a default config using pubspec data.
+  /// Priority chain:
+  /// 1. fluttercraft.yaml (if exists) - highest priority
+  /// 2. pubspec.yaml → fluttercraft: section (embedded)
+  /// 3. Defaults from pubspec.yaml metadata
+  ///
+  /// Both separate and embedded configs MUST have 'fluttercraft:' root key.
   static Future<BuildConfig> load({
     String? configPath,
     PubspecInfo? pubspecInfo,
     String? projectRoot,
   }) async {
     final root = projectRoot ?? Directory.current.path;
-    final path = configPath ?? p.join(root, 'fluttercraft.yaml');
 
-    final file = File(path);
-    if (!await file.exists()) {
-      // Return default config with pubspec fallback
-      return BuildConfig(
-        projectRoot: root,
-        appName: pubspecInfo?.name ?? 'app',
-        buildName: pubspecInfo?.buildName ?? '1.0.0',
-        buildNumber:
-            pubspecInfo != null
-                ? int.tryParse(pubspecInfo.buildNumber) ?? 1
-                : 1,
-        buildType: 'aab',
-        targetDart: 'lib/main.dart',
-        outputPath: 'dist',
-        flags: BuildFlags.defaults,
-        useFvm: false,
-        useShorebird: false,
-        shorebirdNoConfirm: true,
-        keystorePath: 'android/key.properties',
-      );
+    // Load pubspec info first (always needed)
+    if (pubspecInfo == null) {
+      final pubspecParser = PubspecParser(projectRoot: root);
+      pubspecInfo = await pubspecParser.parse();
     }
 
-    final content = await file.readAsString();
+    // ═══════════════════════════════════════════════════════════════
+    // PRIORITY 1: Explicit configPath (for testing/override)
+    // ═══════════════════════════════════════════════════════════════
+    if (configPath != null) {
+      return _loadFromFile(configPath, root, pubspecInfo);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PRIORITY 2: fluttercraft.yaml (separate file - HIGHEST PRIORITY)
+    // ═══════════════════════════════════════════════════════════════
+    final fluttercraftYamlPath = p.join(root, 'fluttercraft.yaml');
+    if (await File(fluttercraftYamlPath).exists()) {
+      return _loadFromFile(fluttercraftYamlPath, root, pubspecInfo);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PRIORITY 3: pubspec.yaml → fluttercraft: section (embedded)
+    // ═══════════════════════════════════════════════════════════════
+    final pubspecYamlPath = p.join(root, 'pubspec.yaml');
+    if (await File(pubspecYamlPath).exists()) {
+      final pubspecContent = await File(pubspecYamlPath).readAsString();
+      final pubspecYaml = loadYaml(pubspecContent) as YamlMap?;
+
+      if (pubspecYaml != null && pubspecYaml.containsKey('fluttercraft')) {
+        final fluttercraftSection = pubspecYaml['fluttercraft'] as YamlMap?;
+        if (fluttercraftSection != null) {
+          // Parse embedded config directly
+          return _parseNewFormat(
+            fluttercraftSection,
+            root,
+            pubspecInfo: pubspecInfo,
+          );
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PRIORITY 4: No config found - use defaults from pubspec.yaml
+    // DO NOT auto-generate any files - just return sensible defaults
+    // ═══════════════════════════════════════════════════════════════
+    return _createDefaultConfig(root, pubspecInfo);
+  }
+
+  /// Load config from file and enforce fluttercraft: root key
+  static Future<BuildConfig> _loadFromFile(
+    String path,
+    String root,
+    PubspecInfo? pubspecInfo,
+  ) async {
+    final content = await File(path).readAsString();
     final yaml = loadYaml(content) as YamlMap?;
 
     if (yaml == null) {
-      throw ConfigParseException('fluttercraft.yaml is empty or invalid');
+      throw ConfigParseException('Config file is empty or invalid: $path');
     }
 
-    return _parseNewFormat(yaml, root);
+    // Expect 'fluttercraft:' root key (required for all config files)
+    if (!yaml.containsKey('fluttercraft')) {
+      throw ConfigParseException(
+        'Config file must have "fluttercraft:" as root key.\n'
+        'Found keys: ${yaml.keys.join(", ")}\n\n'
+        'Migration: Run "fluttercraft gen -f" to regenerate config,\n'
+        'or manually add "fluttercraft:" root key and indent all content.',
+      );
+    }
+
+    final fluttercraftSection = yaml['fluttercraft'] as YamlMap;
+    return _parseNewFormat(fluttercraftSection, root, pubspecInfo: pubspecInfo);
+  }
+
+  /// Create default config when no config file exists
+  static BuildConfig _createDefaultConfig(
+    String root,
+    PubspecInfo? pubspecInfo,
+  ) {
+    // Return minimal config with pubspec metadata + sensible defaults
+    return BuildConfig(
+      projectRoot: root,
+      appName: pubspecInfo?.name ?? 'app',
+      buildName: null, // Let Flutter read from pubspec.yaml
+      buildNumber: null,
+      platform: 'aab',
+      targetDart: 'lib/main.dart',
+      noReview: false,
+      outputPath: '.fluttercraft/dist',
+      flags: BuildFlags.defaults,
+      useFvm: false,
+      useShorebird: false,
+      shorebirdNoConfirm: true,
+      keystorePath: 'android/key.properties',
+      args: [],
+    );
   }
 
   /// Parse new YAML format (v0.1.1+)
-  static BuildConfig _parseNewFormat(YamlMap yaml, String projectRoot) {
+  static BuildConfig _parseNewFormat(
+    YamlMap yaml,
+    String projectRoot, {
+    PubspecInfo? pubspecInfo,
+  }) {
     // ─────────────────────────────────────────────────────────────────
     // Parse build_defaults (base configuration)
     // ─────────────────────────────────────────────────────────────────
     final buildDefaults = yaml['build_defaults'] as YamlMap?;
 
     // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────
     // Parse build section (may inherit from build_defaults via YAML anchor)
     // ─────────────────────────────────────────────────────────────────
     final build = yaml['build'] as YamlMap?;
 
-    // Merge build_defaults and build (build takes precedence)
-    final appName = _getStringOrNull(build, 'app_name') ??
-        _getStringOrNull(buildDefaults, 'app_name') ??
-        'app';
-    var buildName = _getStringOrNull(build, 'name') ??
-        _getStringOrNull(buildDefaults, 'name') ??
-        '1.0.0';
-    var buildNumber = _getInt(build, 'number', null) ??
-        _getInt(buildDefaults, 'number', null) ??
-        1;
-    final buildType = _getStringOrNull(build, 'type') ??
-        _getStringOrNull(buildDefaults, 'type') ??
+    // ═══════════════════════════════════════════════════════════════
+    // DO NOT READ APP METADATA - Let Flutter read from pubspec.yaml
+    // ═══════════════════════════════════════════════════════════════
+    final appName = pubspecInfo?.name ?? 'app';
+    // Set to null so Flutter reads buildName/buildNumber directly from pubspec.yaml
+    final String? buildName = null;
+    final int? buildNumber = null;
+
+    // ═══════════════════════════════════════════════════════════════
+    // READ BUILD SETTINGS FROM YAML (NO APP METADATA)
+    // ═══════════════════════════════════════════════════════════════
+    var platform = YamlHelpers.getStringOrNull(build, 'platform') ??
+        YamlHelpers.getStringOrNull(buildDefaults, 'platform') ??
+        // Fallback to old 'type' key if platform not found
+        YamlHelpers.getStringOrNull(build, 'type') ??
+        YamlHelpers.getStringOrNull(buildDefaults, 'type') ??
         'aab';
-    final flavor = _getStringOrNull(build, 'flavor');
-    final targetDart = _getStringOrNull(build, 'target') ??
-        _getStringOrNull(buildDefaults, 'target') ??
+        
+    final flavor = YamlHelpers.getStringOrNull(build, 'flavor');
+    final targetDart = YamlHelpers.getStringOrNull(build, 'target') ??
+        YamlHelpers.getStringOrNull(buildDefaults, 'target') ??
+        YamlHelpers.getStringOrNull(buildDefaults, 'target') ??
         'lib/main.dart';
+    final noReview = YamlHelpers.getBool(build, 'no_review', null) ??
+        YamlHelpers.getBool(buildDefaults, 'no_review', null) ??
+        false;
+    
+    final args = YamlHelpers.getList(build, 'args') ?? 
+        YamlHelpers.getList(buildDefaults, 'args') ?? 
+        [];
 
     // ─────────────────────────────────────────────────────────────────
     // Parse flags from build or build_defaults
@@ -212,24 +309,24 @@ class BuildConfig {
     final buildFlags = build?['flags'] as YamlMap?;
     final defaultFlags = buildDefaults?['flags'] as YamlMap?;
 
-    var shouldPromptDartDefine = _getBool(buildFlags, 'should_prompt_dart_define', null) ??
-        _getBool(defaultFlags, 'should_prompt_dart_define', null) ??
+    var shouldPromptDartDefine = YamlHelpers.getBool(buildFlags, 'should_prompt_dart_define', null) ??
+        YamlHelpers.getBool(defaultFlags, 'should_prompt_dart_define', null) ??
         false;
-    var shouldClean = _getBool(buildFlags, 'should_clean', null) ??
-        _getBool(defaultFlags, 'should_clean', null) ??
+    var shouldClean = YamlHelpers.getBool(buildFlags, 'should_clean', null) ??
+        YamlHelpers.getBool(defaultFlags, 'should_clean', null) ??
         false;
-    var shouldBuildRunner = _getBool(buildFlags, 'should_build_runner', null) ??
-        _getBool(defaultFlags, 'should_build_runner', null) ??
+    var shouldBuildRunner = YamlHelpers.getBool(buildFlags, 'should_build_runner', null) ??
+        YamlHelpers.getBool(defaultFlags, 'should_build_runner', null) ??
         false;
 
     // ─────────────────────────────────────────────────────────────────
     // Parse dart_define
     // ─────────────────────────────────────────────────────────────────
-    final globalDartDefine = _parseDartDefine(
+    final globalDartDefine = DartDefineParser.parse(
       buildDefaults?['global_dart_define'] as YamlMap? ??
           build?['global_dart_define'] as YamlMap?,
     );
-    var dartDefine = _parseDartDefine(
+    var dartDefine = DartDefineParser.parse(
       build?['dart_define'] as YamlMap? ??
           buildDefaults?['dart_define'] as YamlMap?,
     );
@@ -237,10 +334,10 @@ class BuildConfig {
     // ─────────────────────────────────────────────────────────────────
     // Parse dart_define_from_file
     // ─────────────────────────────────────────────────────────────────
-    final globalDartDefineFromFile = _getStringOrNull(buildDefaults, 'dart_define_from_file') ??
-        _getStringOrNull(build, 'dart_define_from_file');
-    var dartDefineFromFile = _getStringOrNull(build, 'dart_define_from_file') ??
-        _getStringOrNull(buildDefaults, 'dart_define_from_file');
+    final globalDartDefineFromFile = YamlHelpers.getStringOrNull(buildDefaults, 'dart_define_from_file') ??
+        YamlHelpers.getStringOrNull(build, 'dart_define_from_file');
+    var dartDefineFromFile = YamlHelpers.getStringOrNull(build, 'dart_define_from_file') ??
+        YamlHelpers.getStringOrNull(buildDefaults, 'dart_define_from_file');
 
     // ─────────────────────────────────────────────────────────────────
     // Parse flavors
@@ -271,16 +368,16 @@ class BuildConfig {
 
       final flavorConfig = flavors[flavor]!;
 
-      // Apply version overrides
-      if (flavorConfig.versionName != null) {
-        buildName = flavorConfig.versionName!;
-      }
-      if (flavorConfig.buildNumber != null) {
-        buildNumber = flavorConfig.buildNumber!;
-      }
+      // ═══════════════════════════════════════════════════════════════
+      // NO VERSION OVERRIDES - Flavors cannot override app metadata
+      // ═══════════════════════════════════════════════════════════════
 
       if (flavorConfig.shouldPromptDartDefine != null) {
         shouldPromptDartDefine = flavorConfig.shouldPromptDartDefine!;
+      }
+      
+      if (flavorConfig.platform != null) {
+        platform = flavorConfig.platform!;
       }
       if (flavorConfig.shouldClean != null) {
         shouldClean = flavorConfig.shouldClean!;
@@ -291,6 +388,11 @@ class BuildConfig {
 
       // Merge dart_define (flavor takes precedence)
       dartDefine = {...dartDefine, ...flavorConfig.dartDefine};
+
+      // Append flavor-specific args
+      if (flavorConfig.args != null) {
+        args.addAll(flavorConfig.args!);
+      }
 
       // Override dart_define_from_file if flavor specifies it
       if (flavorConfig.dartDefineFromFile != null) {
@@ -305,54 +407,55 @@ class BuildConfig {
 
     // FVM
     final fvm = environments?['fvm'] as YamlMap?;
-    final useFvm = _getBool(fvm, 'enabled', null) ?? false;
-    var flutterVersion = _getStringOrNull(fvm, 'version');
+    final useFvm = YamlHelpers.getBool(fvm, 'enabled', null) ?? false;
+    var flutterVersion = YamlHelpers.getStringOrNull(fvm, 'version');
     if (useFvm && flutterVersion == null) {
-      flutterVersion = detectFvmVersion(projectRoot);
+      flutterVersion = EnvironmentDetectors.detectFvmVersion(projectRoot);
     }
 
     // Shorebird
     final shorebird = environments?['shorebird'] as YamlMap?;
-    final useShorebird = _getBool(shorebird, 'enabled', null) ?? false;
-    var shorebirdAppId = _getStringOrNull(shorebird, 'app_id');
-    final shorebirdArtifact = _getStringOrNull(shorebird, 'artifact');
-    final shorebirdNoConfirm = _getBool(shorebird, 'no_confirm', null) ?? true;
+    final useShorebird = YamlHelpers.getBool(shorebird, 'enabled', null) ?? false;
+    var shorebirdAppId = YamlHelpers.getStringOrNull(shorebird, 'app_id');
+    final shorebirdArtifact = YamlHelpers.getStringOrNull(shorebird, 'artifact');
+    final shorebirdNoConfirm = YamlHelpers.getBool(shorebird, 'no_confirm', null) ?? true;
     if (useShorebird && shorebirdAppId == null) {
-      shorebirdAppId = detectShorebirdAppId(projectRoot);
+      shorebirdAppId = EnvironmentDetectors.detectShorebirdAppId(projectRoot);
     }
 
     // Bundletool
     final bundletool = environments?['bundletool'] as YamlMap?;
-    final bundletoolPath = _getStringOrNull(bundletool, 'path');
-    final keystorePath = _getString(
+    final bundletoolPath = YamlHelpers.getStringOrNull(bundletool, 'path');
+    final keystorePath = YamlHelpers.getString(
       bundletool,
       'keystore',
       'android/key.properties',
     );
 
     // Console settings
-    final noColor = _getBool(environments, 'no_color', null) ?? false;
+    final noColor = YamlHelpers.getBool(environments, 'no_color', null) ?? false;
 
     // ─────────────────────────────────────────────────────────────────
     // Parse paths section
     // ─────────────────────────────────────────────────────────────────
     final paths = yaml['paths'] as YamlMap?;
-    final outputPath = _getString(paths, 'output', 'dist');
+    final outputPath = YamlHelpers.getString(paths, 'output', '.fluttercraft/dist');
 
     // ─────────────────────────────────────────────────────────────────
     // Parse alias section
     // ─────────────────────────────────────────────────────────────────
     final aliasMap = yaml['alias'] as YamlMap?;
-    final aliases = _parseAliases(aliasMap);
+    final aliases = AliasParser.parse(aliasMap);
 
     return BuildConfig(
       projectRoot: projectRoot,
       appName: appName,
       buildName: buildName,
       buildNumber: buildNumber,
-      buildType: buildType,
+      platform: platform,
       flavor: flavor,
       targetDart: targetDart,
+      noReview: noReview,
       outputPath: outputPath,
       flags: BuildFlags(
         shouldPromptDartDefine: shouldPromptDartDefine,
@@ -374,163 +477,23 @@ class BuildConfig {
       noColor: noColor,
       flavors: flavors,
       aliases: aliases,
+      args: args,
     );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // YAML parsing helpers
-  // ─────────────────────────────────────────────────────────────────
-
-  static String _getString(YamlMap? map, String key, String? defaultValue) {
-    if (map == null) return defaultValue ?? '';
-    final value = map[key];
-    if (value == null) return defaultValue ?? '';
-    return value.toString();
-  }
-
-  static String? _getStringOrNull(YamlMap? map, String key) {
-    if (map == null) return null;
-    final value = map[key];
-    if (value == null || value.toString() == 'null') return null;
-    return value.toString();
-  }
-
-  static int? _getInt(YamlMap? map, String key, int? defaultValue) {
-    if (map == null) return defaultValue;
-    final value = map[key];
-    if (value == null) return defaultValue;
-    if (value is int) return value;
-    return int.tryParse(value.toString()) ?? defaultValue;
-  }
-
-  static bool? _getBool(YamlMap? map, String key, bool? defaultValue) {
-    if (map == null) return defaultValue;
-    final value = map[key];
-    if (value == null) return defaultValue;
-    if (value is bool) return value;
-    return value.toString().toLowerCase() == 'true';
-  }
-
-  static Map<String, dynamic> _parseDartDefine(YamlMap? dartDefineMap) {
-    if (dartDefineMap == null) return {};
-
-    final result = <String, dynamic>{};
-    for (final entry in dartDefineMap.entries) {
-      final key = entry.key.toString();
-      final value = entry.value;
-
-      // Validate primitive types only
-      if (value != null && value is! String && value is! bool && value is! num) {
-        throw ConfigParseException(
-          'dart_define.$key must be a primitive (string, bool, or number), '
-          'got ${value.runtimeType}',
-        );
-      }
-
-      result[key] = value;
-    }
-
-    return result;
-  }
-
-  static Map<String, CommandAlias> _parseAliases(YamlMap? aliasMap) {
-    if (aliasMap == null) return {};
-
-    final result = <String, CommandAlias>{};
-
-    for (final entry in aliasMap.entries) {
-      final name = entry.key.toString();
-      final config = entry.value as YamlMap?;
-
-      if (config == null) continue;
-
-      final cmds = config['cmds'];
-      if (cmds == null) continue;
-
-      final commands = <String>[];
-      if (cmds is YamlList) {
-        for (final cmd in cmds) {
-          commands.add(cmd.toString());
-        }
-      }
-
-      if (commands.isNotEmpty) {
-        result[name] = CommandAlias(name: name, commands: commands);
-      }
-    }
-
-    return result;
-  }
-
-  /// Detect FVM version from .fvmrc file
-  ///
-  /// Reads the .fvmrc JSON file in the project root and extracts the Flutter version.
-  /// Also checks .fvm/version file as a fallback.
-  /// Returns null if neither file exists or cannot be parsed.
-  static String? detectFvmVersion(String projectRoot) {
-    try {
-      final fvmrcPath = p.join(projectRoot, '.fvmrc');
-      final fvmrcFile = File(fvmrcPath);
-
-      if (!fvmrcFile.existsSync()) {
-        return null;
-      }
-
-      final content = fvmrcFile.readAsStringSync();
-      final json = loadYaml(content) as YamlMap?;
-
-      if (json == null) {
-        return null;
-      }
-
-      final version = json['flutter'];
-      return version?.toString();
-    } catch (e) {
-      // If we can't read or parse .fvmrc, return null
-      return null;
-    }
-  }
-
-  /// Detect Shorebird app_id from shorebird.yaml file
-  ///
-  /// Reads the shorebird.yaml file in the project root and extracts the app_id.
-  /// Returns null if the file doesn't exist or cannot be parsed.
-  ///
-  /// Note: This is informational only. Actual Shorebird commands read from shorebird.yaml directly.
-  static String? detectShorebirdAppId(String projectRoot) {
-    try {
-      final shorebirdPath = p.join(projectRoot, 'shorebird.yaml');
-      final shorebirdFile = File(shorebirdPath);
-
-      if (!shorebirdFile.existsSync()) {
-        return null;
-      }
-
-      final content = shorebirdFile.readAsStringSync();
-      final yaml = loadYaml(content) as YamlMap?;
-
-      if (yaml == null) {
-        return null;
-      }
-
-      final appId = yaml['app_id'];
-      return appId?.toString();
-    } catch (e) {
-      // If we can't read or parse shorebird.yaml, return null
-      return null;
-    }
   }
 
   // ─────────────────────────────────────────────────────────────────
   // Computed properties
   // ─────────────────────────────────────────────────────────────────
 
-  /// Full version string (e.g., "1.2.3+45")
-  String get fullVersion => '$buildName+$buildNumber';
+  /// Full version string (e.g., "1.2.3+45") - null if not set (Flutter reads from pubspec.yaml)
+  String? get fullVersion => buildName != null && buildNumber != null
+      ? '$buildName+$buildNumber'
+      : null;
 
   /// Full app name with version (e.g., "myapp_1.2.3+45")
   String get fullAppName {
-    var name = '${appName}_$fullVersion';
+    final version = fullVersion ?? 'unknown';
+    var name = '${appName}_$version';
     if (useShorebird) {
       name += '.sb.base';
     }
@@ -539,7 +502,7 @@ class BuildConfig {
 
   /// Absolute output directory path
   ///
-  /// If flavor is set, appends flavor name to output path (e.g., dist/dev/)
+  /// If flavor is set, appends flavor name to output path (e.g., .fluttercraft/dist/dev/)
   String get absoluteOutputPath {
     var path = outputPath;
 
@@ -559,12 +522,14 @@ class BuildConfig {
     return '''BuildConfig:
   appName: $appName
   version: $fullVersion
-  buildType: $buildType
+  platform: $platform
   flavor: $flavor
   targetDart: $targetDart
+  noReview: $noReview
   outputPath: $outputPath
   flags: $flags
   dartDefine: $finalDartDefine
+  args: $args
   useFvm: $useFvm
   useShorebird: $useShorebird''';
   }

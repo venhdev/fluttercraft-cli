@@ -139,7 +139,7 @@ void _printUsage(ArgParser parser) {
   print('');
   print('Available commands:');
   print('  build     Build Flutter app (APK/AAB/IPA)');
-  print('  clean     Clean project and dist folder');
+  print('  clean     Clean project and build folder');
   print('  convert   Convert AAB to universal APK');
   print('  gen       Generate fluttercraft.yaml');
   print('  run       Run custom command alias');

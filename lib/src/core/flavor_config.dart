@@ -9,11 +9,8 @@ class FlavorConfig {
   /// Flavor name (e.g., 'dev', 'staging', 'prod')
   final String name;
 
-  /// Version name override (e.g., '0.1.1-rc')
-  final String? versionName;
-
-  /// Build number override
-  final int? buildNumber;
+  /// Platform override (e.g., 'apk', 'ipa')
+  final String? platform;
 
   /// Flavor-specific dart defines (merged with global_dart_define)
   final Map<String, dynamic> dartDefine;
@@ -25,28 +22,25 @@ class FlavorConfig {
   final bool? shouldPromptDartDefine;
   final bool? shouldClean;
   final bool? shouldBuildRunner;
+  
+  /// Extra arguments override/append
+  final List<String>? args;
 
   const FlavorConfig({
     required this.name,
-    this.versionName,
-    this.buildNumber,
+    this.platform,
     this.dartDefine = const {},
     this.dartDefineFromFile,
     this.shouldPromptDartDefine,
     this.shouldClean,
     this.shouldBuildRunner,
+    this.args,
   });
 
   /// Parse flavor configuration from YAML
   static FlavorConfig fromYaml(String name, YamlMap yaml) {
-    // Parse version overrides
-    final versionName = yaml['name']?.toString();
-    final buildNumber =
-        yaml['number'] is int
-            ? yaml['number'] as int
-            : yaml['number'] != null
-            ? int.tryParse(yaml['number'].toString())
-            : null;
+    // Parse platform override
+    final platform = yaml['platform']?.toString();
 
     // Parse dart_define
     final dartDefineMap = yaml['dart_define'] as YamlMap?;
@@ -77,15 +71,26 @@ class FlavorConfig {
     // Parse dart_define_from_file
     final dartDefineFromFile = yaml['dart_define_from_file']?.toString();
 
+    // Parse args
+    List<String>? args;
+    final argsValue = yaml['args'];
+    if (argsValue != null) {
+      if (argsValue is List) {
+        args = argsValue.map((e) => e.toString()).toList();
+      } else {
+        args = [argsValue.toString()];
+      }
+    }
+
     return FlavorConfig(
       name: name,
-      versionName: versionName,
-      buildNumber: buildNumber,
+      platform: platform,
       dartDefine: dartDefine,
       dartDefineFromFile: dartDefineFromFile,
       shouldPromptDartDefine: shouldPromptDartDefine,
       shouldClean: shouldClean,
       shouldBuildRunner: shouldBuildRunner,
+      args: args,
     );
   }
 
@@ -99,7 +104,7 @@ class FlavorConfig {
 
   @override
   String toString() {
-    return 'FlavorConfig(name: $name, versionName: $versionName, '
-        'buildNumber: $buildNumber, dartDefine: $dartDefine)';
+    return 'FlavorConfig(name: $name, platform: $platform, '
+        'dartDefine: $dartDefine)';
   }
 }

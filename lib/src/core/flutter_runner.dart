@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import '../utils/process_runner.dart';
 import '../utils/console.dart';
 import 'build_config.dart';
@@ -28,6 +29,14 @@ class FlutterRunner {
     return _processRunner.run('flutter', [
       'clean',
     ], workingDirectory: projectRoot);
+  }
+
+  /// Get the full clean command for logging
+  String getCleanCommand({bool useFvm = false}) {
+    if (useFvm) {
+      return 'fvm flutter clean';
+    }
+    return 'flutter clean';
   }
 
   /// Run pub get
@@ -69,10 +78,10 @@ class FlutterRunner {
 
   /// Build Flutter app
   Future<ProcessResult> build(BuildConfig config) async {
-    _console.section('Building ${config.buildType.toUpperCase()}...');
+    _console.section('Building ${config.platform.toUpperCase()}...');
 
     // Determine platform from build type
-    final platform = _getPlatform(config.buildType);
+    final platform = _getPlatform(config.platform);
 
     // Build flutter args (exclude --release for Shorebird per official docs)
     final flutterArgs = _buildFlutterArgs(
@@ -89,24 +98,100 @@ class FlutterRunner {
     }
   }
 
+  /// Execute a raw command string (for manually edited commands)
+  Future<ProcessResult> buildFromCommand(String command, String projectRoot) async {
+    if (command.trim().isEmpty) {
+      return ProcessResult(
+        exitCode: 1,
+        stdout: '',
+        stderr: 'Error: Empty command',
+      );
+    }
+
+    _console.info('Executing custom command via shell');
+    
+    // Execute via shell to properly handle complex commands with -- separators
+    // This avoids parsing issues and lets the OS handle the command correctly
+    String shellProgram;
+    List<String> shellArgs;
+    
+    if (Platform.isWindows) {
+      // Use PowerShell on Windows
+      shellProgram = 'powershell.exe';
+      shellArgs = ['-NoProfile', '-Command', command];
+    } else {
+      // Use sh on Unix-like systems
+      shellProgram = 'sh';
+      shellArgs = ['-c', command];
+    }
+
+    return _processRunner.run(shellProgram, shellArgs, workingDirectory: projectRoot);
+  }
+
   /// Get the full build command for logging
   String getBuildCommand(BuildConfig config) {
-    final platform = _getPlatform(config.buildType);
+    final platform = _getPlatform(config.platform);
     final flutterArgs = _buildFlutterArgs(
       config,
       forShorebird: config.useShorebird,
     );
 
     if (config.useShorebird) {
-      final sbArgs = <String>['shorebird', 'release', 'android'];
-      if (config.buildType == 'apk') {
-        sbArgs.addAll(['--artifact', 'apk']);
+      final sbPlatform = _getShorebirdPlatform(config.platform);
+      final sbArgs = <String>['shorebird', 'release', sbPlatform];
+
+      // Shorebird Management & Versioning Arguments (Before --)
+      if (sbPlatform == 'android' && config.platform == 'apk') {
+        sbArgs.add('--artifact=apk');
       }
       if (config.shorebirdNoConfirm) {
         sbArgs.add('--no-confirm');
       }
-      sbArgs.add('--');
+      if (config.flutterVersion != null && config.flutterVersion!.isNotEmpty) {
+        sbArgs.add('--flutter-version=${config.flutterVersion}');
+      }
+
+      // Everything else goes after -- (Flutter build arguments)
+      // Note: PowerShell -Command requires '--' to be quoted
+      sbArgs.add(Platform.isWindows ? "'--'" : '--');
+      
+      // Version flags for Flutter build
+      if (config.buildName != null && config.buildName!.isNotEmpty) {
+        sbArgs.add('--build-name=${config.buildName}');
+      }
+      if (config.buildNumber != null) {
+        sbArgs.add('--build-number=${config.buildNumber}');
+      }
+
+      if (config.flavor != null && config.flavor!.isNotEmpty) {
+        sbArgs.add('--flavor=${config.flavor}');
+      }
+
+      if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+        sbArgs.add('--target=${config.targetDart}');
+      }
+
+      // Dart-define flags (Flutter build arguments)
+      final dartDefines = config.finalDartDefine;
+      for (final entry in dartDefines.entries) {
+        sbArgs.add('--dart-define=${entry.key}=${entry.value}');
+      }
+
+      // Dart-define-from-file (Flutter build argument)
+      _console.info('[DEBUG] FlutterRunner.getBuildCommand:');
+      _console.info('[DEBUG]   config.globalDartDefineFromFile = ${config.globalDartDefineFromFile}');
+      _console.info('[DEBUG]   config.dartDefineFromFile = ${config.dartDefineFromFile}');
+      _console.info('[DEBUG]   config.finalDartDefineFromFile = ${config.finalDartDefineFromFile}');
+      if (config.finalDartDefineFromFile != null) {
+        _console.info('[DEBUG]   Adding flag: --dart-define-from-file=${config.finalDartDefineFromFile}');
+        sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      } else {
+        _console.info('[DEBUG]   Skipping: finalDartDefineFromFile is null');
+      }
+
+      // Custom args from config
       sbArgs.addAll(flutterArgs);
+
       return sbArgs.join(' ');
     } else if (config.useFvm) {
       return 'fvm flutter build $platform ${flutterArgs.join(' ')}';
@@ -115,14 +200,31 @@ class FlutterRunner {
     }
   }
 
-  /// Get platform from build type
-  String _getPlatform(String buildType) {
-    switch (buildType.toLowerCase()) {
+  /// Get Shorebird platform from build platform
+  String _getShorebirdPlatform(String platform) {
+    switch (platform.toLowerCase()) {
+      case 'ipa':
+      case 'ios':
+        return 'ios';
+      case 'app':
+      case 'macos':
+        return 'macos';
+      case 'apk':
+      case 'aab':
+      default:
+        return 'android';
+    }
+  }
+
+  /// Get platform from build platform
+  String _getPlatform(String platform) {
+    switch (platform.toLowerCase()) {
       case 'aab':
         return 'appbundle';
       case 'apk':
         return 'apk';
       case 'ipa':
+      case 'ios':
         return 'ipa';
       case 'app':
       case 'macos':
@@ -147,28 +249,46 @@ class FlutterRunner {
       args.add('--release');
     }
 
-    if (config.flavor != null && config.flavor!.isNotEmpty) {
-      args.add('--flavor=${config.flavor}');
+    // Flavor and target are also added before -- for Shorebird, so skip them
+    if (!forShorebird) {
+      if (config.flavor != null && config.flavor!.isNotEmpty) {
+        args.add('--flavor=${config.flavor}');
+      }
+
+      if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+        args.add('--target=${config.targetDart}');
+      }
     }
 
-    if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
-      args.add('--target=${config.targetDart}');
+    // Only add version flags if explicitly set AND not using Shorebird
+    // (Shorebird adds these flags before the -- separator)
+    if (!forShorebird) {
+      if (config.buildName != null && config.buildName!.isNotEmpty) {
+        args.add('--build-name=${config.buildName}');
+      }
+      if (config.buildNumber != null) {
+        args.add('--build-number=${config.buildNumber}');
+      }
     }
 
-    args.add('--build-name=${config.buildName}');
-    args.add('--build-number=${config.buildNumber}');
+    // When building for Shorebird, dart-define flags are Shorebird-specific
+    // and should be added before the -- separator, not after
+    if (!forShorebird) {
+      // Always add dart defines from config for regular Flutter builds
+      final dartDefines = config.finalDartDefine;
+      for (final entry in dartDefines.entries) {
+        args.add('--dart-define=${entry.key}=${entry.value}');
+      }
 
-    // Always add dart defines from config
-    final dartDefines = config.finalDartDefine;
-    for (final entry in dartDefines.entries) {
-      args.add('--dart-define=${entry.key}=${entry.value}');
+      // Add dart-define-from-file if specified for regular Flutter builds
+      if (config.finalDartDefineFromFile != null) {
+        args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      }
     }
 
-    // Add dart-define-from-file if specified
-    if (config.finalDartDefineFromFile != null) {
-      args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
-    }
-
+    // Add extra args from config (these go after -- for Shorebird)
+    args.addAll(config.args);
+    
     return args;
   }
 
@@ -179,27 +299,32 @@ class FlutterRunner {
   ) async {
     _console.info('Using Shorebird for build');
 
-    final sbArgs = <String>['release', 'android'];
+    final sbPlatform = _getShorebirdPlatform(config.platform);
+    final sbArgs = <String>['release', sbPlatform];
 
-    // Add artifact type
-    if (config.buildType == 'apk') {
-      sbArgs.addAll(['--artifact', 'apk']);
-      _console.info('Shorebird → building APK');
+    // Shorebird Management & Versioning Arguments (Before --)
+    if (sbPlatform == 'android') {
+      if (config.platform == 'apk') {
+        sbArgs.add('--artifact=apk');
+        _console.info('Shorebird → building APK');
+      } else {
+        _console.info('Shorebird → building AAB (default)');
+      }
+
+      // Manual artifact override
+      if (config.shorebirdArtifact != null &&
+          config.shorebirdArtifact!.isNotEmpty) {
+        // Remove any existing artifact args
+        sbArgs.removeWhere(
+          (arg) => arg.startsWith('--artifact') || arg == 'apk' || arg == 'aab',
+        );
+        sbArgs.add('--artifact=${config.shorebirdArtifact}');
+        _console.info(
+          'Shorebird → using manual artifact: ${config.shorebirdArtifact}',
+        );
+      }
     } else {
-      _console.info('Shorebird → building AAB (default)');
-    }
-
-    // Manual artifact override
-    if (config.shorebirdArtifact != null &&
-        config.shorebirdArtifact!.isNotEmpty) {
-      // Remove any existing artifact args
-      sbArgs.removeWhere(
-        (arg) => arg == '--artifact' || arg == 'apk' || arg == 'aab',
-      );
-      sbArgs.addAll(['--artifact', config.shorebirdArtifact!]);
-      _console.info(
-        'Shorebird → using manual artifact: ${config.shorebirdArtifact}',
-      );
+      _console.info('Shorebird → building $sbPlatform');
     }
 
     if (config.shorebirdNoConfirm) {
@@ -210,8 +335,37 @@ class FlutterRunner {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
 
-    // Add flutter args after --
+    // Everything else goes after -- (Flutter build arguments)
     sbArgs.add('--');
+    
+    // Version flags for Flutter build
+    if (config.buildName != null && config.buildName!.isNotEmpty) {
+      sbArgs.add('--build-name=${config.buildName}');
+    }
+    if (config.buildNumber != null) {
+      sbArgs.add('--build-number=${config.buildNumber}');
+    }
+
+    if (config.flavor != null && config.flavor!.isNotEmpty) {
+      sbArgs.add('--flavor=${config.flavor}');
+    }
+
+    if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+      sbArgs.add('--target=${config.targetDart}');
+    }
+
+    // Dart-define flags (Flutter build arguments)
+    final dartDefines = config.finalDartDefine;
+    for (final entry in dartDefines.entries) {
+      sbArgs.add('--dart-define=${entry.key}=${entry.value}');
+    }
+
+    // Dart-define-from-file (Flutter build argument)
+    if (config.finalDartDefineFromFile != null) {
+      sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+    }
+
+    // Custom args from config
     sbArgs.addAll(flutterArgs);
 
     return _processRunner.run(

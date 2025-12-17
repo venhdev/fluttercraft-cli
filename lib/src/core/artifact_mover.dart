@@ -23,41 +23,56 @@ class ArtifactMover {
     : _console = console ?? Console();
 
   /// Move build artifacts to output directory
+  /// Move artifacts based on platform
   Future<ArtifactResult> moveArtifacts(BuildConfig config) async {
-    final buildType = config.buildType.toLowerCase();
-    final outputDir = config.absoluteOutputPath;
-    final fullAppName = config.fullAppName;
+    _console.info('Moving artifacts for platform: ${config.platform}...');
 
     // Ensure output directory exists
+    final outputDir = config.absoluteOutputPath;
     final dir = Directory(outputDir);
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
 
-    switch (buildType) {
+    switch (config.platform) {
       case 'apk':
-        return _moveApk(config, outputDir, fullAppName);
+        return _moveApk(config);
       case 'aab':
-        return _moveAab(config, outputDir, fullAppName);
+        return _moveAab(config);
       case 'ipa':
-        return _moveIpa(config, outputDir, fullAppName);
+      case 'ios':
+        return _moveIpa(config);
       case 'app':
       case 'macos':
-        return _moveMacOsApp(config, outputDir, fullAppName);
+        return _moveMacOsApp(config);
       default:
-        return ArtifactResult(
-          success: false,
-          error: 'Unknown build type: $buildType',
-        );
+        throw Exception('Unsupported platform: ${config.platform}');
+    }
+  }
+
+  /// Clean existing artifacts before build to prevent stale results
+  Future<void> cleanArtifacts(BuildConfig config) async {
+    final extensions = ['.apk', '.aab', '.ipa', '.app'];
+    final outputDir = config.absoluteOutputPath;
+    final fullAppName = config.fullAppName;
+
+    for (final ext in extensions) {
+      final file = File(p.join(outputDir, '$fullAppName$ext'));
+      if (await file.exists()) {
+        try {
+          await file.delete(recursive: true);
+          _console.info('Cleaned stale artifact: ${p.basename(file.path)}');
+        } catch (e) {
+          _console.warning('Failed to clean stale artifact: $e');
+        }
+      }
     }
   }
 
   /// Move APK artifact
-  Future<ArtifactResult> _moveApk(
-    BuildConfig config,
-    String outputDir,
-    String fullAppName,
-  ) async {
+  Future<ArtifactResult> _moveApk(BuildConfig config) async {
+    final outputDir = config.absoluteOutputPath;
+    final fullAppName = config.fullAppName;
     final srcPath = p.join(
       projectRoot,
       'build',
@@ -91,11 +106,9 @@ class ArtifactMover {
   }
 
   /// Move AAB artifact
-  Future<ArtifactResult> _moveAab(
-    BuildConfig config,
-    String outputDir,
-    String fullAppName,
-  ) async {
+  Future<ArtifactResult> _moveAab(BuildConfig config) async {
+    final outputDir = config.absoluteOutputPath;
+    final fullAppName = config.fullAppName;
     final srcPath = p.join(projectRoot, 'build', 'app', 'outputs', 'bundle');
     final flavor = config.flavor ?? '';
 
@@ -122,11 +135,9 @@ class ArtifactMover {
   }
 
   /// Move IPA artifact
-  Future<ArtifactResult> _moveIpa(
-    BuildConfig config,
-    String outputDir,
-    String fullAppName,
-  ) async {
+  Future<ArtifactResult> _moveIpa(BuildConfig config) async {
+    final outputDir = config.absoluteOutputPath;
+    final fullAppName = config.fullAppName;
     final srcPath = p.join(projectRoot, 'build', 'ios', 'ipa');
 
     final dir = Directory(srcPath);
@@ -154,11 +165,9 @@ class ArtifactMover {
   }
 
   /// Move macOS app artifact
-  Future<ArtifactResult> _moveMacOsApp(
-    BuildConfig config,
-    String outputDir,
-    String fullAppName,
-  ) async {
+  Future<ArtifactResult> _moveMacOsApp(BuildConfig config) async {
+    final outputDir = config.absoluteOutputPath;
+    final fullAppName = config.fullAppName;
     final appName = config.appName;
     final srcPath = p.join(
       projectRoot,

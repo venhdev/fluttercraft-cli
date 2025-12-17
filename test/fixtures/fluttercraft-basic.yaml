@@ -1,0 +1,9 @@
+# Basic test configuration
+build:
+  app_name: testapp
+  name: 1.0.0
+  number: 1
+  type: aab
+  target: lib/main.dart
+paths:
+  output: .fluttercraft/dist

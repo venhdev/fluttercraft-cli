@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../core/app_context.dart';
+import '../commands/run_command.dart';
 import '../utils/console.dart';
 import '../version.dart';
 
@@ -63,7 +64,7 @@ class Shell {
       case 'exit':
       case 'quit':
       case 'q':
-        _running = false;
+        await stop();
         console.info('Goodbye!');
         return;
 
@@ -99,6 +100,14 @@ class Shell {
     if (_commands.containsKey(command)) {
       final handler = _commands[command]!;
       await handler(args);
+      return;
+    }
+
+    // Check aliases
+    if (_appContext != null &&
+        _appContext!.config.aliases.containsKey(command)) {
+      final runCmd = RunCommand(_appContext!, console: console);
+      await runCmd.execute([command, ...args]);
       return;
     }
 
@@ -175,7 +184,7 @@ class Shell {
     // ─────────────────────────────────────────────────────────────────
     console.section('Application');
     console.keyValue('App Name', ctx.appName, keyWidth: kw);
-    console.keyValue('Version', ctx.version, keyWidth: kw);
+    console.keyValue('Version', ctx.version ?? '(from pubspec.yaml)', keyWidth: kw);
 
     // ─────────────────────────────────────────────────────────────────
     // BUILD CONFIGURATION (consolidated section)
@@ -183,7 +192,7 @@ class Shell {
     console.section('Build Configuration');
 
     // Core build settings
-    console.keyValue('Build Type', ctx.buildType, keyWidth: kw);
+    console.keyValue('Platform', ctx.platform, keyWidth: kw);
     console.keyValue(
       'Flavor',
       (ctx.flavor == null || ctx.flavor!.isEmpty) ? '(none)' : ctx.flavor!,
@@ -193,55 +202,57 @@ class Shell {
 
     // FVM sub-section
     console.subSection('FVM');
-    console.keyValue('Enabled', ctx.useFvm.toString(), keyWidth: kw);
+    console.keyValue('Enabled', ctx.useFvm.toString(), keyWidth: kw, indent: 4);
     if (verbose && ctx.useFvm) {
       console.keyValue(
         'Flutter Version',
         ctx.flutterVersion ?? '(auto-detected)',
         keyWidth: kw,
+        indent: 4,
       );
     }
 
     // Shorebird sub-section
     console.subSection('Shorebird');
-    console.keyValue('Enabled', ctx.useShorebird.toString(), keyWidth: kw);
+    console.keyValue('Enabled', ctx.useShorebird.toString(), keyWidth: kw, indent: 4);
     if (verbose && ctx.useShorebird) {
       console.keyValue(
         'App ID',
         ctx.shorebirdAppId ?? '(from shorebird.yaml)',
         keyWidth: kw,
+        indent: 4,
       );
       if (ctx.shorebirdArtifact != null) {
-        console.keyValue('Artifact', ctx.shorebirdArtifact!, keyWidth: kw);
+        console.keyValue('Artifact', ctx.shorebirdArtifact!, keyWidth: kw, indent: 4);
       }
-      console.keyValue('No Confirm', ctx.shorebirdNoConfirm.toString(), keyWidth: kw);
+      console.keyValue('No Confirm', ctx.shorebirdNoConfirm.toString(), keyWidth: kw, indent: 4);
     }
 
     // Verbose: Build flags
     if (verbose) {
       console.subSection('Build Flags');
-      console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw);
-      console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw);
-      console.keyValue('Prompt Dart Define', ctx.shouldPromptDartDefine.toString(), keyWidth: kw);
+      console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw, indent: 4);
+      console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw, indent: 4);
+      console.keyValue('Prompt Dart Define', ctx.shouldPromptDartDefine.toString(), keyWidth: kw, indent: 4);
     }
 
     // Verbose: Paths
     if (verbose) {
       console.subSection('Paths');
-      console.keyValue('Target', ctx.targetDart, keyWidth: kw);
-      console.keyValue('Keystore', ctx.keystorePath, keyWidth: kw);
+      console.keyValue('Target', ctx.targetDart, keyWidth: kw, indent: 4);
+      console.keyValue('Keystore', ctx.keystorePath, keyWidth: kw, indent: 4);
       if (ctx.bundletoolPath != null) {
-        console.keyValue('Bundletool', ctx.bundletoolPath!, keyWidth: kw);
+        console.keyValue('Bundletool', ctx.bundletoolPath!, keyWidth: kw, indent: 4);
       }
-      console.keyValue('Project Root', ctx.projectRoot, keyWidth: kw);
+      console.keyValue('Project Root', ctx.projectRoot, keyWidth: kw, indent: 4);
     }
 
     // ─────────────────────────────────────────────────────────────────
     // VERBOSE-ONLY SECTIONS
     // ─────────────────────────────────────────────────────────────────
     if (verbose) {
-      // Dart defines (only if present)
-      if (ctx.finalDartDefine.isNotEmpty) {
+      // Dart defines (only if present or from file)
+      if (ctx.finalDartDefine.isNotEmpty || ctx.dartDefineFromFile != null) {
         console.section('Dart Define');
         
         // Show dart_define_from_file source first if specified
@@ -296,8 +307,8 @@ class Shell {
       // Show brief summary of loaded config
       if (_appContext != null) {
         console.keyValue('App Name', _appContext!.appName);
-        console.keyValue('Version', _appContext!.version);
-        console.keyValue('Build Type', _appContext!.buildType);
+        console.keyValue('Version', _appContext!.version ?? '(from pubspec.yaml)');
+        console.keyValue('Platform', _appContext!.platform);
       }
     } catch (e) {
       console.error('Failed to reload: $e');
@@ -305,7 +316,7 @@ class Shell {
   }
 
   /// Stop the shell (can be called from external handlers)
-  void stop() {
+  Future<void> stop() async {
     _running = false;
   }
 

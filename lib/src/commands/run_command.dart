@@ -8,11 +8,15 @@ class RunCommand {
   final Console _console;
   final ProcessRunner _runner;
 
-  RunCommand(this.context) : _console = Console(), _runner = ProcessRunner();
+  RunCommand(this.context, {Console? console, ProcessRunner? runner})
+      : _console = console ?? Console(),
+        _runner = runner ?? ProcessRunner();
 
   Future<int> execute(List<String> args) async {
     // Parse flags
-    final showList = args.contains('--list') || args.contains('-l');
+    final showList = args.contains('--list') ||
+        args.contains('-l') ||
+        (args.isNotEmpty && args[0] == 'list');
     final showHelp = args.contains('--help') || args.contains('-h');
 
     if (showHelp) {
@@ -26,13 +30,14 @@ class RunCommand {
     }
 
     if (args.isEmpty) {
-      _console.error('Usage: flc run <alias> or flc run --list');
-      _console.info('Run "flc run --list" to see available aliases');
-      return 1;
+      // Step 1: Show available aliases if no args provided
+      _listAliases();
+      return 0;
     }
 
     final aliasName = args[0];
-    return _runAlias(aliasName);
+    final runArgs = args.sublist(1);
+    return _runAlias(aliasName, runArgs);
   }
 
   void _printHelp() {
@@ -41,6 +46,11 @@ class RunCommand {
     _console.log('Usage: fluttercraft run <alias> [arguments]');
     _console.log('-h, --help     Print this usage information.');
     _console.log('-l, --list     List all available aliases');
+    _console.blank();
+    _console.log('Runtime Parameters:');
+    _console.log('  Use {0}, {1} placeholders for positional arguments');
+    _console.log('  Use {key} placeholders for named arguments (e.g. --key value)');
+    _console.log('  Use {all} to pass all arguments');
     _console.blank();
     _console.log('Run "fluttercraft help" to see global options.');
   }
@@ -75,28 +85,104 @@ class RunCommand {
     }
   }
 
-  Future<int> _runAlias(String name) async {
+  Future<int> _runAlias(String name, List<String> args) async {
     final alias = context.config.aliases[name];
 
     if (alias == null) {
       _console.error('Alias "$name" not found');
-      _console.info('Run "flc run --list" to see available aliases');
+      _listAliases();
       return 1;
     }
 
-    _console.blank();
-    _console.header('Running alias: $name');
-
-    for (var i = 0; i < alias.commands.length; i++) {
-      final cmd = alias.commands[i];
-      _console.section('[${i + 1}/${alias.commands.length}] $cmd');
-
-      // Parse command and arguments
-      final parts = _parseCommand(cmd);
-      if (parts.isEmpty) {
-        _console.error('Invalid command: $cmd');
-        return 1;
+    // Check if alias has params (placeholders)
+    final placeholderRegex = RegExp(r'\{([a-zA-Z0-9_]+)\}');
+    bool hasParams = false;
+    for (final cmd in alias.commands) {
+      if (cmd.contains('{all}') || placeholderRegex.hasMatch(cmd)) {
+        hasParams = true;
+        break;
       }
+    }
+
+    _console.blank();
+    _console.header('Preparing alias: $name');
+
+    // Parse runtime arguments
+    final parsedArgs = _parseRuntimeArgs(args);
+    final processedCommands = <String>[];
+
+    // Process all commands first
+    for (final cmd in alias.commands) {
+      String processed = cmd;
+      
+      // 1. Replace named placeholders {key}
+      final matches = placeholderRegex.allMatches(processed).toList();
+      
+      for (final match in matches) {
+        final key = match.group(1)!;
+        
+        // Skip numeric placeholders for now (handled in next step)
+        if (int.tryParse(key) != null) continue;
+
+        if (parsedArgs.named.containsKey(key)) {
+          processed = processed.replaceAll('{$key}', parsedArgs.named[key]!);
+        } else {
+          // Prompt for missing named placeholder
+          final input = _console.prompt('Enter value for {$key}');
+          processed = processed.replaceAll('{$key}', input);
+        }
+      }
+
+      // 2. Replace positional placeholders {0}, {1}
+      // Also fill sequentially from remaining positional args if no specific index used?
+      // User said: "fill provided {arg}, then substitute sequentially"
+      // Let's handle explicit {0} first
+      for (var i = 0; i < parsedArgs.positional.length; i++) {
+        if (processed.contains('{$i}')) {
+          processed = processed.replaceAll('{$i}', parsedArgs.positional[i]);
+        }
+      }
+
+      // Identify remaining numeric placeholders that weren't filled?
+      // Or just leave them? If commands uses {0} and we have no args, we should prompt?
+      // Checking for remaining placeholders
+      final remainingMatches = placeholderRegex.allMatches(processed).toList();
+      for (final match in remainingMatches) {
+         final key = match.group(1)!;
+         if (key == 'all') continue;
+         
+         // If it's numeric and we didn't have a positional arg for it
+         if (int.tryParse(key) != null) {
+            final input = _console.prompt('Enter value for argument {$key}');
+            processed = processed.replaceAll('{$key}', input);
+         }
+      }
+
+      processedCommands.add(processed);
+    }
+
+    // Preview
+    _console.section('Command Preview');
+    for (final cmd in processedCommands) {
+      _console.info('  > $cmd');
+    }
+    _console.blank();
+
+    if (hasParams) {
+      if (!_console.confirm('Continue?', defaultValue: true)) {
+        _console.log('Aborted.');
+        return 0;
+      }
+      _console.blank();
+    }
+    
+    // Execute
+    for (var i = 0; i < processedCommands.length; i++) {
+      final cmd = processedCommands[i];
+      _console.sectionCompact('[${i + 1}/${alias.commands.length}] Executing...');
+
+      final parts = _parseCommand(cmd);
+      if (parts.isEmpty) continue;
 
       final command = parts[0];
       final cmdArgs = parts.sublist(1);
@@ -111,16 +197,34 @@ class RunCommand {
       if (!result.success) {
         _console.blank();
         _console.error('Command failed with exit code ${result.exitCode}');
-        _console.error('Alias "$name" execution stopped');
         return result.exitCode;
       }
-
-      _console.blank();
     }
 
-    _console.success('✓ Alias "$name" completed successfully');
     _console.blank();
+    _console.success('✓ Alias "$name" execution complete');
     return 0;
+  }
+
+  _RuntimeArgs _parseRuntimeArgs(List<String> args) {
+    final named = <String, String>{};
+    final positional = <String>[];
+
+    for (var i = 0; i < args.length; i++) {
+      final arg = args[i];
+      if (arg.startsWith('--')) {
+        final key = arg.substring(2);
+        if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+          named[key] = args[i + 1];
+          i++; // Skip next value
+        } else {
+          named[key] = 'true'; // Flag treated as true? Or just empty string?
+        }
+      } else {
+        positional.add(arg);
+      }
+    }
+    return _RuntimeArgs(named, positional);
   }
 
   /// Parse command string into command and arguments
@@ -130,6 +234,7 @@ class RunCommand {
     var current = StringBuffer();
     var inQuotes = false;
     var quoteChar = '';
+    var hasToken = false; // Track if we've started a token (even empty "")
 
     for (var i = 0; i < cmd.length; i++) {
       final char = cmd[i];
@@ -137,23 +242,35 @@ class RunCommand {
       if ((char == '"' || char == "'") && !inQuotes) {
         inQuotes = true;
         quoteChar = char;
+        hasToken = true; // Quotes start a token
       } else if (char == quoteChar && inQuotes) {
         inQuotes = false;
         quoteChar = '';
+        hasToken = true; // Closed quotes confirm a token
       } else if (char == ' ' && !inQuotes) {
-        if (current.isNotEmpty) {
+        if (hasToken || current.isNotEmpty) {
           parts.add(current.toString());
           current = StringBuffer();
+          hasToken = false;
         }
       } else {
         current.write(char);
+        hasToken = true; // Characters mean we have a token
       }
     }
 
-    if (current.isNotEmpty) {
+    // Add final token if exists
+    if (hasToken || current.isNotEmpty) {
       parts.add(current.toString());
     }
 
     return parts;
   }
+}
+
+class _RuntimeArgs {
+  final Map<String, String> named;
+  final List<String> positional;
+
+  _RuntimeArgs(this.named, this.positional);
 }

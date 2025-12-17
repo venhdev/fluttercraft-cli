@@ -24,14 +24,36 @@ flc gen
 flc build
 
 # 4. Or build directly
-flc build --type apk --no-confirm
+flc build --platform apk --no-confirm
 ```
 
 ## 📦 Installation
 
-**Recommended:**
+**1. Stable Channel:**
 ```bash
 dart pub global activate fluttercraft
+```
+
+or via
+
+```bash
+dart pub global activate --source git https://github.com/venhdev/fluttercraft-cli.git --git-ref=stable
+```
+
+**2. Beta Channel (Git):**
+```bash
+dart pub global activate --source git https://github.com/venhdev/fluttercraft-cli.git --git-ref=beta
+```
+
+**3. Local (For Dev):**
+```bash
+dart pub global activate --source path .
+```
+
+## 📦 Uninstall
+
+```bash
+dart pub global deactivate fluttercraft
 ```
 
 **Alternative:** Download the binary from [Releases](https://github.com/venhdev/fluttercraft-cli/releases).
@@ -40,7 +62,7 @@ dart pub global activate fluttercraft
 
 | Command | Description | Example |
 |:---|:---|:---|
-| `build` | Build Flutter app (APK/AAB/IPA) | `flc build --type apk` |
+| `build` | Build Flutter app (APK/AAB/IPA) | `flc build --platform apk` |
 | `clean` | Clean project and dist folder | `flc clean` |
 | `gen` | Generate configuration file | `flc gen` |
 | `run` | Run custom command alias | `flc run gen-icon` |
@@ -58,7 +80,7 @@ Run `flc gen` to create a starter file.
 build_defaults: &build_defaults
   app_name: myapp
   name: 1.0.0
-  type: aab
+  platform: aab
   dart_define_from_file: .env
 
 build:
@@ -82,11 +104,23 @@ alias:
   gen-assets:
     cmds:
       - fvm flutter pub run build_runner build
+
+## 🏃 Run Aliases
+
+Run aliases from `fluttercraft.yaml` with parameter substitution.
+
+```yaml
+alias:
+  commit:
+    cmds: ["git commit -m '{0}'"]
 ```
+
+**Usage:** `> commit "fix"` or `flc run commit "fix"`
+**Syntax:** `{0}` (pos), `{key}` (named).
 
 ## 📂 Output
 
-Builds are saved to `dist/` (or `dist/<flavor>/`).
+Builds are saved to `.fluttercraft/dist/` (or `.fluttercraft/dist/<flavor>/`).
 Logs are stored in `.fluttercraft/`.
 
 ## License
