@@ -197,15 +197,27 @@ class Console {
   }
 
   /// Prompt for choice selection
+  ///
+  /// Returns the index of the selected option, or -1 if options list is empty.
+  /// If [defaultIndex] is out of bounds, it is clamped to a valid range.
   int choose(String message, List<String> options, {int defaultIndex = 0}) {
+    // Handle empty options list
+    if (options.isEmpty) {
+      warning('No options available.');
+      return -1;
+    }
+
+    // Clamp defaultIndex to valid range
+    final safeDefault = defaultIndex.clamp(0, options.length - 1);
+
     print(_colorize('\n? $message', _AnsiColors.cyan));
 
     for (var i = 0; i < options.length; i++) {
-      final marker = i == defaultIndex ? '>' : ' ';
+      final marker = i == safeDefault ? '>' : ' ';
       print(
         _colorize(
           '  $marker $i. ${options[i]}',
-          i == defaultIndex ? _AnsiColors.green : _AnsiColors.white,
+          i == safeDefault ? _AnsiColors.green : _AnsiColors.white,
         ),
       );
     }
@@ -215,15 +227,15 @@ class Console {
     );
     final input = stdin.readLineSync()?.trim() ?? '';
 
-    if (input.isEmpty) return defaultIndex;
+    if (input.isEmpty) return safeDefault;
 
     final choice = int.tryParse(input);
     if (choice != null && choice >= 0 && choice < options.length) {
       return choice;
     }
 
-    warning('Invalid choice, using default: ${options[defaultIndex]}');
-    return defaultIndex;
+    warning('Invalid choice, using default: ${options[safeDefault]}');
+    return safeDefault;
   }
 
   // ─────────────────────────────────────────────────────────────────

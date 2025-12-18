@@ -1,6 +1,6 @@
 
-- change default output dir `/dist` to `.fluttercraft/build/`
-- when run 'gen' cmd, add `.fluttercraft/` to .gitignore
+- change default output dir `/dist` to `.fluttercraft/dist/`
+- when run 'gen' cmd, add `.fluttercraft/dist/` to .gitignore
 - enhace 'clean' cmd, add `clean -h` to show help
 - enhace help for all subcommands, when run `flc <subcommand> -h`, show help for that subcommand
 - **CRITICAL**: no longer manage by version, always use latest version.

@@ -66,6 +66,9 @@ class GenCommand extends Command<int> {
     // Write file
     await configFile.writeAsString(content);
 
+    // Update .gitignore to include .fluttercraft/
+    await _updateGitignore(projectRoot);
+
     console.success('Generated fluttercraft.yaml');
     console.info('Location: $configPath');
     console.info('App name: $appName');
@@ -78,6 +81,34 @@ class GenCommand extends Command<int> {
     }
 
     return 0;
+  }
+
+  /// Update .gitignore to include .fluttercraft/ if not already present
+  Future<void> _updateGitignore(String projectRoot) async {
+    final gitignorePath = p.join(projectRoot, '.gitignore');
+    final gitignoreFile = File(gitignorePath);
+
+    const fluttercraftEntry = '.fluttercraft/';
+
+    if (await gitignoreFile.exists()) {
+      final content = await gitignoreFile.readAsString();
+      
+      // Check if .fluttercraft/ is already in .gitignore
+      if (!content.contains(fluttercraftEntry)) {
+        // Append to existing .gitignore
+        final newContent = content.endsWith('\n') 
+            ? '$content\n# FlutterCraft build output\n$fluttercraftEntry\n'
+            : '$content\n\n# FlutterCraft build output\n$fluttercraftEntry\n';
+        await gitignoreFile.writeAsString(newContent);
+        console.info('Updated .gitignore with $fluttercraftEntry');
+      }
+    } else {
+      // Create new .gitignore with .fluttercraft/ entry
+      await gitignoreFile.writeAsString(
+        '# FlutterCraft build output\n$fluttercraftEntry\n',
+      );
+      console.info('Created .gitignore with $fluttercraftEntry');
+    }
   }
 
   String _generateConfigContent({
@@ -204,9 +235,8 @@ environments:
 # OUTPUT PATHS
 # ══════════════════════════════════════════════════════════════════════════════
 paths:
-  # Output directory for build artifacts
-  # Note: if flavor is set, output becomes dist/<flavor>/
-  output: dist
+  # Note: if flavor is set, output becomes .fluttercraft/dist/<flavor>/
+  output: .fluttercraft/dist
 
 # ══════════════════════════════════════════════════════════════════════════════
 # CUSTOM COMMAND ALIASES

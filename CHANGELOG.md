@@ -1,3 +1,12 @@
+## 0.1.5 (2025-12-18)
+
+### 🔧 Improvements
+- **Output path** - Changed default from `dist/` to `.fluttercraft/dist/`
+- **Auto gitignore** - `flc gen` now adds `.fluttercraft/` to `.gitignore`
+- **Console edge cases** - `choose()` now handles empty options and invalid defaultIndex
+
+---
+
 ## 0.1.4 (2025-12-17)
 
 ### ⚠️ Breaking: Renamed Flag

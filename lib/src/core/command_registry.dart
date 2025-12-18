@@ -26,7 +26,7 @@ class CommandRegistry {
             '\n'
             'Commands:\n'
             '  build     Build Flutter app (APK/AAB/IPA)\n'
-            '  clean     Clean project and dist folder\n'
+            '  clean     Clean project and build folder\n'
             '  convert   Convert AAB to universal APK\n'
             '  gen       Generate fluttercraft.yaml\n'
             '  run       Run custom command alias',
@@ -56,7 +56,7 @@ class CommandRegistry {
   /// Get command descriptions for help display
   Map<String, String> get commandDescriptions => {
     'build': 'Build Flutter app (APK/AAB/IPA)',
-    'clean': 'Clean project and dist folder',
+    'clean': 'Clean project and build folder',
     'convert': 'Convert AAB to universal APK',
     'gen': 'Generate fluttercraft.yaml',
     'run': 'Run custom command alias',

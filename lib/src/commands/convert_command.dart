@@ -48,7 +48,7 @@ class ConvertCommand extends Command<int> {
         buildNumber: 1,
         buildType: 'aab',
         targetDart: 'lib/main.dart',
-        outputPath: 'dist',
+        outputPath: '.fluttercraft/dist',
         flags: BuildFlags.defaults,
         useFvm: false,
         useShorebird: false,

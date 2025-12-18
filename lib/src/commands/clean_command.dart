@@ -7,19 +7,19 @@ import '../core/build_flags.dart';
 import '../core/flutter_runner.dart';
 import '../utils/console.dart';
 
-/// Clean command - cleans project and dist folder
+/// Clean command - cleans project and build folder
 class CleanCommand extends Command<int> {
   @override
   final String name = 'clean';
 
   @override
-  final String description = 'Clean project and dist folder';
+  final String description = 'Clean project and build folder';
 
   CleanCommand() {
     argParser
       ..addFlag(
         'dist-only',
-        help: 'Only remove dist folder, skip flutter clean',
+        help: 'Only remove build folder, skip flutter clean',
         defaultsTo: false,
       )
       ..addFlag('yes', abbr: 'y', help: 'Skip confirmation', defaultsTo: false);
@@ -45,7 +45,7 @@ class CleanCommand extends Command<int> {
         buildNumber: 1,
         buildType: 'aab',
         targetDart: 'lib/main.dart',
-        outputPath: 'dist',
+        outputPath: '.fluttercraft/dist',
         flags: BuildFlags.defaults,
         useFvm: false,
         useShorebird: false,
@@ -61,7 +61,7 @@ class CleanCommand extends Command<int> {
     console.section('Clean Targets');
 
     final distExists = await distDir.exists();
-    console.keyValue('Dist folder', distExists ? distDir.path : '(not found)');
+    console.keyValue('Build folder', distExists ? distDir.path : '(not found)');
 
     if (argResults?['dist-only'] != true) {
       console.keyValue('Flutter clean', 'Yes');
@@ -91,17 +91,17 @@ class CleanCommand extends Command<int> {
 
       // Remove dist folder
       if (distExists) {
-        console.section('Removing dist folder...');
+        console.section('Removing build folder...');
         try {
           await distDir.delete(recursive: true);
-          console.success('Dist folder removed');
+          console.success('Build folder removed');
         } catch (e) {
-          console.error('Failed to delete dist folder: $e');
-          console.info('Try closing any open files in the dist folder');
+          console.error('Failed to delete build folder: $e');
+          console.info('Try closing any open files in the build folder');
           return 1;
         }
       } else {
-        console.info('Dist folder not found (nothing to delete)');
+        console.info('Build folder not found (nothing to delete)');
       }
 
       console.blank();

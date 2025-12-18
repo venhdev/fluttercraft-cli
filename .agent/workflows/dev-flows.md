@@ -11,14 +11,14 @@ description: Dev Flows
 ## Working Flows
 User can change the mode for better responses (default: `//fast`)
 
-### Ask Mode (`//ask`)
+### Ask Mode (`--ask`)
 Only answer what the user asks.  
 No modifications unless explicitly requested.
 
-### Fast Work Mode (`//fast`)
+### Fast Work Mode (`--fast`)
 Execute tasks directly for simple requests.
 
-### Plan Work Mode (`//plan`)
+### Plan Work Mode (--plan`)
 
 1. **Analyze**
    - Analyze the request.

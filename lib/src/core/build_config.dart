@@ -157,7 +157,7 @@ class BuildConfig {
                 : 1,
         buildType: 'aab',
         targetDart: 'lib/main.dart',
-        outputPath: 'dist',
+        outputPath: '.fluttercraft/dist',
         flags: BuildFlags.defaults,
         useFvm: false,
         useShorebird: false,
@@ -337,7 +337,7 @@ class BuildConfig {
     // Parse paths section
     // ─────────────────────────────────────────────────────────────────
     final paths = yaml['paths'] as YamlMap?;
-    final outputPath = _getString(paths, 'output', 'dist');
+    final outputPath = _getString(paths, 'output', '.fluttercraft/dist');
 
     // ─────────────────────────────────────────────────────────────────
     // Parse alias section
@@ -539,7 +539,7 @@ class BuildConfig {
 
   /// Absolute output directory path
   ///
-  /// If flavor is set, appends flavor name to output path (e.g., dist/dev/)
+  /// If flavor is set, appends flavor name to output path (e.g., .fluttercraft/dist/dev/)
   String get absoluteOutputPath {
     var path = outputPath;
 

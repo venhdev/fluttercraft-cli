@@ -1,0 +1,72 @@
+# Full test configuration with all features
+build_defaults: &build_defaults
+  app_name: testapp
+  name: 1.0.0
+  number: 1
+  type: aab
+  target: lib/main.dart
+  global_dart_define:
+    GLOBAL_KEY: global_value
+  dart_define: {}
+  dart_define_from_file: null
+  flags:
+    should_prompt_dart_define: false
+    should_clean: false
+    should_build_runner: false
+
+build:
+  <<: *build_defaults
+  flavor: null
+
+flavors:
+  dev:
+    flags:
+      should_prompt_dart_define: false
+    dart_define:
+      IS_DEV: true
+      LOG_LEVEL: debug
+
+  staging:
+    name: 1.0.0-rc
+    flags:
+      should_prompt_dart_define: false
+      should_clean: true
+    dart_define:
+      IS_STAGING: true
+
+  prod:
+    flags:
+      should_prompt_dart_define: false
+      should_clean: true
+      should_build_runner: true
+    dart_define:
+      IS_PROD: true
+
+environments:
+  fvm:
+    enabled: false
+    version: null
+
+  shorebird:
+    enabled: false
+    app_id: null
+    artifact: null
+    no_confirm: true
+
+  bundletool:
+    path: null
+    keystore: android/key.properties
+
+  no_color: false
+
+paths:
+  output: .fluttercraft/dist
+
+alias:
+  simple:
+    cmds:
+      - echo hello
+  multi:
+    cmds:
+      - echo first
+      - echo second
