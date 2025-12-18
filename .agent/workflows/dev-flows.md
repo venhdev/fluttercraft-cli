@@ -9,7 +9,7 @@ description: Dev Flows
 - Always run `fvm` when .fvmrc exists.
 
 ## Working Flows
-User can change the mode for better responses (default: `//fast`)
+User can change the mode for better responses (default: `--fast`)
 
 ### Ask Mode (`--ask`)
 Only answer what the user asks.  
@@ -31,7 +31,7 @@ Execute tasks directly for simple requests.
 
 3. **Proceed as Planned**
    - Implement following plan phases.
-   - Testing: `/test/plans/{short-plan-name}_test`
+   - Testing: `/test/plans/{short-plan-name}_test` (Do NOT create version subdirectories like `test/v1.0.0`)
    - Verify and fix:
      ```bash
      fvm flutter analyze --no-fatal-infos | Select-String "error|warning"

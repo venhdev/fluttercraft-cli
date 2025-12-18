@@ -1,19 +1,6 @@
 import 'dart:io';
 
-/// ANSI color codes for terminal output
-class _AnsiColors {
-  static const String reset = '\x1B[0m';
-  static const String bold = '\x1B[1m';
-  static const String dim = '\x1B[2m';
-
-  // Foreground colors
-  static const String red = '\x1B[31m';
-  static const String green = '\x1B[32m';
-  static const String yellow = '\x1B[33m';
-  static const String blue = '\x1B[34m';
-  static const String cyan = '\x1B[36m';
-  static const String white = '\x1B[37m';
-}
+import 'package:colored_logger/colored_logger.dart';
 
 /// Console utility for pretty terminal output
 class Console {
@@ -21,42 +8,41 @@ class Console {
 
   Console({this.useColors = true});
 
-  bool get _supportsAnsi => useColors && stdout.supportsAnsiEscapes;
-
-  String _colorize(String text, String color) {
-    if (_supportsAnsi) {
-      return '$color$text${_AnsiColors.reset}';
-    }
-    return text;
-  }
-
   // ─────────────────────────────────────────────────────────────────
   // Basic Output
   // ─────────────────────────────────────────────────────────────────
 
   /// Print a success message (green)
   void success(String message) {
-    print(_colorize('✔ $message', _AnsiColors.green));
+    if (useColors) {
+      print(message.green());
+    } else {
+      print(message);
+    }
   }
 
   /// Print an error message (red)
   void error(String message) {
-    print(_colorize('✖ $message', _AnsiColors.red));
+    if (useColors) {
+      print(message.red());
+    } else {
+      print(message);
+    }
   }
 
-  /// Print a warning message (yellow)
+  /// Print a warning message (plain)
   void warning(String message) {
-    print(_colorize('⚠ $message', _AnsiColors.yellow));
+    print(message);
   }
 
-  /// Print an info message (cyan)
+  /// Print an info message (plain)
   void info(String message) {
-    print(_colorize('ℹ $message', _AnsiColors.cyan));
+    print(message);
   }
 
-  /// Print a debug message (dim)
+  /// Print a debug message (plain)
   void debug(String message) {
-    print(_colorize('  $message', _AnsiColors.dim));
+    print('  $message');
   }
 
   /// Print a normal message
@@ -73,64 +59,60 @@ class Console {
   // Styled Output
   // ─────────────────────────────────────────────────────────────────
 
-  /// Print a header (bold cyan)
+  /// Print a header (plain)
   void header(String message) {
     blank();
-    print(_colorize('${_AnsiColors.bold}═══ $message ═══', _AnsiColors.cyan));
+    print('=== $message ===');
     blank();
   }
 
-  /// Print a section title (bold)
+  /// Print a section title (plain)
   void section(String message) {
     blank();
-    print(_colorize('▸ $message', '${_AnsiColors.bold}${_AnsiColors.white}'));
+    print(message);
   }
 
-  /// Print a section title without leading blank line (compact)
+  /// Print a section title without leading blank line (plain)
   void sectionCompact(String message) {
-    print(_colorize('▸ $message', '${_AnsiColors.bold}${_AnsiColors.white}'));
+    print(message);
   }
 
-  /// Print a sub-section title (indented, dimmer)
+  /// Print a sub-section title (plain)
   void subSection(String message) {
-    print(_colorize('  ┄ $message', '${_AnsiColors.dim}${_AnsiColors.white}'));
+    print('  $message');
   }
 
-  /// Print a key-value pair
+  /// Print a key-value pair (plain)
   void keyValue(String key, String value, {int keyWidth = 16}) {
     final paddedKey = key.padRight(keyWidth);
-    print(
-      '  ${_colorize(paddedKey, _AnsiColors.blue)}: ${_colorize(value, _AnsiColors.white)}',
-    );
+    print('  $paddedKey: $value');
   }
 
   // ─────────────────────────────────────────────────────────────────
   // Box Drawing
   // ─────────────────────────────────────────────────────────────────
 
-  /// Print a box with title and content
+  /// Print a box with title and content (plain)
   void box(String title, List<String> lines) {
     const width = 50;
     final topBorder = '╔${'═' * (width - 2)}╗';
     final bottomBorder = '╚${'═' * (width - 2)}╝';
     final divider = '╠${'═' * (width - 2)}╣';
 
-    print(_colorize(topBorder, _AnsiColors.cyan));
-    print(_colorize('║ ${title.padRight(width - 4)} ║', _AnsiColors.cyan));
-    print(_colorize(divider, _AnsiColors.cyan));
+    print(topBorder);
+    print('║ ${title.padRight(width - 4)} ║');
+    print(divider);
 
     for (final line in lines) {
       final truncated =
           line.length > width - 4 ? '${line.substring(0, width - 7)}...' : line;
-      print(
-        _colorize('║ ${truncated.padRight(width - 4)} ║', _AnsiColors.cyan),
-      );
+      print('║ ${truncated.padRight(width - 4)} ║');
     }
 
-    print(_colorize(bottomBorder, _AnsiColors.cyan));
+    print(bottomBorder);
   }
 
-  /// Print a menu box
+  /// Print a menu box (plain)
   void menu(String title, List<String> options) {
     const width = 50;
     final topBorder = '╔${'═' * (width - 2)}╗';
@@ -138,15 +120,15 @@ class Console {
     final divider = '╠${'═' * (width - 2)}╣';
 
     blank();
-    print(_colorize(topBorder, _AnsiColors.cyan));
-    print(_colorize('║ ${title.padRight(width - 4)} ║', _AnsiColors.cyan));
-    print(_colorize(divider, _AnsiColors.cyan));
+    print(topBorder);
+    print('║ ${title.padRight(width - 4)} ║');
+    print(divider);
 
     for (final option in options) {
-      print(_colorize('║   ${option.padRight(width - 6)} ║', _AnsiColors.cyan));
+      print('║   ${option.padRight(width - 6)} ║');
     }
 
-    print(_colorize(bottomBorder, _AnsiColors.cyan));
+    print(bottomBorder);
     blank();
   }
 
@@ -154,41 +136,49 @@ class Console {
   // Progress / Spinner
   // ─────────────────────────────────────────────────────────────────
 
-  /// Start a spinner (simple version - prints message)
+  /// Start a spinner (simple version - prints message plain)
   void startSpinner(String message) {
-    stdout.write(_colorize('⏳ $message...', _AnsiColors.yellow));
+    stdout.write('$message...');
   }
 
-  /// Stop spinner with success
+  /// Stop spinner with success (green)
   void stopSpinnerSuccess(String message) {
-    print('\r${_colorize('✔ $message', _AnsiColors.green)}${' ' * 20}');
+    if (useColors) {
+      print('\r${message.green()}${' ' * 20}');
+    } else {
+      print('\r$message${' ' * 20}');
+    }
   }
 
-  /// Stop spinner with error
+  /// Stop spinner with error (red)
   void stopSpinnerError(String message) {
-    print('\r${_colorize('✖ $message', _AnsiColors.red)}${' ' * 20}');
+    if (useColors) {
+      print('\r${message.red()}${' ' * 20}');
+    } else {
+      print('\r$message${' ' * 20}');
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────
   // User Input
   // ─────────────────────────────────────────────────────────────────
 
-  /// Prompt for text input
+  /// Prompt for text input (plain)
   String prompt(String message, {String? defaultValue}) {
     if (defaultValue != null) {
-      stdout.write(_colorize('? $message [$defaultValue]: ', _AnsiColors.cyan));
+      stdout.write('$message [$defaultValue]: ');
     } else {
-      stdout.write(_colorize('? $message: ', _AnsiColors.cyan));
+      stdout.write('$message: ');
     }
 
     final input = stdin.readLineSync()?.trim() ?? '';
     return input.isEmpty && defaultValue != null ? defaultValue : input;
   }
 
-  /// Prompt for yes/no confirmation
+  /// Prompt for yes/no confirmation (plain)
   bool confirm(String message, {bool defaultValue = true}) {
     final defaultStr = defaultValue ? 'Y/n' : 'y/N';
-    stdout.write(_colorize('? $message ($defaultStr): ', _AnsiColors.cyan));
+    stdout.write('$message ($defaultStr): ');
 
     final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
 
@@ -210,21 +200,20 @@ class Console {
     // Clamp defaultIndex to valid range
     final safeDefault = defaultIndex.clamp(0, options.length - 1);
 
-    print(_colorize('\n? $message', _AnsiColors.cyan));
+    print('\n$message');
 
     for (var i = 0; i < options.length; i++) {
       final marker = i == safeDefault ? '>' : ' ';
-      print(
-        _colorize(
-          '  $marker $i. ${options[i]}',
-          i == safeDefault ? _AnsiColors.green : _AnsiColors.white,
-        ),
-      );
+      // Current selection in green if colors enabled, otherwise just marker
+      final line = '  $marker $i. ${options[i]}';
+      if (useColors && i == safeDefault) {
+        print(line.green());
+      } else {
+        print(line);
+      }
     }
 
-    stdout.write(
-      _colorize('Enter choice [0-${options.length - 1}]: ', _AnsiColors.cyan),
-    );
+    stdout.write('Enter choice [0-${options.length - 1}]: ');
     final input = stdin.readLineSync()?.trim() ?? '';
 
     if (input.isEmpty) return safeDefault;
@@ -251,32 +240,22 @@ class Console {
     required Duration duration,
   }) {
     blank();
-    print(
-      _colorize(
-        '═══════════════════════════════════════════',
-        _AnsiColors.green,
-      ),
-    );
-    print(
-      _colorize('  BUILD COMPLETE', '${_AnsiColors.bold}${_AnsiColors.green}'),
-    );
-    print(
-      _colorize(
-        '═══════════════════════════════════════════',
-        _AnsiColors.green,
-      ),
-    );
+    
+    print('═══════════════════════════════════════════');
+    if (useColors) {
+      print('  BUILD COMPLETE'.bold.green());
+    } else {
+      print('  BUILD COMPLETE');
+    }
+    print('═══════════════════════════════════════════');
+    
     keyValue('App Name', appName);
     keyValue('Version', version);
     keyValue('Build Type', buildType);
     keyValue('Output', outputPath);
     keyValue('Duration', '${duration.inSeconds}s');
-    print(
-      _colorize(
-        '═══════════════════════════════════════════',
-        _AnsiColors.green,
-      ),
-    );
+    
+    print('═══════════════════════════════════════════');
     blank();
   }
 }

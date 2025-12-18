@@ -1,12 +1,12 @@
 name: fluttercraft
 description: Cross-platform Flutter build CLI - Craft Your Flutter Builds with Precision.
-version: 0.1.5
+version: 0.1.6
 repository: https://github.com/venhdev/fluttercraft-cli.git
 homepage: https://github.com/venhdev/fluttercraft-cli
 issue_tracker: https://github.com/venhdev/fluttercraft-cli/issues
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.4.0
 
 executables:
   flc: fluttercraft
@@ -21,6 +21,9 @@ dependencies:
   
   # Cross-platform path utilities
   path: ^1.9.1
+
+  # Color support
+  colored_logger: ^2.1.1
 
 dev_dependencies:
   lints: ^5.0.0

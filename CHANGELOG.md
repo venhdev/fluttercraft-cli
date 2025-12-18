@@ -1,3 +1,12 @@
+## 0.1.6 (2025-12-18)
+
+### ✨ New Features
+- **No Review Option** - Added `no_review` config and CLI flag to skip final build confirmation
+  - `build --no-review` or `build -y` skips the "Do you want to proceed?" prompt
+  - Configurable via `build.no_review: true` in `fluttercraft.yaml`
+
+---
+
 ## 0.1.5 (2025-12-18)
 
 ### 🔧 Improvements

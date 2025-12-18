@@ -21,6 +21,8 @@ build:
   flavor: null
   # Main entry point
   target: lib/main.dart
+  # Skip final confirmation/review (default: false)
+  no_review: false
 
 # ──────────────────────────────────────────────
 # Output & Input paths

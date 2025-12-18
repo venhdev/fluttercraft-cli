@@ -36,6 +36,7 @@ class BuildConfig {
   final String buildType;
   final String? flavor;
   final String targetDart;
+  final bool noReview;
 
   // Paths
   final String outputPath;
@@ -83,6 +84,7 @@ class BuildConfig {
     required this.buildType,
     this.flavor,
     required this.targetDart,
+    this.noReview = false,
     required this.outputPath,
     required this.flags,
     this.globalDartDefine = const {},
@@ -157,6 +159,7 @@ class BuildConfig {
                 : 1,
         buildType: 'aab',
         targetDart: 'lib/main.dart',
+        noReview: false,
         outputPath: '.fluttercraft/dist',
         flags: BuildFlags.defaults,
         useFvm: false,
@@ -204,7 +207,11 @@ class BuildConfig {
     final flavor = _getStringOrNull(build, 'flavor');
     final targetDart = _getStringOrNull(build, 'target') ??
         _getStringOrNull(buildDefaults, 'target') ??
+        _getStringOrNull(buildDefaults, 'target') ??
         'lib/main.dart';
+    final noReview = _getBool(build, 'no_review', null) ??
+        _getBool(buildDefaults, 'no_review', null) ??
+        false;
 
     // ─────────────────────────────────────────────────────────────────
     // Parse flags from build or build_defaults
@@ -353,6 +360,7 @@ class BuildConfig {
       buildType: buildType,
       flavor: flavor,
       targetDart: targetDart,
+      noReview: noReview,
       outputPath: outputPath,
       flags: BuildFlags(
         shouldPromptDartDefine: shouldPromptDartDefine,
@@ -562,6 +570,7 @@ class BuildConfig {
   buildType: $buildType
   flavor: $flavor
   targetDart: $targetDart
+  noReview: $noReview
   outputPath: $outputPath
   flags: $flags
   dartDefine: $finalDartDefine

@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  colored_logger:
+    dependency: "direct main"
+    description:
+      name: colored_logger
+      sha256: "90abcf0d1307f7c6dbf3c3f4af0804e56f6d1ab28c97a76fd403d7e40989c49f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   convert:
     dependency: transitive
     description:

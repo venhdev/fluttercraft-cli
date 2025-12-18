@@ -40,6 +40,18 @@ class BuildCommand extends Command<int> {
         help: 'Skip confirmation prompts',
         defaultsTo: false,
       )
+      ..addFlag(
+        'review',
+        help: 'Ask for final confirmation/review before building',
+        defaultsTo: true,
+      )
+      ..addFlag(
+        'yes',
+        abbr: 'y',
+        help: 'Skip all confirmation prompts (same as --no-review)',
+        defaultsTo: false,
+        negatable: false,
+      )
       ..addOption(
         'version',
         abbr: 'v',
@@ -90,6 +102,7 @@ class BuildCommand extends Command<int> {
       buildType: buildType,
       flavor: config.flavor,
       targetDart: config.targetDart,
+      noReview: config.noReview,
       outputPath: config.outputPath,
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
@@ -173,6 +186,18 @@ class BuildCommand extends Command<int> {
       }
     }
 
+    // Update pubspec.yaml if version changed
+    if (currentVersion.fullVersion != versionToUse && argResults?['no-confirm'] != true) {
+      final updated = await pubspecParser.updateVersion(currentVersion.fullVersion);
+      if (updated) {
+        console.success(
+          'Updated pubspec.yaml version to ${currentVersion.fullVersion}',
+        );
+      } else {
+        console.warning('Failed to update pubspec.yaml version.');
+      }
+    }
+
     // Create updated config with new version
     final buildConfig = BuildConfig(
       projectRoot: config.projectRoot,
@@ -182,6 +207,7 @@ class BuildCommand extends Command<int> {
       buildType: config.buildType,
       flavor: config.flavor,
       targetDart: config.targetDart,
+      noReview: config.noReview,
       outputPath: config.outputPath,
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
@@ -197,6 +223,13 @@ class BuildCommand extends Command<int> {
       flavors: config.flavors,
       aliases: config.aliases,
     );
+
+    // Determine if we should ask for review
+    final shouldReview =
+        argResults?['review'] == true &&
+        argResults?['yes'] != true &&
+        argResults?['no-confirm'] != true &&
+        !buildConfig.noReview;
 
     // Start logging
     await logger.startSession(version: currentVersion.fullVersion);
@@ -293,11 +326,11 @@ class BuildCommand extends Command<int> {
     }
 
     // Confirmation with edit option
-    if (argResults?['no-confirm'] != true) {
+    if (shouldReview) {
       var currentCmd = buildCmd;
 
       while (true) {
-        stdout.write('\nProceed with build? (y/n/e to edit): ');
+        stdout.write('\nDo you want to proceed? (y/n) or (e)dit command: ');
         final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
 
         if (input == 'n' || input == 'no') {

@@ -10,3 +10,7 @@ scripts/.buildenv
 
 # FVM Version Cache
 .fvm/
+
+build/
+.plans/
+.dart_tool/
