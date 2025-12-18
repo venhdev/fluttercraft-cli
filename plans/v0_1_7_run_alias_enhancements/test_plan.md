@@ -5,7 +5,7 @@
 ### 1. Complex Runtime Parameters
 - **Mixed Substitution**: `git commit -m "{1}" --author="{0}"`
 - **Quoted Arguments**: `flc run myalias "argument with spaces"`
-- **Unused Arguments**: Providing more arguments than placeholders (should be ignored or handled if `{all}` is used).
+- **Unused Arguments**: Providing more arguments than placeholders (should be ignored).
 
 ### 2. Interactive Prompts
 - **Missing Named**: Configure `{key}` but runs without `--key`. verify prompt.

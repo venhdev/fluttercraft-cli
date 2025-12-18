@@ -98,7 +98,7 @@ alias:
 ```
 
 **Usage:** `> commit "fix"` or `flc run commit "fix"`
-**Syntax:** `{0}` (pos), `{key}` (named), `{all}` (rest).
+**Syntax:** `{0}` (pos), `{key}` (named).
 
 ## 📂 Output
 

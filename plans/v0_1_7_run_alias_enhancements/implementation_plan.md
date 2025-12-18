@@ -18,7 +18,7 @@ Reliably verify the new run alias runtime parameter functionality with comprehen
 #### [MODIFY] [CHANGELOG.md](file:///C:/src/self/flutter-dart/cli/fluttercraft/CHANGELOG.md)
 - Add entry for v0.1.7 detailing alias enhancements:
     - Direct alias execution in shell.
-    - Runtime parameters (`{0}`, `{key}`, `{all}`).
+    - Runtime parameters (`{0}`, `{key}`).
     - Command preview.
 
 #### [MODIFY] [README.md](file:///C:/src/self/flutter-dart/cli/fluttercraft/README.md)

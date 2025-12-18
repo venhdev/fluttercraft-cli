@@ -3,7 +3,7 @@
 ### ✨ New Features
 - **Run Aliases** - Enhanced `run` command:
   - **Direct Execution** - Run aliases directly in shell (e.g. `> my_alias`)
-  - **Runtime Parameters** - Support for `{0}`, `{key}`, `{all}` placeholders
+  - **Runtime Parameters** - Support for `{0}` (positional) and `{key}` (named) placeholders.
   - **Preview** - Shows command preview before execution
   - **Auto-list** - `flc run` lists available aliases
 

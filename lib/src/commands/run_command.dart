@@ -94,6 +94,16 @@ class RunCommand {
       return 1;
     }
 
+    // Check if alias has params (placeholders)
+    final placeholderRegex = RegExp(r'\{([a-zA-Z0-9_]+)\}');
+    bool hasParams = false;
+    for (final cmd in alias.commands) {
+      if (cmd.contains('{all}') || placeholderRegex.hasMatch(cmd)) {
+        hasParams = true;
+        break;
+      }
+    }
+
     _console.blank();
     _console.header('Preparing alias: $name');
 
@@ -105,20 +115,13 @@ class RunCommand {
     for (final cmd in alias.commands) {
       String processed = cmd;
       
-      // 1. Replace {all} with all raw arguments
-      if (processed.contains('{all}')) {
-        processed = processed.replaceAll('{all}', args.join(' '));
-      }
-
-      // 2. Replace named placeholders {key}
-      final placeholderRegex = RegExp(r'\{([a-zA-Z0-9_]+)\}');
+      // 1. Replace named placeholders {key}
       final matches = placeholderRegex.allMatches(processed).toList();
       
       for (final match in matches) {
         final key = match.group(1)!;
-        if (key == 'all') continue; // Already handled
         
-        // Skip numeric placeholders for now (handled in step 3)
+        // Skip numeric placeholders for now (handled in next step)
         if (int.tryParse(key) != null) continue;
 
         if (parsedArgs.named.containsKey(key)) {
@@ -130,7 +133,7 @@ class RunCommand {
         }
       }
 
-      // 3. Replace positional placeholders {0}, {1}
+      // 2. Replace positional placeholders {0}, {1}
       // Also fill sequentially from remaining positional args if no specific index used?
       // User said: "fill provided {arg}, then substitute sequentially"
       // Let's handle explicit {0} first
@@ -164,6 +167,14 @@ class RunCommand {
       _console.info('  > $cmd');
     }
     _console.blank();
+
+    if (hasParams) {
+      if (!_console.confirm('Continue?', defaultValue: true)) {
+        _console.log('Aborted.');
+        return 0;
+      }
+      _console.blank();
+    }
     
     // Execute
     for (var i = 0; i < processedCommands.length; i++) {

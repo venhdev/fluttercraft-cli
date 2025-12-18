@@ -78,7 +78,7 @@ build:
     });
 
     group('Alias Execution', () {
-      test('shows error when no alias name is provided', () async {
+      test('lists aliases when no alias name is provided', () async {
         final context = await createTestContext('''
 build:
   app_name: testapp
@@ -88,7 +88,7 @@ alias:
       - echo hello
 ''');
         final runCmd = RunCommand(context);
-        expect(await runCmd.execute([]), 1);
+        expect(await runCmd.execute([]), 0);
       });
 
       test('executes single simple command successfully', () async {

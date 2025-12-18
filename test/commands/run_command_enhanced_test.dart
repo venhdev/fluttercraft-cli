@@ -96,7 +96,7 @@ alias:
       expect(mockRunner.executedCommands[0], ['echo', 'hello']);
     });
 
-    test('replaces {all} with raw arguments', () async {
+    test('replaces {all} as named argument', () async {
       final context = await createTestContext('''
 build:
   app_name: testapp
@@ -112,15 +112,12 @@ alias:
       );
 
       final exitCode = await runCmd.execute(
-        ['wrapper', '--flag', 'value', 'pos'],
+        ['wrapper', '--all', 'value'],
       );
       
       expect(exitCode, 0);
-      // Args joined by space: "--flag value pos"
-      // Mock runner: executable="wrapper", args=["--flag", "value", "pos"] if parsed correctly by _parseCommand
-      // _parseCommand logic splits by space but respects quotes.
       expect(mockRunner.executedCommands[0], 
-        ['wrapper', '--flag', 'value', 'pos']);
+        ['wrapper', 'value']);
     });
 
     test('prompts for missing named parameter', () async {
