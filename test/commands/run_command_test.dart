@@ -54,6 +54,19 @@ alias:
         expect(await runCmd.execute(['-l']), 0);
       });
 
+      test('lists aliases when "list" subcommand is provided', () async {
+        final context = await createTestContext('''
+build:
+  app_name: testapp
+alias:
+  test:
+    cmds:
+      - echo test
+''');
+        final runCmd = RunCommand(context);
+        expect(await runCmd.execute(['list']), 0);
+      });
+
       test('shows message when no aliases are defined', () async {
         final context = await createTestContext('''
 build:

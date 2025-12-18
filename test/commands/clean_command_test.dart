@@ -38,11 +38,12 @@ void main() {
       expect(options.containsKey('dist-only'), true);
     });
 
-    test('argParser includes yes flag with abbreviation', () {
+    test('argParser includes yes flag with negation disabled', () {
       final cleanCmd = CleanCommand();
       final options = cleanCmd.argParser.options;
       expect(options.containsKey('yes'), true);
       expect(options['yes']?.abbr, 'y');
+      expect(options['yes']?.negatable, false);
     });
 
     test('clean removes build folder when it exists', () async {

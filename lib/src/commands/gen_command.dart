@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
 import '../core/build_config.dart';
+import '../core/config_backup.dart';
 import '../core/pubspec_parser.dart';
 import '../utils/console.dart';
 
@@ -34,10 +35,19 @@ class GenCommand extends Command<int> {
     final configFile = File(configPath);
 
     // Check if file exists
-    if (await configFile.exists() && !force) {
-      console.warning('fluttercraft.yaml already exists.');
-      console.info('Use --force to overwrite.');
-      return 1;
+    if (await configFile.exists()) {
+      if (!force) {
+        console.warning('fluttercraft.yaml already exists.');
+        console.info('Use --force to overwrite.');
+        return 1;
+      }
+      
+      // Backup existing config
+      final backup = ConfigBackup(projectRoot: projectRoot, console: console);
+      final backupPath = await backup.backup(reason: 'gen');
+      if (backupPath != null) {
+        console.info('Backed up existing config to: $backupPath');
+      }
     }
 
     // Load pubspec to get app name and version

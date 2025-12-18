@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import '../core/app_context.dart';
+import '../core/config_backup.dart';
+import '../commands/run_command.dart';
 import '../utils/console.dart';
 import '../version.dart';
 
@@ -63,7 +65,7 @@ class Shell {
       case 'exit':
       case 'quit':
       case 'q':
-        _running = false;
+        await stop();
         console.info('Goodbye!');
         return;
 
@@ -99,6 +101,14 @@ class Shell {
     if (_commands.containsKey(command)) {
       final handler = _commands[command]!;
       await handler(args);
+      return;
+    }
+
+    // Check aliases
+    if (_appContext != null &&
+        _appContext!.config.aliases.containsKey(command)) {
+      final runCmd = RunCommand(_appContext!, console: console);
+      await runCmd.execute([command, ...args]);
       return;
     }
 
@@ -193,47 +203,49 @@ class Shell {
 
     // FVM sub-section
     console.subSection('FVM');
-    console.keyValue('Enabled', ctx.useFvm.toString(), keyWidth: kw);
+    console.keyValue('Enabled', ctx.useFvm.toString(), keyWidth: kw, indent: 4);
     if (verbose && ctx.useFvm) {
       console.keyValue(
         'Flutter Version',
         ctx.flutterVersion ?? '(auto-detected)',
         keyWidth: kw,
+        indent: 4,
       );
     }
 
     // Shorebird sub-section
     console.subSection('Shorebird');
-    console.keyValue('Enabled', ctx.useShorebird.toString(), keyWidth: kw);
+    console.keyValue('Enabled', ctx.useShorebird.toString(), keyWidth: kw, indent: 4);
     if (verbose && ctx.useShorebird) {
       console.keyValue(
         'App ID',
         ctx.shorebirdAppId ?? '(from shorebird.yaml)',
         keyWidth: kw,
+        indent: 4,
       );
       if (ctx.shorebirdArtifact != null) {
-        console.keyValue('Artifact', ctx.shorebirdArtifact!, keyWidth: kw);
+        console.keyValue('Artifact', ctx.shorebirdArtifact!, keyWidth: kw, indent: 4);
       }
-      console.keyValue('No Confirm', ctx.shorebirdNoConfirm.toString(), keyWidth: kw);
+      console.keyValue('No Confirm', ctx.shorebirdNoConfirm.toString(), keyWidth: kw, indent: 4);
     }
 
     // Verbose: Build flags
     if (verbose) {
       console.subSection('Build Flags');
-      console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw);
-      console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw);
-      console.keyValue('Prompt Dart Define', ctx.shouldPromptDartDefine.toString(), keyWidth: kw);
+      console.keyValue('Should Clean', ctx.shouldClean.toString(), keyWidth: kw, indent: 4);
+      console.keyValue('Should Build Runner', ctx.shouldBuildRunner.toString(), keyWidth: kw, indent: 4);
+      console.keyValue('Prompt Dart Define', ctx.shouldPromptDartDefine.toString(), keyWidth: kw, indent: 4);
     }
 
     // Verbose: Paths
     if (verbose) {
       console.subSection('Paths');
-      console.keyValue('Target', ctx.targetDart, keyWidth: kw);
-      console.keyValue('Keystore', ctx.keystorePath, keyWidth: kw);
+      console.keyValue('Target', ctx.targetDart, keyWidth: kw, indent: 4);
+      console.keyValue('Keystore', ctx.keystorePath, keyWidth: kw, indent: 4);
       if (ctx.bundletoolPath != null) {
-        console.keyValue('Bundletool', ctx.bundletoolPath!, keyWidth: kw);
+        console.keyValue('Bundletool', ctx.bundletoolPath!, keyWidth: kw, indent: 4);
       }
-      console.keyValue('Project Root', ctx.projectRoot, keyWidth: kw);
+      console.keyValue('Project Root', ctx.projectRoot, keyWidth: kw, indent: 4);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -287,6 +299,9 @@ class Shell {
 
   /// Reload configuration from fluttercraft.yaml
   Future<void> _reloadContext() async {
+    // Backup before reload (just in case)
+    await _backupConfig('reload');
+
     console.info('Reloading configuration...');
 
     try {
@@ -304,8 +319,20 @@ class Shell {
     }
   }
 
+  /// Backup configuration
+  Future<void> _backupConfig(String reason) async {
+    if (appContext == null) return;
+    
+    final backup = ConfigBackup(
+      projectRoot: appContext!.projectRoot, 
+      console: console,
+    );
+    await backup.backup(reason: reason);
+  }
+
   /// Stop the shell (can be called from external handlers)
-  void stop() {
+  Future<void> stop() async {
+    await _backupConfig('quit');
     _running = false;
   }
 

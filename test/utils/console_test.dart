@@ -165,13 +165,18 @@ void main() {
 
       test('subSection prints indented title', () {
         runWithIO(() => console.subSection('Sub'));
-        expect(printBuffer.toString(), '  Sub\n');
+        expect(printBuffer.toString(), '  -- Sub --\n');
       });
 
       test('keyValue prints formatted pair', () {
         runWithIO(() => console.keyValue('Key', 'Value'));
-        // Default width 16
+        // Default width 16, indent 2
         expect(printBuffer.toString(), '  Key             : Value\n');
+      });
+
+      test('keyValue supports custom indent', () {
+        runWithIO(() => console.keyValue('Key', 'Value', indent: 4));
+        expect(printBuffer.toString(), '    Key             : Value\n');
       });
     });
 
@@ -310,6 +315,21 @@ void main() {
          runWithIO(() => console.success('Msg'));
          expect(printBuffer.toString().trim(), isNot(equals('Msg')));
          expect(printBuffer.toString(), contains('Msg'));
+       });
+
+       test('section uses colors when enabled', () {
+         console = Console(useColors: true);
+         runWithIO(() => console.section('Section'));
+         // Should contain ANSI codes + Section + newline
+         expect(printBuffer.toString().trim(), isNot(equals('Section')));
+         expect(printBuffer.toString(), contains('Section'));
+       });
+
+       test('subSection uses colors when enabled', () {
+         console = Console(useColors: true);
+         runWithIO(() => console.subSection('Sub'));
+         expect(printBuffer.toString().trim(), isNot(equals('-- Sub --')));
+         expect(printBuffer.toString(), contains('-- Sub --'));
        });
     });
   });

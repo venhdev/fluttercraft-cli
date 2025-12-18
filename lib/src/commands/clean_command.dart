@@ -22,7 +22,13 @@ class CleanCommand extends Command<int> {
         help: 'Only remove build folder, skip flutter clean',
         defaultsTo: false,
       )
-      ..addFlag('yes', abbr: 'y', help: 'Skip confirmation', defaultsTo: false);
+      ..addFlag(
+        'yes',
+        abbr: 'y',
+        help: 'Skip confirmation',
+        defaultsTo: false,
+        negatable: false,
+      );
   }
 
   @override

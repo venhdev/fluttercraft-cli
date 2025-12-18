@@ -66,26 +66,42 @@ class Console {
     blank();
   }
 
-  /// Print a section title (plain)
+  /// Print a section title (plain/colored)
   void section(String message) {
     blank();
-    print(message);
+    if (useColors) {
+      // Assuming bold is a property and cyan is a method based on existing code '.bold.green()'
+      print(message.bold.cyan());
+    } else {
+      print(message);
+    }
   }
 
   /// Print a section title without leading blank line (plain)
   void sectionCompact(String message) {
-    print(message);
+    if (useColors) {
+      print(message.bold.cyan());
+    } else {
+      print(message);
+    }
   }
 
   /// Print a sub-section title (plain)
   void subSection(String message) {
-    print('  $message');
+    final label = '-- $message --';
+    if (useColors) {
+      // Use ANSI bright black (gray)
+      print('  \x1B[90m$label\x1B[0m');
+    } else {
+      print('  $label');
+    }
   }
 
   /// Print a key-value pair (plain)
-  void keyValue(String key, String value, {int keyWidth = 16}) {
+  void keyValue(String key, String value, {int keyWidth = 16, int indent = 2}) {
+    final padding = ' ' * indent;
     final paddedKey = key.padRight(keyWidth);
-    print('  $paddedKey: $value');
+    print('$padding$paddedKey: $value');
   }
 
   // ─────────────────────────────────────────────────────────────────

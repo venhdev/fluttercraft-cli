@@ -124,6 +124,10 @@ paths:
 # CUSTOM COMMAND ALIASES
 # ══════════════════════════════════════════════════════════════════════════════
 alias:
+  commit:
+    cmds:
+      - "git add ."
+      - "git commit -m '{1}' --author='{0}'"
   gen-icon:
     cmds:
       - fvm flutter pub get

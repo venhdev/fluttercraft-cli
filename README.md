@@ -33,6 +33,10 @@ flc build --type apk --no-confirm
 ```bash
 dart pub global activate fluttercraft
 ```
+or with local source
+```bash
+dart pub global activate --source path .
+```
 
 **Alternative:** Download the binary from [Releases](https://github.com/venhdev/fluttercraft-cli/releases).
 
@@ -82,7 +86,19 @@ alias:
   gen-assets:
     cmds:
       - fvm flutter pub run build_runner build
+
+## 🏃 Run Aliases
+
+Run aliases from `fluttercraft.yaml` with parameter substitution.
+
+```yaml
+alias:
+  commit:
+    cmds: ["git commit -m '{0}'"]
 ```
+
+**Usage:** `> commit "fix"` or `flc run commit "fix"`
+**Syntax:** `{0}` (pos), `{key}` (named), `{all}` (rest).
 
 ## 📂 Output
 
