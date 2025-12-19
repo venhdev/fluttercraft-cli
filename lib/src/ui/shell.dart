@@ -252,8 +252,8 @@ class Shell {
     // VERBOSE-ONLY SECTIONS
     // ─────────────────────────────────────────────────────────────────
     if (verbose) {
-      // Dart defines (only if present)
-      if (ctx.finalDartDefine.isNotEmpty) {
+      // Dart defines (only if present or from file)
+      if (ctx.finalDartDefine.isNotEmpty || ctx.dartDefineFromFile != null) {
         console.section('Dart Define');
         
         // Show dart_define_from_file source first if specified

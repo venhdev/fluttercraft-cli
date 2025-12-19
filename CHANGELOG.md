@@ -1,3 +1,11 @@
+## 0.1.8 (2025-12-19)
+
+### 🐛 Bug Fixes
+- **Shorebird Integration**: Fixed missing `--flutter-version` flag in Shorebird command generation when FVM is used.
+- **Config UI**: Fixed `info -v` not displaying `dart_define_from_file` when the dart define map is empty.
+
+---
+
 ## 0.1.7 (2025-12-19)
 
 ### ✨ New Features

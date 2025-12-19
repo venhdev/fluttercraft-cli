@@ -113,6 +113,9 @@ class FlutterRunner {
       if (config.shorebirdNoConfirm) {
         sbArgs.add('--no-confirm');
       }
+      if (config.flutterVersion != null && config.flutterVersion!.isNotEmpty) {
+        sbArgs.add('--flutter-version=${config.flutterVersion}');
+      }
       sbArgs.add('--');
       sbArgs.addAll(flutterArgs);
       return sbArgs.join(' ');
