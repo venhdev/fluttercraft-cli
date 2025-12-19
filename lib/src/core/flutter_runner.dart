@@ -30,6 +30,14 @@ class FlutterRunner {
     ], workingDirectory: projectRoot);
   }
 
+  /// Get the full clean command for logging
+  String getCleanCommand({bool useFvm = false}) {
+    if (useFvm) {
+      return 'fvm flutter clean';
+    }
+    return 'flutter clean';
+  }
+
   /// Run pub get
   Future<ProcessResult> pubGet({bool useFvm = false}) async {
     _console.info('Running pub get...');

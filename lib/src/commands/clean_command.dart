@@ -70,7 +70,10 @@ class CleanCommand extends Command<int> {
     console.keyValue('Build folder', distExists ? distDir.path : '(not found)');
 
     if (argResults?['dist-only'] != true) {
-      console.keyValue('Flutter clean', 'Yes');
+      console.keyValue(
+        'Flutter clean',
+        flutterRunner.getCleanCommand(useFvm: config.useFvm),
+      );
     }
     console.blank();
 
