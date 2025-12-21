@@ -1,3 +1,11 @@
+## 0.1.9 (2025-12-21)
+
+### 🧹 Housekeeping
+- **Removed Legacy Config**: Removed obsolete `.buildenv` system and related documentation scripts (`gen-buildenv.ps1`, `build.ps1`, `buildenv.base`).
+- **Documentation**: Updated `doc/proj_structure.md` to accurately reflect the current project structure, including new core modules and tests.
+
+---
+
 ## 0.1.8 (2025-12-19)
 
 ### 🐛 Bug Fixes

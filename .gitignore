@@ -5,9 +5,6 @@
 # Build output
 .fluttercraft/
 
-# Generated build config
-scripts/.buildenv
-
 # FVM Version Cache
 .fvm/
 

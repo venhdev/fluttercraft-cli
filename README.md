@@ -29,11 +29,23 @@ flc build --type apk --no-confirm
 
 ## 📦 Installation
 
-**Recommended:**
+**1. Stable Channel:**
 ```bash
 dart pub global activate fluttercraft
 ```
-or with local source
+
+or via
+
+```bash
+dart pub global activate --source git https://github.com/venhdev/fluttercraft-cli.git --git-ref=stable
+```
+
+**2. Beta Channel (Git):**
+```bash
+dart pub global activate --source git https://github.com/venhdev/fluttercraft-cli.git --git-ref=beta
+```
+
+**3. Local (For Dev):**
 ```bash
 dart pub global activate --source path .
 ```

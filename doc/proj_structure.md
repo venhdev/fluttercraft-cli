@@ -1,6 +1,6 @@
-# Project Layout
+# Project Structure
 
-## Root Layout
+## Root Structure
 
 ```
 fluttercraft/
@@ -43,6 +43,7 @@ fluttercraft/
 | `pubspec_parser.dart` | Parse pubspec.yaml |
 | `build_record.dart` | Build history JSONL records |
 | `command_registry.dart` | Central command registration |
+| `config_backup.dart` | Backup & restore user config |
 
 ### UI (`ui/`)
 | File | Description |
@@ -69,12 +70,21 @@ test/
 │   ├── clean_command_test.dart
 │   ├── convert_command_test.dart
 │   ├── gen_command_test.dart
+│   ├── run_command_enhanced_test.dart
 │   └── run_command_test.dart
 ├── core/                  # Core module tests
+│   ├── app_context_test.dart
 │   ├── build_config_test.dart
 │   ├── build_flags_test.dart
-│   └── flavor_config_test.dart
+│   ├── config_backup_test.dart
+│   ├── flavor_config_test.dart
+│   ├── flutter_runner_test.dart
+│   ├── no_review_test.dart
+│   └── pubspec_parser_test.dart
+├── utils/                 # Utility tests
+│   └── console_test.dart
 ├── fixtures/              # Test YAML configs
+├── wrapper_test_mocks.dart # Shared mock classes
 └── test_helper.dart       # Shared test utilities
 ```
 
