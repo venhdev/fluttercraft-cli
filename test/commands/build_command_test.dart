@@ -16,11 +16,14 @@ void main() {
       expect(buildCmd.description, contains('Build'));
     });
 
-    test('argParser includes type option with abbreviation', () {
+    test('argParser includes platform option with abbreviation and allowed values', () {
       final buildCmd = BuildCommand();
-      final options = buildCmd.argParser.options;
-      expect(options.containsKey('type'), true);
-      expect(options['type']?.abbr, 't');
+      final parser = buildCmd.argParser;
+      final options = parser.options;
+
+      expect(options.containsKey('platform'), isTrue);
+      expect(options['platform']!.abbr, 'p');
+      expect(options['platform']!.allowed, ['apk', 'aab', 'ipa', 'app']);
     });
 
     test('argParser includes clean flag with abbreviation', () {
@@ -49,10 +52,10 @@ void main() {
       expect(options.containsKey('build-number'), true);
     });
 
-    test('type option allows only valid build types', () {
+    test('platform option allows only valid build types', () {
       final buildCmd = BuildCommand();
       final options = buildCmd.argParser.options;
-      final allowed = options['type']?.allowed;
+      final allowed = options['platform']?.allowed;
       expect(allowed, containsAll(['apk', 'aab', 'ipa', 'app']));
     });
   });

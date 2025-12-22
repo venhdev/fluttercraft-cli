@@ -15,6 +15,9 @@ class FlavorConfig {
   /// Build number override
   final int? buildNumber;
 
+  /// Platform override (e.g., 'apk', 'ipa')
+  final String? platform;
+
   /// Flavor-specific dart defines (merged with global_dart_define)
   final Map<String, dynamic> dartDefine;
 
@@ -30,6 +33,7 @@ class FlavorConfig {
     required this.name,
     this.versionName,
     this.buildNumber,
+    this.platform,
     this.dartDefine = const {},
     this.dartDefineFromFile,
     this.shouldPromptDartDefine,
@@ -47,6 +51,8 @@ class FlavorConfig {
             : yaml['number'] != null
             ? int.tryParse(yaml['number'].toString())
             : null;
+    
+    final platform = yaml['platform']?.toString();
 
     // Parse dart_define
     final dartDefineMap = yaml['dart_define'] as YamlMap?;
@@ -81,6 +87,7 @@ class FlavorConfig {
       name: name,
       versionName: versionName,
       buildNumber: buildNumber,
+      platform: platform,
       dartDefine: dartDefine,
       dartDefineFromFile: dartDefineFromFile,
       shouldPromptDartDefine: shouldPromptDartDefine,

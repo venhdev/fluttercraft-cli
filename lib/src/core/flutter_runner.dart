@@ -77,10 +77,10 @@ class FlutterRunner {
 
   /// Build Flutter app
   Future<ProcessResult> build(BuildConfig config) async {
-    _console.section('Building ${config.buildType.toUpperCase()}...');
+    _console.section('Building ${config.platform.toUpperCase()}...');
 
     // Determine platform from build type
-    final platform = _getPlatform(config.buildType);
+    final platform = _getPlatform(config.platform);
 
     // Build flutter args (exclude --release for Shorebird per official docs)
     final flutterArgs = _buildFlutterArgs(
@@ -99,16 +99,19 @@ class FlutterRunner {
 
   /// Get the full build command for logging
   String getBuildCommand(BuildConfig config) {
-    final platform = _getPlatform(config.buildType);
+    final platform = _getPlatform(config.platform);
     final flutterArgs = _buildFlutterArgs(
       config,
       forShorebird: config.useShorebird,
     );
 
     if (config.useShorebird) {
-      final sbArgs = <String>['shorebird', 'release', 'android'];
-      if (config.buildType == 'apk') {
-        sbArgs.addAll(['--artifact', 'apk']);
+      final sbPlatform = _getShorebirdPlatform(config.platform);
+      final sbArgs = <String>['shorebird', 'release', sbPlatform];
+
+      // Shorebird Management & Versioning Arguments (Before --)
+      if (sbPlatform == 'android' && config.platform == 'apk') {
+        sbArgs.add('--artifact=apk');
       }
       if (config.shorebirdNoConfirm) {
         sbArgs.add('--no-confirm');
@@ -116,13 +119,42 @@ class FlutterRunner {
       if (config.flutterVersion != null && config.flutterVersion!.isNotEmpty) {
         sbArgs.add('--flutter-version=${config.flutterVersion}');
       }
+
+      sbArgs.add('--build-name=${config.buildName}');
+      sbArgs.add('--build-number=${config.buildNumber}');
+
+      if (config.flavor != null && config.flavor!.isNotEmpty) {
+        sbArgs.add('--flavor=${config.flavor}');
+      }
+
+      if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+        sbArgs.add('--target=${config.targetDart}');
+      }
+
+      // Official Documentation: Pass arguments to the underlying flutter build after --
       sbArgs.add('--');
       sbArgs.addAll(flutterArgs);
+
       return sbArgs.join(' ');
     } else if (config.useFvm) {
       return 'fvm flutter build $platform ${flutterArgs.join(' ')}';
     } else {
       return 'flutter build $platform ${flutterArgs.join(' ')}';
+    }
+  }
+
+  /// Get Shorebird platform from build type
+  String _getShorebirdPlatform(String buildType) {
+    switch (buildType.toLowerCase()) {
+      case 'ipa':
+        return 'ios';
+      case 'app':
+      case 'macos':
+        return 'macos';
+      case 'apk':
+      case 'aab':
+      default:
+        return 'android';
     }
   }
 
@@ -190,27 +222,32 @@ class FlutterRunner {
   ) async {
     _console.info('Using Shorebird for build');
 
-    final sbArgs = <String>['release', 'android'];
+    final sbPlatform = _getShorebirdPlatform(config.platform);
+    final sbArgs = <String>['release', sbPlatform];
 
-    // Add artifact type
-    if (config.buildType == 'apk') {
-      sbArgs.addAll(['--artifact', 'apk']);
-      _console.info('Shorebird → building APK');
+    // Shorebird Management & Versioning Arguments (Before --)
+    if (sbPlatform == 'android') {
+      if (config.platform == 'apk') {
+        sbArgs.add('--artifact=apk');
+        _console.info('Shorebird → building APK');
+      } else {
+        _console.info('Shorebird → building AAB (default)');
+      }
+
+      // Manual artifact override
+      if (config.shorebirdArtifact != null &&
+          config.shorebirdArtifact!.isNotEmpty) {
+        // Remove any existing artifact args
+        sbArgs.removeWhere(
+          (arg) => arg.startsWith('--artifact') || arg == 'apk' || arg == 'aab',
+        );
+        sbArgs.add('--artifact=${config.shorebirdArtifact}');
+        _console.info(
+          'Shorebird → using manual artifact: ${config.shorebirdArtifact}',
+        );
+      }
     } else {
-      _console.info('Shorebird → building AAB (default)');
-    }
-
-    // Manual artifact override
-    if (config.shorebirdArtifact != null &&
-        config.shorebirdArtifact!.isNotEmpty) {
-      // Remove any existing artifact args
-      sbArgs.removeWhere(
-        (arg) => arg == '--artifact' || arg == 'apk' || arg == 'aab',
-      );
-      sbArgs.addAll(['--artifact', config.shorebirdArtifact!]);
-      _console.info(
-        'Shorebird → using manual artifact: ${config.shorebirdArtifact}',
-      );
+      _console.info('Shorebird → building $sbPlatform');
     }
 
     if (config.shorebirdNoConfirm) {
@@ -221,7 +258,18 @@ class FlutterRunner {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
 
-    // Add flutter args after --
+    sbArgs.add('--build-name=${config.buildName}');
+    sbArgs.add('--build-number=${config.buildNumber}');
+
+    if (config.flavor != null && config.flavor!.isNotEmpty) {
+      sbArgs.add('--flavor=${config.flavor}');
+    }
+
+    if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+      sbArgs.add('--target=${config.targetDart}');
+    }
+
+    // Official Documentation: Pass arguments to the underlying flutter build after --
     sbArgs.add('--');
     sbArgs.addAll(flutterArgs);
 

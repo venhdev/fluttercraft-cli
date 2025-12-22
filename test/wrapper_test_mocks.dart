@@ -105,7 +105,7 @@ class MockConsole implements Console {
   }
   
   @override
-  void buildSummary({required String appName, required String version, required String buildType, required String outputPath, required Duration duration}) {
+  void buildSummary({required String appName, required String version, required String platform, required String outputPath, Duration? duration}) {
     logs.add('[SUMMARY] $appName $version');
   }
 }

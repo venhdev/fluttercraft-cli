@@ -33,7 +33,7 @@ class BuildConfig {
   // Core build settings
   final String buildName;
   final int buildNumber;
-  final String buildType;
+  final String platform;
   final String? flavor;
   final String targetDart;
   final bool noReview;
@@ -81,7 +81,7 @@ class BuildConfig {
     required this.appName,
     required this.buildName,
     required this.buildNumber,
-    required this.buildType,
+    required this.platform,
     this.flavor,
     required this.targetDart,
     this.noReview = false,
@@ -157,7 +157,7 @@ class BuildConfig {
             pubspecInfo != null
                 ? int.tryParse(pubspecInfo.buildNumber) ?? 1
                 : 1,
-        buildType: 'aab',
+        platform: 'aab',
         targetDart: 'lib/main.dart',
         noReview: false,
         outputPath: '.fluttercraft/dist',
@@ -201,9 +201,19 @@ class BuildConfig {
     var buildNumber = _getInt(build, 'number', null) ??
         _getInt(buildDefaults, 'number', null) ??
         1;
-    final buildType = _getStringOrNull(build, 'type') ??
-        _getStringOrNull(buildDefaults, 'type') ??
+    var platform = _getStringOrNull(build, 'platform') ??
+        _getStringOrNull(buildDefaults, 'platform') ??
+        // Fallback to old 'type' key if platform not found (optional, but good for transition)
+        // User requested no backward compatibility, so we stick to 'platform'.
+        // Wait, initial plan said "type is being removed". 
+        // Docs say "no backward compatible".
+        // Let's implement strict platform check.
+        // Actually, let's keep it simple: just look for 'platform'
+        // But previously it looked for 'type'.
+        // So we strictly look for 'platform' now, and maybe default to 'aab' if not found?
+        // Let's default to 'aab' if missing, same as before.
         'aab';
+        
     final flavor = _getStringOrNull(build, 'flavor');
     final targetDart = _getStringOrNull(build, 'target') ??
         _getStringOrNull(buildDefaults, 'target') ??
@@ -289,6 +299,10 @@ class BuildConfig {
       if (flavorConfig.shouldPromptDartDefine != null) {
         shouldPromptDartDefine = flavorConfig.shouldPromptDartDefine!;
       }
+      
+      if (flavorConfig.platform != null) {
+        platform = flavorConfig.platform!;
+      }
       if (flavorConfig.shouldClean != null) {
         shouldClean = flavorConfig.shouldClean!;
       }
@@ -357,7 +371,7 @@ class BuildConfig {
       appName: appName,
       buildName: buildName,
       buildNumber: buildNumber,
-      buildType: buildType,
+      platform: platform,
       flavor: flavor,
       targetDart: targetDart,
       noReview: noReview,
@@ -567,7 +581,7 @@ class BuildConfig {
     return '''BuildConfig:
   appName: $appName
   version: $fullVersion
-  buildType: $buildType
+  platform: $platform
   flavor: $flavor
   targetDart: $targetDart
   noReview: $noReview

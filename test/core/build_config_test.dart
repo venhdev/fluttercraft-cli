@@ -27,7 +27,7 @@ void main() {
         expect(config.appName, 'app');
         expect(config.buildName, '1.0.0');
         expect(config.buildNumber, 1);
-        expect(config.buildType, 'aab');
+        expect(config.platform, 'aab');
         expect(config.outputPath, '.fluttercraft/dist');
       });
 
@@ -37,7 +37,7 @@ build:
   app_name: myapp
   name: 2.0.0
   number: 42
-  type: apk
+  platform: apk
 paths:
   output: custom/output
 ''');
@@ -47,7 +47,7 @@ paths:
         expect(config.appName, 'myapp');
         expect(config.buildName, '2.0.0');
         expect(config.buildNumber, 42);
-        expect(config.buildType, 'apk');
+        expect(config.platform, 'apk');
         expect(config.outputPath, 'custom/output');
       });
 
@@ -69,6 +69,7 @@ build_defaults:
   app_name: defaultapp
   name: 1.0.0
   target: lib/main.dart
+  platform: apk
 
 build:
   name: 2.0.0
@@ -79,6 +80,7 @@ build:
         expect(config.appName, 'defaultapp'); // inherited from defaults
         expect(config.buildName, '2.0.0'); // overridden in build
         expect(config.targetDart, 'lib/main.dart'); // inherited
+        expect(config.platform, 'apk'); // inherited
       });
     });
 
@@ -98,6 +100,16 @@ build:
         expect(config.flags.shouldClean, true);
         expect(config.flags.shouldBuildRunner, true);
         expect(config.flags.shouldPromptDartDefine, true);
+      });
+
+      test('platform delegates to config', () async {
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build:
+  app_name: testapp
+  platform: ipa
+''');
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.platform, 'ipa');
       });
 
       test('defaults all flags to false', () async {
@@ -179,6 +191,7 @@ flavors:
     name: 1.0.0-dev
     flags:
       should_clean: true
+    platform: ios
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -186,6 +199,7 @@ flavors:
         expect(config.buildName, '1.0.0-dev');
         expect(config.flags.shouldClean, true);
         expect(config.flavor, 'dev');
+        expect(config.platform, 'ios');
       });
 
       test('absoluteOutputPath includes flavor', () async {
@@ -301,6 +315,7 @@ build:
         expect(config.appName, 'app');
         expect(config.buildName, '1.0.0');
         expect(config.buildNumber, 1);
+        expect(config.platform, 'aab'); // Default platform
       });
 
       test('null values in YAML use defaults', () async {
@@ -309,13 +324,13 @@ build:
   app_name: null
   name: null
   number: null
-  type: null
+  platform: null
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
         expect(config.appName, 'app');
         expect(config.buildName, '1.0.0');
-        expect(config.buildType, 'aab');
+        expect(config.platform, 'aab');
       });
 
       test('missing environments section uses defaults', () async {

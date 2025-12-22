@@ -26,20 +26,20 @@ void main() {
 
         expect(context.hasConfigFile, false);
         expect(context.appName, 'app'); // default
-        expect(context.buildType, 'aab'); // default
+        expect(context.platform, 'aab'); // default
       });
 
       test('loads context with fluttercraft.yaml', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
   app_name: myapp
-  type: apk
+  platform: apk
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
 
         expect(context.hasConfigFile, true);
         expect(context.appName, 'myapp');
-        expect(context.buildType, 'apk');
+        expect(context.platform, 'apk');
       });
 
       test('loads pubspec info when available', () async {
@@ -94,14 +94,14 @@ build:
         expect(context.version, '3.0.0+99');
       });
 
-      test('buildType delegates to config', () async {
+      test('platform delegates to config', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
   app_name: testapp
-  type: ipa
+  platform: ipa
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
-        expect(context.buildType, 'ipa');
+        expect(context.platform, 'ipa');
       });
 
       test('flavor returns null when not set', () async {
@@ -247,7 +247,7 @@ build:
 
         expect(str, contains('appName'));
         expect(str, contains('testapp'));
-        expect(str, contains('buildType'));
+        expect(str, contains('platform'));
         expect(str, contains('projectRoot'));
       });
     });

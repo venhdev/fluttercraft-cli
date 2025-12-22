@@ -24,7 +24,7 @@ flc gen
 flc build
 
 # 4. Or build directly
-flc build --type apk --no-confirm
+flc build --platform apk --no-confirm
 ```
 
 ## 📦 Installation
@@ -50,13 +50,19 @@ dart pub global activate --source git https://github.com/venhdev/fluttercraft-cl
 dart pub global activate --source path .
 ```
 
+## 📦 Uninstall
+
+```bash
+dart pub global deactivate fluttercraft
+```
+
 **Alternative:** Download the binary from [Releases](https://github.com/venhdev/fluttercraft-cli/releases).
 
 ## 🛠 Commands
 
 | Command | Description | Example |
 |:---|:---|:---|
-| `build` | Build Flutter app (APK/AAB/IPA) | `flc build --type apk` |
+| `build` | Build Flutter app (APK/AAB/IPA) | `flc build --platform apk` |
 | `clean` | Clean project and dist folder | `flc clean` |
 | `gen` | Generate configuration file | `flc gen` |
 | `run` | Run custom command alias | `flc run gen-icon` |
@@ -74,7 +80,7 @@ Run `flc gen` to create a starter file.
 build_defaults: &build_defaults
   app_name: myapp
   name: 1.0.0
-  type: aab
+  platform: aab
   dart_define_from_file: .env
 
 build:

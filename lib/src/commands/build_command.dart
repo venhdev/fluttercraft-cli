@@ -24,9 +24,9 @@ class BuildCommand extends Command<int> {
   BuildCommand() {
     argParser
       ..addOption(
-        'type',
-        abbr: 't',
-        help: 'Build type: apk, aab, ipa, app',
+        'platform',
+        abbr: 'p',
+        help: 'Build platform: apk, aab, ipa, app',
         allowed: ['apk', 'aab', 'ipa', 'app'],
       )
       ..addFlag(
@@ -87,19 +87,19 @@ class BuildCommand extends Command<int> {
     final logger = BuildLogger(projectRoot: projectRoot, buildId: buildId);
     final history = BuildHistory(projectRoot: projectRoot);
 
-    // Override build type from command line
-    String buildType = config.buildType;
-    if (argResults?['type'] != null) {
-      buildType = argResults!['type'] as String;
+    // Override build platform from command line
+    String platform = config.platform;
+    if (argResults?['platform'] != null) {
+      platform = argResults!['platform'] as String;
     }
 
-    // Update config with overridden build type
+    // Update config with overridden build platform
     config = BuildConfig(
       projectRoot: config.projectRoot,
       appName: config.appName,
       buildName: config.buildName,
       buildNumber: config.buildNumber,
-      buildType: buildType,
+      platform: platform,
       flavor: config.flavor,
       targetDart: config.targetDart,
       noReview: config.noReview,
@@ -204,7 +204,7 @@ class BuildCommand extends Command<int> {
       appName: config.appName,
       buildName: currentVersion.buildName,
       buildNumber: currentVersion.buildNumber,
-      buildType: config.buildType,
+      platform: config.platform,
       flavor: config.flavor,
       targetDart: config.targetDart,
       noReview: config.noReview,
@@ -240,7 +240,7 @@ class BuildCommand extends Command<int> {
     logger.section('Build Configuration');
     logger.info('App Name: ${buildConfig.appName}');
     logger.info('Version: ${currentVersion.fullVersion}');
-    logger.info('Build Type: ${buildConfig.buildType.toUpperCase()}');
+    logger.info('Platform: ${buildConfig.platform.toUpperCase()}');
     logger.info('Flavor: ${buildConfig.flavor ?? "(none)"}');
     logger.info('Target: ${buildConfig.targetDart}');
     logger.info('Output Path: ${buildConfig.absoluteOutputPath}');
@@ -277,7 +277,7 @@ class BuildCommand extends Command<int> {
     console.section('Build Configuration');
     console.keyValue('App Name', buildConfig.appName);
     console.keyValue('Version', currentVersion.fullVersion);
-    console.keyValue('Build Type', buildConfig.buildType.toUpperCase());
+    console.keyValue('Platform', buildConfig.platform.toUpperCase());
     console.keyValue('Output', buildConfig.absoluteOutputPath);
     console.keyValue('Use FVM', buildConfig.useFvm.toString());
     console.keyValue('Use Shorebird', buildConfig.useShorebird.toString());
@@ -392,7 +392,11 @@ class BuildCommand extends Command<int> {
       }
 
       // Build
-      logger.section('Building ${buildConfig.buildType.toUpperCase()}');
+      logger.section('Building ${buildConfig.platform.toUpperCase()}');
+      
+      // Clean existing artifacts before build to prevent stale results
+      await artifactMover.cleanArtifacts(buildConfig);
+
       final buildResult = await flutterRunner.build(buildConfig);
       logger.output(buildResult.stdout);
       if (buildResult.stderr.isNotEmpty) {
@@ -443,7 +447,7 @@ class BuildCommand extends Command<int> {
       console.buildSummary(
         appName: buildConfig.appName,
         version: currentVersion.fullVersion,
-        buildType: buildConfig.buildType.toUpperCase(),
+        platform: buildConfig.platform.toUpperCase(),
         outputPath: artifactResult.outputPath ?? buildConfig.absoluteOutputPath,
         duration: duration,
       );

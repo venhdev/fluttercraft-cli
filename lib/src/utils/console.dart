@@ -251,11 +251,12 @@ class Console {
   void buildSummary({
     required String appName,
     required String version,
-    required String buildType,
+    required String platform,
     required String outputPath,
-    required Duration duration,
+    Duration? duration,
   }) {
     blank();
+    section('Build Summary');
     
     print('═══════════════════════════════════════════');
     if (useColors) {
@@ -267,9 +268,9 @@ class Console {
     
     keyValue('App Name', appName);
     keyValue('Version', version);
-    keyValue('Build Type', buildType);
+    keyValue('Platform', platform);
     keyValue('Output', outputPath);
-    keyValue('Duration', '${duration.inSeconds}s');
+    keyValue('Duration', '${duration?.inSeconds ?? 0}s');
     
     print('═══════════════════════════════════════════');
     blank();

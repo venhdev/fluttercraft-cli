@@ -71,8 +71,8 @@ class AppContext {
   /// Current version from pubspec or config
   String get version => pubspecInfo?.fullVersion ?? config.fullVersion;
 
-  /// Build type (apk, aab, ipa, app)
-  String get buildType => config.buildType;
+  /// Platform (apk, aab, ipa, app)
+  String get platform => config.platform;
 
   /// Flavor (dev, staging, prod)
   String? get flavor => config.flavor;
@@ -145,7 +145,7 @@ class AppContext {
     return 'AppContext(\n'
         '  appName: $appName,\n'
         '  version: $version,\n'
-        '  buildType: $buildType,\n'
+        '  platform: $platform,\n'
         '  flavor: $flavor,\n'
         '  useFvm: $useFvm,\n'
         '  useShorebird: $useShorebird,\n'
