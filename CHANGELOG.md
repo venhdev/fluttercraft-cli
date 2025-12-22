@@ -1,3 +1,15 @@
+## 0.2.2 (2025-12-22)
+
+### 🐛 Bug Fixes
+- **Shorebird Command Structure** - Fixed incorrect `--` separator placement in Shorebird commands
+  - Corrected per official Shorebird documentation: only management flags (`--artifact`, `--no-confirm`, `--flutter-version`) go before `--`
+  - All Flutter build flags (`--build-name`, `--build-number`, `--flavor`, `--target`, `--dart-define`, `--dart-define-from-file`) now correctly placed after `--` separator
+  - Removed duplicate flags that were appearing both before and after `--`
+  - **Before (incorrect)**: `shorebird release android --artifact=apk --build-name=1.0.0 -- --build-name=1.0.0 --dart-define=foo=bar`
+  - **After (correct)**: `shorebird release android --artifact=apk --no-confirm --flutter-version=3.35.3 -- --build-name=1.0.0 --build-number=1 --dart-define-from-file=.env`
+
+---
+
 ## 0.2.1 (2025-12-22)
 
 ### ✨ New Features
