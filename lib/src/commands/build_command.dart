@@ -126,28 +126,11 @@ class BuildCommand extends Command<int> {
       keystorePath: config.keystorePath,
       flavors: config.flavors,
       aliases: config.aliases,
+      args: config.args,
     );
 
-    // Get current version
-    // Priority: fluttercraft.yaml > pubspec.yaml (if fluttercraft.yaml has custom values)
-    final pubspec = await pubspecParser.parse();
-    final configVersion = config.fullVersion;
-    final pubspecVersion = pubspec?.fullVersion;
-
-    // Use fluttercraft.yaml version if it's not the default (1.0.0+1)
-    // Otherwise fall back to pubspec.yaml
-    String versionToUse;
-    if (configVersion != '1.0.0+1') {
-      // fluttercraft.yaml has custom version - use it
-      versionToUse = configVersion;
-    } else if (pubspecVersion != null) {
-      // Use pubspec.yaml version
-      versionToUse = pubspecVersion;
-    } else {
-      // Fall back to config default
-      versionToUse = configVersion;
-    }
-
+    // Get current version from config (which now includes pubspec fallback)
+    final versionToUse = config.fullVersion;
     var currentVersion = SemanticVersion.parse(versionToUse);
 
     // Handle version from command line
@@ -231,6 +214,7 @@ class BuildCommand extends Command<int> {
       keystorePath: config.keystorePath,
       flavors: config.flavors,
       aliases: config.aliases,
+      args: config.args,
     );
 
     // Determine if we should ask for review

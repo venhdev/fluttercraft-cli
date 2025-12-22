@@ -8,6 +8,5 @@
 # FVM Version Cache
 .fvm/
 
-build/
-.plans/
+build/*
 .dart_tool/

@@ -138,16 +138,19 @@ build_defaults: &build_defaults
   # App identifier (from pubspec or override here)
   app_name: $appName
 
-  # Semantic version (x.y.z)
-  name: $buildName
-  # Build number (integer)
-  number: $buildNumber
+  # Semantic version (x.y.z) - Optional: inherited from pubspec.yaml if omitted
+  # name: $buildName
+  # Build number (integer) - Optional: inherited from pubspec.yaml if omitted
+  # number: $buildNumber
   # Platform: aab | apk | ipa | ios | app
   platform: aab
   # Main entry point
   target: lib/main.dart
   # Skip code review checklist
   no_review: false
+
+  # Extra arguments to pass to the build command (e.g., --obfuscate, --split-debug-info=...)
+  args: []
 
   # ────────────────────────────────────────────────────────────────────────────
   # Dart Define - Always added to build command

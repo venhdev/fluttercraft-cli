@@ -144,6 +144,28 @@ void main() {
       expect(cmd, 'flutter build apk --release --build-name=1.0.0 --build-number=1');
     });
 
+    test('getBuildCommand includes extra args from config', () {
+      final config = BuildConfig(
+        projectRoot: minimalConfig.projectRoot,
+        appName: minimalConfig.appName,
+        buildName: minimalConfig.buildName,
+        buildNumber: minimalConfig.buildNumber,
+        platform: minimalConfig.platform,
+        targetDart: minimalConfig.targetDart,
+        outputPath: minimalConfig.outputPath,
+        flags: minimalConfig.flags,
+        useFvm: false,
+        useShorebird: false,
+        shorebirdNoConfirm: true,
+        keystorePath: minimalConfig.keystorePath,
+        args: ['--obfuscate', '--split-debug-info=symbols'],
+      );
+
+      final cmd = runner.getBuildCommand(config);
+      expect(cmd, contains('--obfuscate'));
+      expect(cmd, contains('--split-debug-info=symbols'));
+    });
+
     test('getBuildCommand for aab returns correct command', () {
       final config = BuildConfig(
         projectRoot: minimalConfig.projectRoot,

@@ -60,6 +60,49 @@ build:
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.outputPath, '.fluttercraft/dist');
       });
+
+      test('falls back to pubspec.yaml when name/number/app_name missing', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: pubspec_app
+version: 1.2.3+45
+''');
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build:
+  platform: apk
+''');
+
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.appName, 'pubspec_app');
+        expect(config.buildName, '1.2.3');
+        expect(config.buildNumber, 45);
+      });
+
+      test('favors fluttercraft.yaml over pubspec.yaml', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: pubspec_app
+version: 1.2.3+45
+''');
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build:
+  app_name: craft_app
+  name: 2.0.0
+  number: 100
+''');
+
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.appName, 'craft_app');
+        expect(config.buildName, '2.0.0');
+        expect(config.buildNumber, 100);
+      });
+
+      test('supports backward compatibility with "type" key', () async {
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build:
+  type: ios
+''');
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.platform, 'ios');
+      });
     });
 
     group('build_defaults inheritance', () {
@@ -290,6 +333,49 @@ alias:
 
         expect(config.aliases.containsKey('gen-icon'), true);
         expect(config.aliases['gen-icon']?.commands.length, 2);
+      });
+    });
+
+    group('args', () {
+      test('parses args from build_defaults', () async {
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build_defaults:
+  args:
+    - --obfuscate
+    - --split-debug-info=symbols
+build:
+  app_name: myapp
+''');
+
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.args, containsAll(['--obfuscate', '--split-debug-info=symbols']));
+      });
+
+      test('merges inherited and flavor-specific args', () async {
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build_defaults:
+  args:
+    - --def-arg
+build:
+  flavor: prod
+flavors:
+  prod:
+    args:
+      - --flavor-arg
+''');
+
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.args, containsAll(['--def-arg', '--flavor-arg']));
+      });
+
+      test('handles single string arg', () async {
+        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
+build:
+  args: --single-arg
+''');
+
+        final config = await BuildConfig.load(projectRoot: tempDir);
+        expect(config.args, ['--single-arg']);
       });
     });
 

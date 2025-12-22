@@ -28,6 +28,9 @@ class FlavorConfig {
   final bool? shouldPromptDartDefine;
   final bool? shouldClean;
   final bool? shouldBuildRunner;
+  
+  /// Extra arguments override/append
+  final List<String>? args;
 
   const FlavorConfig({
     required this.name,
@@ -39,6 +42,7 @@ class FlavorConfig {
     this.shouldPromptDartDefine,
     this.shouldClean,
     this.shouldBuildRunner,
+    this.args,
   });
 
   /// Parse flavor configuration from YAML
@@ -83,6 +87,17 @@ class FlavorConfig {
     // Parse dart_define_from_file
     final dartDefineFromFile = yaml['dart_define_from_file']?.toString();
 
+    // Parse args
+    List<String>? args;
+    final argsValue = yaml['args'];
+    if (argsValue != null) {
+      if (argsValue is List) {
+        args = argsValue.map((e) => e.toString()).toList();
+      } else {
+        args = [argsValue.toString()];
+      }
+    }
+
     return FlavorConfig(
       name: name,
       versionName: versionName,
@@ -93,6 +108,7 @@ class FlavorConfig {
       shouldPromptDartDefine: shouldPromptDartDefine,
       shouldClean: shouldClean,
       shouldBuildRunner: shouldBuildRunner,
+      args: args,
     );
   }
 

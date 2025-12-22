@@ -143,9 +143,9 @@ class FlutterRunner {
     }
   }
 
-  /// Get Shorebird platform from build type
-  String _getShorebirdPlatform(String buildType) {
-    switch (buildType.toLowerCase()) {
+  /// Get Shorebird platform from build platform
+  String _getShorebirdPlatform(String platform) {
+    switch (platform.toLowerCase()) {
       case 'ipa':
       case 'ios':
         return 'ios';
@@ -159,9 +159,9 @@ class FlutterRunner {
     }
   }
 
-  /// Get platform from build type
-  String _getPlatform(String buildType) {
-    switch (buildType.toLowerCase()) {
+  /// Get platform from build platform
+  String _getPlatform(String platform) {
+    switch (platform.toLowerCase()) {
       case 'aab':
         return 'appbundle';
       case 'apk':
@@ -214,6 +214,9 @@ class FlutterRunner {
       args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
     }
 
+    // Add extra args from config
+    args.addAll(config.args);
+    
     return args;
   }
 

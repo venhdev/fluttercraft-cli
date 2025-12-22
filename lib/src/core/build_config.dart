@@ -37,6 +37,7 @@ class BuildConfig {
   final String? flavor;
   final String targetDart;
   final bool noReview;
+  final List<String> args;
 
   // Paths
   final String outputPath;
@@ -102,6 +103,7 @@ class BuildConfig {
     this.noColor = false,
     this.flavors = const {},
     this.aliases = const {},
+    this.args = const [],
   });
 
   // ─────────────────────────────────────────────────────────────────
@@ -146,6 +148,11 @@ class BuildConfig {
     final root = projectRoot ?? Directory.current.path;
     final path = configPath ?? p.join(root, 'fluttercraft.yaml');
 
+    if (pubspecInfo == null) {
+      final pubspecParser = PubspecParser(projectRoot: root);
+      pubspecInfo = await pubspecParser.parse();
+    }
+
     final file = File(path);
     if (!await file.exists()) {
       // Return default config with pubspec fallback
@@ -166,6 +173,7 @@ class BuildConfig {
         useShorebird: false,
         shorebirdNoConfirm: true,
         keystorePath: 'android/key.properties',
+        args: [],
       );
     }
 
@@ -176,11 +184,15 @@ class BuildConfig {
       throw ConfigParseException('fluttercraft.yaml is empty or invalid');
     }
 
-    return _parseNewFormat(yaml, root);
+    return _parseNewFormat(yaml, root, pubspecInfo: pubspecInfo);
   }
 
   /// Parse new YAML format (v0.1.1+)
-  static BuildConfig _parseNewFormat(YamlMap yaml, String projectRoot) {
+  static BuildConfig _parseNewFormat(
+    YamlMap yaml,
+    String projectRoot, {
+    PubspecInfo? pubspecInfo,
+  }) {
     // ─────────────────────────────────────────────────────────────────
     // Parse build_defaults (base configuration)
     // ─────────────────────────────────────────────────────────────────
@@ -194,24 +206,21 @@ class BuildConfig {
     // Merge build_defaults and build (build takes precedence)
     final appName = _getStringOrNull(build, 'app_name') ??
         _getStringOrNull(buildDefaults, 'app_name') ??
+        pubspecInfo?.name ??
         'app';
     var buildName = _getStringOrNull(build, 'name') ??
         _getStringOrNull(buildDefaults, 'name') ??
+        pubspecInfo?.buildName ??
         '1.0.0';
     var buildNumber = _getInt(build, 'number', null) ??
         _getInt(buildDefaults, 'number', null) ??
+        (pubspecInfo != null ? int.tryParse(pubspecInfo.buildNumber) : null) ??
         1;
     var platform = _getStringOrNull(build, 'platform') ??
         _getStringOrNull(buildDefaults, 'platform') ??
-        // Fallback to old 'type' key if platform not found (optional, but good for transition)
-        // User requested no backward compatibility, so we stick to 'platform'.
-        // Wait, initial plan said "type is being removed". 
-        // Docs say "no backward compatible".
-        // Let's implement strict platform check.
-        // Actually, let's keep it simple: just look for 'platform'
-        // But previously it looked for 'type'.
-        // So we strictly look for 'platform' now, and maybe default to 'aab' if not found?
-        // Let's default to 'aab' if missing, same as before.
+        // Fallback to old 'type' key if platform not found
+        _getStringOrNull(build, 'type') ??
+        _getStringOrNull(buildDefaults, 'type') ??
         'aab';
         
     final flavor = _getStringOrNull(build, 'flavor');
@@ -222,6 +231,10 @@ class BuildConfig {
     final noReview = _getBool(build, 'no_review', null) ??
         _getBool(buildDefaults, 'no_review', null) ??
         false;
+    
+    final args = _getList(build, 'args') ?? 
+        _getList(buildDefaults, 'args') ?? 
+        [];
 
     // ─────────────────────────────────────────────────────────────────
     // Parse flags from build or build_defaults
@@ -313,6 +326,11 @@ class BuildConfig {
       // Merge dart_define (flavor takes precedence)
       dartDefine = {...dartDefine, ...flavorConfig.dartDefine};
 
+      // Append flavor-specific args
+      if (flavorConfig.args != null) {
+        args.addAll(flavorConfig.args!);
+      }
+
       // Override dart_define_from_file if flavor specifies it
       if (flavorConfig.dartDefineFromFile != null) {
         dartDefineFromFile = flavorConfig.dartDefineFromFile;
@@ -396,6 +414,7 @@ class BuildConfig {
       noColor: noColor,
       flavors: flavors,
       aliases: aliases,
+      args: args,
     );
   }
 
@@ -431,6 +450,18 @@ class BuildConfig {
     if (value == null) return defaultValue;
     if (value is bool) return value;
     return value.toString().toLowerCase() == 'true';
+  }
+
+  static List<String>? _getList(YamlMap? map, String key) {
+    if (map == null) return null;
+    final value = map[key];
+    if (value == null) return null;
+    
+    if (value is YamlList) {
+      return value.map((e) => e.toString()).toList();
+    }
+    
+    return [value.toString()];
   }
 
   static Map<String, dynamic> _parseDartDefine(YamlMap? dartDefineMap) {
@@ -588,6 +619,7 @@ class BuildConfig {
   outputPath: $outputPath
   flags: $flags
   dartDefine: $finalDartDefine
+  args: $args
   useFvm: $useFvm
   useShorebird: $useShorebird''';
   }

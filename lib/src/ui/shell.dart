@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../core/app_context.dart';
 import '../core/config_backup.dart';
 import '../commands/run_command.dart';
+import '../core/pubspec_parser.dart';
 import '../utils/console.dart';
 import '../version.dart';
 
@@ -304,6 +307,9 @@ class Shell {
 
     console.info('Reloading configuration...');
 
+    // Sync version from pubspec.yaml before loading
+    await syncVersion();
+
     try {
       _appContext = await AppContext.load();
       console.success('Configuration reloaded successfully.');
@@ -316,6 +322,55 @@ class Shell {
       }
     } catch (e) {
       console.error('Failed to reload: $e');
+    }
+  }
+
+  /// Sync version from pubspec.yaml to fluttercraft.yaml
+  Future<void> syncVersion() async {
+    final root = appContext?.projectRoot ?? Directory.current.path;
+    final parser = PubspecParser(projectRoot: root);
+    final pubspecInfo = await parser.parse();
+
+    if (pubspecInfo == null) return;
+
+    final configPath = p.join(root, 'fluttercraft.yaml');
+    final file = File(configPath);
+    if (!await file.exists()) return;
+
+    var content = await file.readAsString();
+    bool changed = false;
+
+    // Use regex to update version in build_defaults
+    // We use replaceFirst to target the first occurrence which is typically in build_defaults
+    final nameRegex = RegExp(r'^(\s+name:\s*)(.+)$', multiLine: true);
+    final numberRegex = RegExp(r'^(\s+number:\s*)(\d+)$', multiLine: true);
+
+    if (nameRegex.hasMatch(content)) {
+      final match = nameRegex.firstMatch(content);
+      if (match != null && match.group(2) != pubspecInfo.buildName) {
+        content = content.replaceFirst(
+          nameRegex,
+          '${match.group(1)}${pubspecInfo.buildName}',
+        );
+        changed = true;
+        console.info('Updated version name to ${pubspecInfo.buildName}');
+      }
+    }
+
+    if (numberRegex.hasMatch(content)) {
+      final match = numberRegex.firstMatch(content);
+      if (match != null && match.group(2) != pubspecInfo.buildNumber) {
+        content = content.replaceFirst(
+          numberRegex,
+          '${match.group(1)}${pubspecInfo.buildNumber}',
+        );
+        changed = true;
+        console.info('Updated build number to ${pubspecInfo.buildNumber}');
+      }
+    }
+
+    if (changed) {
+      await file.writeAsString(content);
     }
   }
 

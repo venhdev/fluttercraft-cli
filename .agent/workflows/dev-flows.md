@@ -24,7 +24,7 @@ Execute tasks directly for simple requests.
    - Analyze the request.
    - Ask if any context is missing.
 
-2. **Create Plan Docs** (`{rootDir}/.plans/{short-plan-name}/`)
+2. **Create Plan Docs** (`{rootDir}/doc/plans/{short-plan-name}/`)
    - `implementation_plan.md`: Goals, changes (`[NEW]` / `[MODIFY]`)
      - **NOTE**: Update all user-facing parts (e.g. shell, CLI output).
    - `test_plan.md`: Verification strategy.
@@ -34,7 +34,8 @@ Execute tasks directly for simple requests.
    - Testing: `/test/plans/{short-plan-name}_test` (Do NOT create version subdirectories like `test/v1.0.0`)
    - Verify and fix:
      ```bash
-     fvm flutter analyze --no-fatal-infos | Select-String "error|warning"
+     fvm dart analyze --no-fatal-infos | Select-String "error|warning"
+     fvm dart test -r failures-only --file-reporter=json:reports/tests.json
      ```
 
 4. **Finalize**

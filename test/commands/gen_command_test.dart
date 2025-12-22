@@ -160,5 +160,21 @@ environment:
         Directory.current = originalDir;
       }
     });
+
+    test('generated config includes args field', () async {
+      final originalDir = Directory.current;
+      Directory.current = Directory(tempDir);
+
+      try {
+        final genCmd = GenCommand();
+        await genCmd.run();
+
+        final content = await TestHelper.readFile(tempDir, 'fluttercraft.yaml');
+        expect(content, contains('args: []'));
+        expect(content, contains('Extra arguments to pass to the build command'));
+      } finally {
+        Directory.current = originalDir;
+      }
+    });
   });
 }
