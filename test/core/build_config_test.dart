@@ -25,18 +25,20 @@ void main() {
         final config = await BuildConfig.load(projectRoot: tempDir);
 
         expect(config.appName, 'app');
-        expect(config.buildName, '1.0.0');
-        expect(config.buildNumber, 1);
+        // buildName/buildNumber are now always null - Flutter reads from pubspec.yaml
+        expect(config.buildName, isNull);
+        expect(config.buildNumber, isNull);
         expect(config.platform, 'aab');
         expect(config.outputPath, '.fluttercraft/dist');
       });
 
       test('loads config from YAML file', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: myapp
+version: 2.0.0+42
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: myapp
-  name: 2.0.0
-  number: 42
   platform: apk
 paths:
   output: custom/output
@@ -45,8 +47,9 @@ paths:
         final config = await BuildConfig.load(projectRoot: tempDir);
 
         expect(config.appName, 'myapp');
-        expect(config.buildName, '2.0.0');
-        expect(config.buildNumber, 42);
+        // buildName/buildNumber always null - Flutter reads from pubspec
+        expect(config.buildName, isNull);
+        expect(config.buildNumber, isNull);
         expect(config.platform, 'apk');
         expect(config.outputPath, 'custom/output');
       });
@@ -61,7 +64,7 @@ build:
         expect(config.outputPath, '.fluttercraft/dist');
       });
 
-      test('falls back to pubspec.yaml when name/number/app_name missing', () async {
+      test('appName comes from pubspec when not in config', () async {
         await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
 name: pubspec_app
 version: 1.2.3+45
@@ -73,26 +76,26 @@ build:
 
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.appName, 'pubspec_app');
-        expect(config.buildName, '1.2.3');
-        expect(config.buildNumber, 45);
+        // buildName/buildNumber always null in config
+        expect(config.buildName, isNull);
+        expect(config.buildNumber, isNull);
       });
 
-      test('favors fluttercraft.yaml over pubspec.yaml', () async {
+      test('appName always comes from pubspec', () async {
         await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
 name: pubspec_app
 version: 1.2.3+45
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: craft_app
-  name: 2.0.0
-  number: 100
+  platform: aab
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
-        expect(config.appName, 'craft_app');
-        expect(config.buildName, '2.0.0');
-        expect(config.buildNumber, 100);
+        expect(config.appName, 'pubspec_app');
+        // buildName/buildNumber no longer in config
+        expect(config.buildName, isNull);
+        expect(config.buildNumber, isNull);
       });
 
       test('supports backward compatibility with "type" key', () async {
@@ -107,21 +110,22 @@ build:
 
     group('build_defaults inheritance', () {
       test('build inherits from build_defaults', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: defaultapp
+version: 2.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build_defaults:
-  app_name: defaultapp
-  name: 1.0.0
   target: lib/main.dart
   platform: apk
 
 build:
-  name: 2.0.0
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
 
-        expect(config.appName, 'defaultapp'); // inherited from defaults
-        expect(config.buildName, '2.0.0'); // overridden in build
+        expect(config.appName, 'defaultapp'); // from pubspec
+        expect(config.buildName, isNull); // always null
         expect(config.targetDart, 'lib/main.dart'); // inherited
         expect(config.platform, 'apk'); // inherited
       });
@@ -226,14 +230,15 @@ flavors:
       });
 
       test('applies flavor overrides', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: myapp
+version: 1.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: myapp
-  name: 1.0.0
   flavor: dev
 flavors:
   dev:
-    name: 1.0.0-dev
     flags:
       should_clean: true
     platform: ios
@@ -241,7 +246,8 @@ flavors:
 
         final config = await BuildConfig.load(projectRoot: tempDir);
 
-        expect(config.buildName, '1.0.0-dev');
+        // buildName no longer overridden by flavors
+        expect(config.buildName, isNull);
         expect(config.flags.shouldClean, true);
         expect(config.flavor, 'dev');
         expect(config.platform, 'ios');
@@ -380,16 +386,15 @@ build:
     });
 
     group('computed properties', () {
-      test('fullVersion combines name and number', () async {
+      test('fullVersion is null when buildName/buildNumber are null', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: myapp
-  name: 1.2.3
-  number: 45
+  platform: aab
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
-        expect(config.fullVersion, '1.2.3+45');
+        // fullVersion is null because buildName/buildNumber are null
+        expect(config.fullVersion, isNull);
       });
     });
 
@@ -401,23 +406,20 @@ build:
         final config = await BuildConfig.load(projectRoot: tempDir);
 
         expect(config.appName, 'app');
-        expect(config.buildName, '1.0.0');
-        expect(config.buildNumber, 1);
+        expect(config.buildName, isNull);
+        expect(config.buildNumber, isNull);
         expect(config.platform, 'aab'); // Default platform
       });
 
       test('null values in YAML use defaults', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: null
-  name: null
-  number: null
   platform: null
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
         expect(config.appName, 'app');
-        expect(config.buildName, '1.0.0');
+        expect(config.buildName, isNull);
         expect(config.platform, 'aab');
       });
 

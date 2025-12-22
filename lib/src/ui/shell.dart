@@ -1,11 +1,7 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
-
 import '../core/app_context.dart';
-import '../core/config_backup.dart';
 import '../commands/run_command.dart';
-import '../core/pubspec_parser.dart';
 import '../utils/console.dart';
 import '../version.dart';
 
@@ -188,7 +184,7 @@ class Shell {
     // ─────────────────────────────────────────────────────────────────
     console.section('Application');
     console.keyValue('App Name', ctx.appName, keyWidth: kw);
-    console.keyValue('Version', ctx.version, keyWidth: kw);
+    console.keyValue('Version', ctx.version ?? '(from pubspec.yaml)', keyWidth: kw);
 
     // ─────────────────────────────────────────────────────────────────
     // BUILD CONFIGURATION (consolidated section)
@@ -302,13 +298,7 @@ class Shell {
 
   /// Reload configuration from fluttercraft.yaml
   Future<void> _reloadContext() async {
-    // Backup before reload (just in case)
-    await _backupConfig('reload');
-
     console.info('Reloading configuration...');
-
-    // Sync version from pubspec.yaml before loading
-    await syncVersion();
 
     try {
       _appContext = await AppContext.load();
@@ -317,7 +307,7 @@ class Shell {
       // Show brief summary of loaded config
       if (_appContext != null) {
         console.keyValue('App Name', _appContext!.appName);
-        console.keyValue('Version', _appContext!.version);
+        console.keyValue('Version', _appContext!.version ?? '(from pubspec.yaml)');
         console.keyValue('Platform', _appContext!.platform);
       }
     } catch (e) {
@@ -325,69 +315,8 @@ class Shell {
     }
   }
 
-  /// Sync version from pubspec.yaml to fluttercraft.yaml
-  Future<void> syncVersion() async {
-    final root = appContext?.projectRoot ?? Directory.current.path;
-    final parser = PubspecParser(projectRoot: root);
-    final pubspecInfo = await parser.parse();
-
-    if (pubspecInfo == null) return;
-
-    final configPath = p.join(root, 'fluttercraft.yaml');
-    final file = File(configPath);
-    if (!await file.exists()) return;
-
-    var content = await file.readAsString();
-    bool changed = false;
-
-    // Use regex to update version in build_defaults
-    // We use replaceFirst to target the first occurrence which is typically in build_defaults
-    final nameRegex = RegExp(r'^(\s+name:\s*)(.+)$', multiLine: true);
-    final numberRegex = RegExp(r'^(\s+number:\s*)(\d+)$', multiLine: true);
-
-    if (nameRegex.hasMatch(content)) {
-      final match = nameRegex.firstMatch(content);
-      if (match != null && match.group(2) != pubspecInfo.buildName) {
-        content = content.replaceFirst(
-          nameRegex,
-          '${match.group(1)}${pubspecInfo.buildName}',
-        );
-        changed = true;
-        console.info('Updated version name to ${pubspecInfo.buildName}');
-      }
-    }
-
-    if (numberRegex.hasMatch(content)) {
-      final match = numberRegex.firstMatch(content);
-      if (match != null && match.group(2) != pubspecInfo.buildNumber) {
-        content = content.replaceFirst(
-          numberRegex,
-          '${match.group(1)}${pubspecInfo.buildNumber}',
-        );
-        changed = true;
-        console.info('Updated build number to ${pubspecInfo.buildNumber}');
-      }
-    }
-
-    if (changed) {
-      await file.writeAsString(content);
-    }
-  }
-
-  /// Backup configuration
-  Future<void> _backupConfig(String reason) async {
-    if (appContext == null) return;
-    
-    final backup = ConfigBackup(
-      projectRoot: appContext!.projectRoot, 
-      console: console,
-    );
-    await backup.backup(reason: reason);
-  }
-
   /// Stop the shell (can be called from external handlers)
   Future<void> stop() async {
-    await _backupConfig('quit');
     _running = false;
   }
 

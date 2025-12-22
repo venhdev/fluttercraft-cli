@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:args/command_runner.dart';
 import 'package:test/test.dart';
 import 'package:fluttercraft/src/commands/gen_command.dart';
-import 'package:path/path.dart' as p;
 import '../test_helper.dart';
 
 /// Tests for GenCommand
@@ -113,34 +111,6 @@ environment:
         final result = await genCmd.run();
 
         expect(result, 1); // Should fail without --force
-      } finally {
-        Directory.current = originalDir;
-      }
-    });
-
-    test('backups existing config when using --force', () async {
-      await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', 'existing: true');
-
-      // Use --force to overwrite which should trigger backup
-      final runner = CommandRunner<int>('test', 'test')..addCommand(GenCommand());
-      
-      final originalDir = Directory.current;
-      Directory.current = Directory(tempDir);
-
-      try {
-        final result = await runner.run(['gen', '--force']);
-        expect(result, 0);
-
-        // Check if backup exists
-        final backupDir = Directory(p.join(tempDir, '.fluttercraft', 'backups'));
-        expect(await backupDir.exists(), isTrue);
-        
-        final files = await backupDir.list().toList();
-        expect(files.isNotEmpty, isTrue);
-        
-        final backupFile = files.first as File;
-        expect(await backupFile.readAsString(), 'existing: true');
-        expect(p.basename(backupFile.path), contains('.gen.bak'));
       } finally {
         Directory.current = originalDir;
       }

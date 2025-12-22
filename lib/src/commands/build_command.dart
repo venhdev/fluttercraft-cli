@@ -129,9 +129,14 @@ class BuildCommand extends Command<int> {
       args: config.args,
     );
 
-    // Get current version from config (which now includes pubspec fallback)
-    final versionToUse = config.fullVersion;
-    var currentVersion = SemanticVersion.parse(versionToUse);
+    // Get version from pubspec.yaml (since config now has null buildName/buildNumber)
+    final pubspecInfo = await pubspecParser.parse();
+    final versionToUse = pubspecInfo?.fullVersion;
+    
+    // If no version available, use minimal default for version management UI only
+    var currentVersion = versionToUse != null 
+        ? SemanticVersion.parse(versionToUse)
+        : SemanticVersion(major: 1, minor: 0, patch: 0, buildNumber: 1);
 
     // Handle version from command line
     if (argResults?['version'] != null) {

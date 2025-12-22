@@ -30,15 +30,18 @@ void main() {
       });
 
       test('loads context with fluttercraft.yaml', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: myapp
+version: 1.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: myapp
   platform: apk
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
 
         expect(context.hasConfigFile, true);
-        expect(context.appName, 'myapp');
+        expect(context.appName, 'myapp'); // from pubspec
         expect(context.platform, 'apk');
       });
 
@@ -74,24 +77,27 @@ version: 1.0.0+1
     });
 
     group('convenience getters', () {
-      test('appName delegates to config', () async {
+      test('appName comes from pubspec', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: testapp
+version: 1.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: testapp
+  platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.appName, 'testapp');
       });
 
-      test('version returns config version when no pubspec', () async {
+      test('version is nullable when not in pubspec', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: testapp
-  name: 3.0.0
-  number: 99
+  platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
-        expect(context.version, '3.0.0+99');
+        // version is null when no pubspec and buildName/buildNumber are null
+        expect(context.version, isNull);
       });
 
       test('platform delegates to config', () async {
@@ -218,17 +224,21 @@ build:
 
     group('reload', () {
       test('reload creates new context', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: original
+version: 1.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: original
+  platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.appName, 'original');
 
         // Update file
-        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: updated
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: updated
+version: 1.0.0+1
 ''');
 
         final reloaded = await context.reload();
@@ -238,9 +248,13 @@ build:
 
     group('toString', () {
       test('includes key properties', () async {
+        await TestHelper.writeFile(tempDir, 'pubspec.yaml', '''
+name: testapp
+version: 1.0.0+1
+''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:
-  app_name: testapp
+  platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         final str = context.toString();

@@ -288,7 +288,7 @@ class Console {
     
     void printRow(String k, String v) {
       final key = k.padRight(12);
-      print('║ $key : $v'.padRight(49) + '║');
+      print('${'║ $key : $v'.padRight(49)}║');
     }
 
     final header = 'BUILD COMPLETE'.padLeft(26).padRight(48);

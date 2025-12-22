@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
 
 import 'build_config.dart';
 import 'pubspec_parser.dart';
@@ -19,6 +20,7 @@ class AppContext {
   final String projectRoot;
   final DateTime loadedAt;
   final bool hasConfigFile;
+  final String configSource;
 
   AppContext._({
     required this.config,
@@ -26,6 +28,7 @@ class AppContext {
     required this.projectRoot,
     required this.loadedAt,
     required this.hasConfigFile,
+    required this.configSource,
   });
 
   /// Load context from current directory
@@ -36,11 +39,34 @@ class AppContext {
     final pubspecParser = PubspecParser(projectRoot: root);
     final pubspecInfo = await pubspecParser.parse();
 
-    // Check if fluttercraft.yaml exists
-    final configPath = p.join(root, 'fluttercraft.yaml');
-    final hasConfigFile = await File(configPath).exists();
+    // Determine config source for tracking
+    final fluttercraftYamlPath = p.join(root, 'fluttercraft.yaml');
+    final hasFluttercraftYaml = await File(fluttercraftYamlPath).exists();
 
-    // Load config with pubspec fallback
+    String configSource;
+    if (hasFluttercraftYaml) {
+      configSource = 'fluttercraft.yaml';
+    } else {
+      // Check if pubspec has embedded config
+      final pubspecYamlPath = p.join(root, 'pubspec.yaml');
+      if (await File(pubspecYamlPath).exists()) {
+        final content = await File(pubspecYamlPath).readAsString();
+        try {
+          final yaml = loadYaml(content) as YamlMap?;
+          if (yaml?.containsKey('fluttercraft') ?? false) {
+            configSource = 'pubspec.yaml (fluttercraft: section)';
+          } else {
+            configSource = 'defaults (no config found)';
+          }
+        } catch (e) {
+          configSource = 'defaults (no config found)';
+        }
+      } else {
+        configSource = 'defaults (no pubspec.yaml)';
+      }
+    }
+
+    // Load config (new loader handles priority automatically)
     final config = await BuildConfig.load(
       pubspecInfo: pubspecInfo,
       projectRoot: root,
@@ -51,7 +77,8 @@ class AppContext {
       pubspecInfo: pubspecInfo,
       projectRoot: root,
       loadedAt: DateTime.now(),
-      hasConfigFile: hasConfigFile,
+      hasConfigFile: hasFluttercraftYaml,
+      configSource: configSource,
     );
   }
 
@@ -66,10 +93,12 @@ class AppContext {
 
   /// App name from config or pubspec
   String get appName =>
-      config.appName.isNotEmpty ? config.appName : (pubspecInfo?.name ?? 'app');
+      config.appName.isNotEmpty // appName only used for output paths - keep simple fallback
+          ? config.appName
+          : (pubspecInfo?.name ?? 'app');
 
-  /// Current version from pubspec or config
-  String get version => pubspecInfo?.fullVersion ?? config.fullVersion;
+  /// Current version from pubspec or config (null if not set - Flutter reads from pubspec.yaml)
+  String? get version => pubspecInfo?.fullVersion ?? config.fullVersion;
 
   /// Platform (apk, aab, ipa, app)
   String get platform => config.platform;
@@ -144,7 +173,7 @@ class AppContext {
   String toString() {
     return 'AppContext(\n'
         '  appName: $appName,\n'
-        '  version: $version,\n'
+        '  version: ${version ?? "(from pubspec.yaml)"},\n'
         '  platform: $platform,\n'
         '  flavor: $flavor,\n'
         '  useFvm: $useFvm,\n'

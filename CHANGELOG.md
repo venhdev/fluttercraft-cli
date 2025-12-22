@@ -1,3 +1,49 @@
+## 0.2.1 (2025-12-22)
+
+### ✨ New Features
+- **Dual Config Loading** - Support for both separate `fluttercraft.yaml` and embedded `pubspec.yaml` configuration
+  - **Priority Chain**: `fluttercraft.yaml` (highest) → `pubspec.yaml` with `fluttercraft:` section → sensible defaults
+  - **Config Source Tracking**: New `configSource` field in `AppContext` shows where config was loaded from
+  - **No Auto-Generation**: Tool works with intelligent defaults when no config exists - no file creation
+  - **Embedded Config Example**: Added `doc/examples/pubspec_embedded.yaml` showing how to embed config in `pubspec.yaml`
+
+### ⚠️ BREAKING CHANGES
+- **Root Key Requirement**: All config files (both `fluttercraft.yaml` and embedded) MUST now have `fluttercraft:` as root key
+  
+  **Old Format (No longer supported):**
+  ```yaml
+  build_defaults: &build_defaults
+    platform: aab
+  build:
+    <<: *build_defaults
+  ```
+  
+  **New Format (Required):**
+  ```yaml
+  fluttercraft:
+    build_defaults: &build_defaults
+      platform: aab
+    build:
+      <<: *build_defaults
+  ```
+
+### 🔄 Migration Guide
+**Option 1: Auto-regenerate (Recommended)**
+```bash
+fluttercraft gen -f
+```
+
+**Option 2: Manual Update**
+1. Add `fluttercraft:` at the beginning of your `fluttercraft.yaml`
+2. Indent all existing content by 2 spaces
+
+### 🛠️ Improvements
+- **Clear Error Messages**: Helpful error messages with migration guidance when root key is missing
+- **YAML Anchors**: Continue to work correctly with the new indented structure
+- **Consistent Structure**: Same format whether using separate file or embedded config
+
+---
+
 ## 0.2.0 (2025-12-22)
 
 ### 🎨 UI Improvements

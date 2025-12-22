@@ -1,0 +1,46 @@
+name: myapp
+version: 1.0.0+1
+
+# ──────────────────────────────────────────────────────────────────────────────
+# FlutterCraft Build Configuration (Embedded Example)
+# ──────────────────────────────────────────────────────────────────────────────
+# This example shows how to embed fluttercraft config in pubspec.yaml
+# for simple projects. For complex projects, use a separate fluttercraft.yaml
+
+fluttercraft:
+  # ════════════════════════════════════════════════════════════════════════════
+  # ACTIVE BUILD CONFIGURATION
+  # ════════════════════════════════════════════════════════════════════════════
+  build:
+    platform: apk
+    target: lib/main.dart
+    no_review: false
+    
+    flags:
+      should_clean: false
+      should_build_runner: false
+  
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FLAVORS (optional)
+  # ════════════════════════════════════════════════════════════════════════════
+  flavors:
+    dev:
+      platform: apk
+      dart_define:
+        FLAVOR: dev
+        IS_DEV: true
+        
+    prod:
+      platform: aab
+      dart_define:
+        FLAVOR: prod
+        IS_PROD: true
+      flags:
+        should_clean: true
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # ENVIRONMENT TOOLS
+  # ════════════════════════════════════════════════════════════════════════════
+  environments:
+    fvm:
+      enabled: true

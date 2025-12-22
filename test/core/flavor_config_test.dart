@@ -10,33 +10,23 @@ void main() {
     group('fromYaml', () {
       test('parses minimal flavor config', () {
         final yaml = loadYaml('''
-name: 1.0.0-dev
+platform: apk
 ''') as YamlMap;
 
         final flavor = FlavorConfig.fromYaml('dev', yaml);
 
         expect(flavor.name, 'dev');
-        expect(flavor.versionName, '1.0.0-dev');
+        expect(flavor.platform, 'apk');
       });
 
-      test('parses version name override', () {
+      test('parses platform override', () {
         final yaml = loadYaml('''
-name: 2.0.0-rc
-''') as YamlMap;
-
-        final flavor = FlavorConfig.fromYaml('staging', yaml);
-
-        expect(flavor.versionName, '2.0.0-rc');
-      });
-
-      test('parses build number override', () {
-        final yaml = loadYaml('''
-number: 99
+platform: aab
 ''') as YamlMap;
 
         final flavor = FlavorConfig.fromYaml('prod', yaml);
 
-        expect(flavor.buildNumber, 99);
+        expect(flavor.platform, 'aab');
       });
 
       test('parses flags', () {
@@ -77,24 +67,23 @@ dart_define_from_file: .env.dev
         expect(flavor.dartDefineFromFile, '.env.dev');
       });
 
-      test('handles null values gracefully', () {
+      test('parses args', () {
         final yaml = loadYaml('''
-name: null
-number: null
+args:
+  - --obfuscate
+  - --split-debug-info=debug_info
 ''') as YamlMap;
 
-        final flavor = FlavorConfig.fromYaml('test', yaml);
+        final flavor = FlavorConfig.fromYaml('prod', yaml);
 
-        expect(flavor.versionName, isNull);
-        expect(flavor.buildNumber, isNull);
+        expect(flavor.args, ['--obfuscate', '--split-debug-info=debug_info']);
       });
     });
 
     group('complete flavor config', () {
       test('parses all fields', () {
         final yaml = loadYaml('''
-name: 1.5.0-staging
-number: 50
+platform: aab
 flags:
   should_clean: true
   should_build_runner: false
@@ -103,19 +92,21 @@ dart_define:
   ENV: staging
   API_URL: https://staging.api.com
 dart_define_from_file: .env.staging
+args:
+  - --obfuscate
 ''') as YamlMap;
 
         final flavor = FlavorConfig.fromYaml('staging', yaml);
 
         expect(flavor.name, 'staging');
-        expect(flavor.versionName, '1.5.0-staging');
-        expect(flavor.buildNumber, 50);
+        expect(flavor.platform, 'aab');
         expect(flavor.shouldClean, true);
         expect(flavor.shouldBuildRunner, false);
         expect(flavor.shouldPromptDartDefine, true);
         expect(flavor.dartDefine['ENV'], 'staging');
         expect(flavor.dartDefine['API_URL'], 'https://staging.api.com');
         expect(flavor.dartDefineFromFile, '.env.staging');
+        expect(flavor.args, ['--obfuscate']);
       });
     });
   });

@@ -120,8 +120,13 @@ class FlutterRunner {
         sbArgs.add('--flutter-version=${config.flutterVersion}');
       }
 
-      sbArgs.add('--build-name=${config.buildName}');
-      sbArgs.add('--build-number=${config.buildNumber}');
+      // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
+      if (config.buildName != null && config.buildName!.isNotEmpty) {
+        sbArgs.add('--build-name=${config.buildName}');
+      }
+      if (config.buildNumber != null) {
+        sbArgs.add('--build-number=${config.buildNumber}');
+      }
 
       if (config.flavor != null && config.flavor!.isNotEmpty) {
         sbArgs.add('--flavor=${config.flavor}');
@@ -200,8 +205,13 @@ class FlutterRunner {
       args.add('--target=${config.targetDart}');
     }
 
-    args.add('--build-name=${config.buildName}');
-    args.add('--build-number=${config.buildNumber}');
+    // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
+    if (config.buildName != null && config.buildName!.isNotEmpty) {
+      args.add('--build-name=${config.buildName}');
+    }
+    if (config.buildNumber != null) {
+      args.add('--build-number=${config.buildNumber}');
+    }
 
     // Always add dart defines from config
     final dartDefines = config.finalDartDefine;
@@ -263,8 +273,13 @@ class FlutterRunner {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
 
-    sbArgs.add('--build-name=${config.buildName}');
-    sbArgs.add('--build-number=${config.buildNumber}');
+    // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
+    if (config.buildName != null && config.buildName!.isNotEmpty) {
+      sbArgs.add('--build-name=${config.buildName}');
+    }
+    if (config.buildNumber != null) {
+      sbArgs.add('--build-number=${config.buildNumber}');
+    }
 
     if (config.flavor != null && config.flavor!.isNotEmpty) {
       sbArgs.add('--flavor=${config.flavor}');

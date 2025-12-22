@@ -9,12 +9,6 @@ class FlavorConfig {
   /// Flavor name (e.g., 'dev', 'staging', 'prod')
   final String name;
 
-  /// Version name override (e.g., '0.1.1-rc')
-  final String? versionName;
-
-  /// Build number override
-  final int? buildNumber;
-
   /// Platform override (e.g., 'apk', 'ipa')
   final String? platform;
 
@@ -34,8 +28,6 @@ class FlavorConfig {
 
   const FlavorConfig({
     required this.name,
-    this.versionName,
-    this.buildNumber,
     this.platform,
     this.dartDefine = const {},
     this.dartDefineFromFile,
@@ -47,15 +39,7 @@ class FlavorConfig {
 
   /// Parse flavor configuration from YAML
   static FlavorConfig fromYaml(String name, YamlMap yaml) {
-    // Parse version overrides
-    final versionName = yaml['name']?.toString();
-    final buildNumber =
-        yaml['number'] is int
-            ? yaml['number'] as int
-            : yaml['number'] != null
-            ? int.tryParse(yaml['number'].toString())
-            : null;
-    
+    // Parse platform override
     final platform = yaml['platform']?.toString();
 
     // Parse dart_define
@@ -100,8 +84,6 @@ class FlavorConfig {
 
     return FlavorConfig(
       name: name,
-      versionName: versionName,
-      buildNumber: buildNumber,
       platform: platform,
       dartDefine: dartDefine,
       dartDefineFromFile: dartDefineFromFile,
@@ -122,7 +104,7 @@ class FlavorConfig {
 
   @override
   String toString() {
-    return 'FlavorConfig(name: $name, versionName: $versionName, '
-        'buildNumber: $buildNumber, dartDefine: $dartDefine)';
+    return 'FlavorConfig(name: $name, platform: $platform, '
+        'dartDefine: $dartDefine)';
   }
 }
