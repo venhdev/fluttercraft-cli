@@ -197,20 +197,26 @@ class FlutterRunner {
       args.add('--release');
     }
 
-    if (config.flavor != null && config.flavor!.isNotEmpty) {
-      args.add('--flavor=${config.flavor}');
+    // Flavor and target are also added before -- for Shorebird, so skip them
+    if (!forShorebird) {
+      if (config.flavor != null && config.flavor!.isNotEmpty) {
+        args.add('--flavor=${config.flavor}');
+      }
+
+      if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+        args.add('--target=${config.targetDart}');
+      }
     }
 
-    if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
-      args.add('--target=${config.targetDart}');
-    }
-
-    // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
-    if (config.buildName != null && config.buildName!.isNotEmpty) {
-      args.add('--build-name=${config.buildName}');
-    }
-    if (config.buildNumber != null) {
-      args.add('--build-number=${config.buildNumber}');
+    // Only add version flags if explicitly set AND not using Shorebird
+    // (Shorebird adds these flags before the -- separator)
+    if (!forShorebird) {
+      if (config.buildName != null && config.buildName!.isNotEmpty) {
+        args.add('--build-name=${config.buildName}');
+      }
+      if (config.buildNumber != null) {
+        args.add('--build-number=${config.buildNumber}');
+      }
     }
 
     // Always add dart defines from config
