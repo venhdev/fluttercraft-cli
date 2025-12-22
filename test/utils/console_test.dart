@@ -189,9 +189,10 @@ void main() {
         runWithIO(() => console.box('Title', ['Line 1']));
         final output = printBuffer.toString().split('\n');
         // Check some structural elements
-        expect(output[0], contains('╔═'));
-        expect(output[1], contains('Title'));
-        expect(output[3], contains('Line 1'));
+        expect(output[0].isEmpty, true);
+        expect(output[1], contains('╔═'));
+        expect(output[2], contains('Title'));
+        expect(output[4], contains('Line 1'));
         expect(output.last, isEmpty); // Trailing newline from writeln
       });
 
@@ -288,18 +289,18 @@ void main() {
 
       test('startSpinner writes to stdout', () {
         runWithIO(() => console.startSpinner('Loading'));
-        expect(mockStdout.output, 'Loading...');
+        expect(mockStdout.output, 'Loading... ');
       });
 
       test('stopSpinnerSuccess prints success', () {
         runWithIO(() => console.stopSpinnerSuccess('Done'));
         // Usually prints \r...
-        expect(printBuffer.toString(), '\rDone                    \n');
+        expect(printBuffer.toString(), '\rOK Done          \n');
       });
 
       test('stopSpinnerError prints error', () {
         runWithIO(() => console.stopSpinnerError('Error'));
-        expect(printBuffer.toString(), '\rError                    \n');
+        expect(printBuffer.toString(), '\rERR Error          \n');
       });
     });
     

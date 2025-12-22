@@ -112,6 +112,8 @@ build:
         expect(config.platform, 'ipa');
       });
 
+
+
       test('defaults all flags to false', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 build:

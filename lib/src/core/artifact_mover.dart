@@ -40,6 +40,7 @@ class ArtifactMover {
       case 'aab':
         return _moveAab(config);
       case 'ipa':
+      case 'ios':
         return _moveIpa(config);
       case 'app':
       case 'macos':

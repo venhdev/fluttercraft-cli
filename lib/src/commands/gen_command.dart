@@ -142,10 +142,12 @@ build_defaults: &build_defaults
   name: $buildName
   # Build number (integer)
   number: $buildNumber
-  # Build type: aab | apk | ipa | app
-  type: aab
+  # Platform: aab | apk | ipa | ios | app
+  platform: aab
   # Main entry point
   target: lib/main.dart
+  # Skip code review checklist
+  no_review: false
 
   # ────────────────────────────────────────────────────────────────────────────
   # Dart Define - Always added to build command
@@ -183,10 +185,12 @@ build:
 
 # ══════════════════════════════════════════════════════════════════════════════
 # FLAVOR OVERRIDES
-# Each flavor can override: name, number, flags, dart_define, dart_define_from_file
+# Each flavor can override: name, number, flags, dart_define, dart_define_from_file, platform
 # ══════════════════════════════════════════════════════════════════════════════
 flavors:
   dev:
+    # Example: suffix version with -dev
+    name: $buildName-dev
     flags:
       should_prompt_dart_define: false
     dart_define:
@@ -226,7 +230,7 @@ environments:
     enabled: ${shorebirdAppId != null ? 'true' : 'false'}
     # App ID (auto-detected from shorebird.yaml)
     app_id: ${shorebirdAppId ?? 'null'}
-    # @read-only [build:type] - Artifact type derived from build.type
+    # @read-only [build:platform] - Artifact type derived from build.platform
     artifact: null
     # Skip confirmation prompts (maps to --no-confirm)
     no_confirm: true

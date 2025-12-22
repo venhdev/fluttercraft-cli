@@ -147,6 +147,7 @@ class FlutterRunner {
   String _getShorebirdPlatform(String buildType) {
     switch (buildType.toLowerCase()) {
       case 'ipa':
+      case 'ios':
         return 'ios';
       case 'app':
       case 'macos':
@@ -166,6 +167,7 @@ class FlutterRunner {
       case 'apk':
         return 'apk';
       case 'ipa':
+      case 'ios':
         return 'ipa';
       case 'app':
       case 'macos':

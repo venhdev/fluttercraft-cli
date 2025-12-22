@@ -193,7 +193,7 @@ class Shell {
     console.section('Build Configuration');
 
     // Core build settings
-    console.keyValue('Build Type', ctx.buildType, keyWidth: kw);
+    console.keyValue('Platform', ctx.platform, keyWidth: kw);
     console.keyValue(
       'Flavor',
       (ctx.flavor == null || ctx.flavor!.isEmpty) ? '(none)' : ctx.flavor!,
@@ -312,7 +312,7 @@ class Shell {
       if (_appContext != null) {
         console.keyValue('App Name', _appContext!.appName);
         console.keyValue('Version', _appContext!.version);
-        console.keyValue('Build Type', _appContext!.buildType);
+        console.keyValue('Platform', _appContext!.platform);
       }
     } catch (e) {
       console.error('Failed to reload: $e');

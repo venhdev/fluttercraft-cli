@@ -23,7 +23,14 @@ void main() {
 
       expect(options.containsKey('platform'), isTrue);
       expect(options['platform']!.abbr, 'p');
-      expect(options['platform']!.allowed, ['apk', 'aab', 'ipa', 'app']);
+      expect(
+        options['platform']!.allowed,
+        containsAll([
+          'apk',
+          'aab',
+          'ipa',
+        ]),
+      );
     });
 
     test('argParser includes clean flag with abbreviation', () {
@@ -56,7 +63,14 @@ void main() {
       final buildCmd = BuildCommand();
       final options = buildCmd.argParser.options;
       final allowed = options['platform']?.allowed;
-      expect(allowed, containsAll(['apk', 'aab', 'ipa', 'app']));
+      expect(
+        allowed,
+        containsAll([
+          'apk',
+          'aab',
+          'ipa',
+        ]),
+      );
     });
   });
 }

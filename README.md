@@ -120,7 +120,7 @@ alias:
 
 ## 📂 Output
 
-Builds are saved to `dist/` (or `dist/<flavor>/`).
+Builds are saved to `.fluttercraft/dist/` (or `.fluttercraft/dist/<flavor>/`).
 Logs are stored in `.fluttercraft/`.
 
 ## License

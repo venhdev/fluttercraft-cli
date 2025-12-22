@@ -108,43 +108,65 @@ class Console {
   // Box Drawing
   // ─────────────────────────────────────────────────────────────────
 
-  /// Print a box with title and content (plain)
+  /// Print a box with title and content (styled)
   void box(String title, List<String> lines) {
     const width = 50;
     final topBorder = '╔${'═' * (width - 2)}╗';
     final bottomBorder = '╚${'═' * (width - 2)}╝';
-    final divider = '╠${'═' * (width - 2)}╣';
+    
+    // Center title
+    final titleLen = title.length;
+    final padLeft = (width - 4 - titleLen) ~/ 2;
+    final padRight = width - 4 - titleLen - padLeft;
+    final styledTitle = '${' ' * padLeft}$title${' ' * padRight}';
 
-    print(topBorder);
-    print('║ ${title.padRight(width - 4)} ║');
-    print(divider);
+    final colorTitle = useColors ? styledTitle.bold.cyan() : styledTitle;
+    final colorBorderTop = useColors ? topBorder.cyan() : topBorder;
+    final colorBorderBottom = useColors ? bottomBorder.cyan() : bottomBorder;
+    final colorDivider = useColors ? '║'.cyan() : '║';
+
+    blank();
+    print(colorBorderTop);
+    print('$colorDivider $colorTitle $colorDivider');
+    print(useColors ? '╠${'═' * (width - 2)}╣'.cyan() : '╠${'═' * (width - 2)}╣');
 
     for (final line in lines) {
       final truncated =
           line.length > width - 4 ? '${line.substring(0, width - 7)}...' : line;
-      print('║ ${truncated.padRight(width - 4)} ║');
+      // Plain text content, but bordered
+      print('$colorDivider ${truncated.padRight(width - 4)} $colorDivider');
     }
 
-    print(bottomBorder);
+    print(colorBorderBottom);
+    blank();
   }
 
-  /// Print a menu box (plain)
+  /// Print a menu box (styled)
   void menu(String title, List<String> options) {
     const width = 50;
     final topBorder = '╔${'═' * (width - 2)}╗';
     final bottomBorder = '╚${'═' * (width - 2)}╝';
-    final divider = '╠${'═' * (width - 2)}╣';
+    
+    final titleLen = title.length;
+    final padLeft = (width - 4 - titleLen) ~/ 2;
+    final padRight = width - 4 - titleLen - padLeft;
+    final styledTitle = '${' ' * padLeft}$title${' ' * padRight}';
+
+    final colorTitle = useColors ? styledTitle.bold.yellow() : styledTitle;
+    final colorBorderTop = useColors ? topBorder.yellow() : topBorder;
+    final colorBorderBottom = useColors ? bottomBorder.yellow() : bottomBorder;
+    final colorDivider = useColors ? '║'.yellow() : '║';
 
     blank();
-    print(topBorder);
-    print('║ ${title.padRight(width - 4)} ║');
-    print(divider);
+    print(colorBorderTop);
+    print('$colorDivider $colorTitle $colorDivider');
+    print(useColors ? '╠${'═' * (width - 2)}╣'.yellow() : '╠${'═' * (width - 2)}╣');
 
     for (final option in options) {
-      print('║   ${option.padRight(width - 6)} ║');
+      print('$colorDivider   ${option.padRight(width - 6)} $colorDivider');
     }
 
-    print(bottomBorder);
+    print(colorBorderBottom);
     blank();
   }
 
@@ -154,24 +176,28 @@ class Console {
 
   /// Start a spinner (simple version - prints message plain)
   void startSpinner(String message) {
-    stdout.write('$message...');
+    if (useColors) {
+      stdout.write('${message.cyan()}... ');
+    } else {
+      stdout.write('$message... ');
+    }
   }
 
   /// Stop spinner with success (green)
   void stopSpinnerSuccess(String message) {
     if (useColors) {
-      print('\r${message.green()}${' ' * 20}');
+      print('\r${'✔'.green()} $message${' ' * 10}');
     } else {
-      print('\r$message${' ' * 20}');
+      print('\rOK $message${' ' * 10}');
     }
   }
 
   /// Stop spinner with error (red)
   void stopSpinnerError(String message) {
     if (useColors) {
-      print('\r${message.red()}${' ' * 20}');
+      print('\r${'✖'.red()} $message${' ' * 10}');
     } else {
-      print('\r$message${' ' * 20}');
+      print('\rERR $message${' ' * 10}');
     }
   }
 
@@ -179,22 +205,25 @@ class Console {
   // User Input
   // ─────────────────────────────────────────────────────────────────
 
-  /// Prompt for text input (plain)
+  /// Prompt for text input (styled)
   String prompt(String message, {String? defaultValue}) {
+    final msg = useColors ? message.bold.blue() : message;
     if (defaultValue != null) {
-      stdout.write('$message [$defaultValue]: ');
+      final defVal = useColors ? defaultValue.cyan() : defaultValue;
+      stdout.write('$msg [$defVal]: ');
     } else {
-      stdout.write('$message: ');
+      stdout.write('$msg: ');
     }
 
     final input = stdin.readLineSync()?.trim() ?? '';
     return input.isEmpty && defaultValue != null ? defaultValue : input;
   }
 
-  /// Prompt for yes/no confirmation (plain)
+  /// Prompt for yes/no confirmation (styled)
   bool confirm(String message, {bool defaultValue = true}) {
     final defaultStr = defaultValue ? 'Y/n' : 'y/N';
-    stdout.write('$message ($defaultStr): ');
+    final msg = useColors ? message.bold.blue() : message;
+    stdout.write('$msg ($defaultStr): ');
 
     final input = stdin.readLineSync()?.trim().toLowerCase() ?? '';
 
@@ -216,20 +245,20 @@ class Console {
     // Clamp defaultIndex to valid range
     final safeDefault = defaultIndex.clamp(0, options.length - 1);
 
-    print('\n$message');
+    print('\n${useColors ? message.bold.blue() : message}');
 
     for (var i = 0; i < options.length; i++) {
-      final marker = i == safeDefault ? '>' : ' ';
-      // Current selection in green if colors enabled, otherwise just marker
+      final marker = i == safeDefault ? '➜' : ' ';
       final line = '  $marker $i. ${options[i]}';
+      
       if (useColors && i == safeDefault) {
-        print(line.green());
+        print(line.green().bold());
       } else {
         print(line);
       }
     }
 
-    stdout.write('Enter choice [0-${options.length - 1}]: ');
+    stdout.write('\nEnter choice [0-${options.length - 1}]: ');
     final input = stdin.readLineSync()?.trim() ?? '';
 
     if (input.isEmpty) return safeDefault;
@@ -256,23 +285,35 @@ class Console {
     Duration? duration,
   }) {
     blank();
-    section('Build Summary');
     
-    print('═══════════════════════════════════════════');
-    if (useColors) {
-      print('  BUILD COMPLETE'.bold.green());
-    } else {
-      print('  BUILD COMPLETE');
+    void printRow(String k, String v) {
+      final key = k.padRight(12);
+      print('║ $key : $v'.padRight(49) + '║');
     }
-    print('═══════════════════════════════════════════');
+
+    final header = 'BUILD COMPLETE'.padLeft(26).padRight(48);
     
-    keyValue('App Name', appName);
-    keyValue('Version', version);
-    keyValue('Platform', platform);
-    keyValue('Output', outputPath);
-    keyValue('Duration', '${duration?.inSeconds ?? 0}s');
-    
-    print('═══════════════════════════════════════════');
+    if (useColors) {
+      print('╔════════════════════════════════════════════════╗'.green());
+      print('║$header║'.green().bold());
+      print('╠════════════════════════════════════════════════╣'.green());
+      printRow('App Name', appName);
+      printRow('Version', version);
+      printRow('Platform', platform);
+      printRow('Output', outputPath);
+      printRow('Duration', '${duration?.inSeconds ?? 0}s');
+      print('╚════════════════════════════════════════════════╝'.green());
+    } else {
+      print('╔════════════════════════════════════════════════╗');
+      print('║$header║');
+      print('╠════════════════════════════════════════════════╣');
+      printRow('App Name', appName);
+      printRow('Version', version);
+      printRow('Platform', platform);
+      printRow('Output', outputPath);
+      printRow('Duration', '${duration?.inSeconds ?? 0}s');
+      print('╚════════════════════════════════════════════════╝');
+    }
     blank();
   }
 }

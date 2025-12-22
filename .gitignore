@@ -9,5 +9,5 @@
 .fvm/
 
 build/
-# .plans/
+.plans/
 .dart_tool/

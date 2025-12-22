@@ -1,3 +1,16 @@
+## 0.2.0 (2025-12-22)
+
+### 🎨 UI Improvements
+- **Rich CLI Output**: Enhanced shell UI with colored borders, spinner animations, and better formatted tables.
+- **Improved Summary**: Build summary now shows detailed information in a styled box.
+
+### 🛠️ Fixes
+- **Platform Handling**: Replaced deprecated `buildType` with `platform` internally.
+- **Console Colors**: Fixed potential crash with undefined colors in prompts.
+- **Validation**: Added explicit validation for supported platforms (Mobile only for now).
+
+---
+
 ## 0.1.9 (2025-12-21)
 
 ### 🧹 Housekeeping

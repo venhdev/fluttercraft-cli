@@ -26,8 +26,8 @@ class BuildCommand extends Command<int> {
       ..addOption(
         'platform',
         abbr: 'p',
-        help: 'Build platform: apk, aab, ipa, app',
-        allowed: ['apk', 'aab', 'ipa', 'app'],
+        help: 'Build platform: apk, aab, ipa, ios',
+        allowed: ['apk', 'aab', 'ipa', 'ios'],
       )
       ..addFlag(
         'clean',
@@ -80,18 +80,27 @@ class BuildCommand extends Command<int> {
       return 1;
     }
 
+    // Override build platform from command line
+    String platform = config.platform;
+    if (argResults?['platform'] != null) {
+      platform = argResults!['platform'] as String;
+    }
+
+    // Validate Platform (Mobile Only)
+    const supportedPlatforms = ['apk', 'aab', 'ipa', 'ios'];
+    if (!supportedPlatforms.contains(platform)) {
+      console.error('Platform "$platform" is not currently supported.');
+      console.info('Supported platforms: ${supportedPlatforms.join(", ")}');
+      console.warning('Desktop and Web builds are coming soon!');
+      return 1;
+    }
+
     final pubspecParser = PubspecParser(projectRoot: projectRoot);
     final versionManager = VersionManager();
     final flutterRunner = FlutterRunner(projectRoot: projectRoot);
     final artifactMover = ArtifactMover(projectRoot: projectRoot);
     final logger = BuildLogger(projectRoot: projectRoot, buildId: buildId);
     final history = BuildHistory(projectRoot: projectRoot);
-
-    // Override build platform from command line
-    String platform = config.platform;
-    if (argResults?['platform'] != null) {
-      platform = argResults!['platform'] as String;
-    }
 
     // Update config with overridden build platform
     config = BuildConfig(
