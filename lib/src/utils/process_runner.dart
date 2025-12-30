@@ -35,17 +35,23 @@ class ProcessRunner {
   /// [args] - Arguments for the command
   /// [workingDirectory] - Working directory for the command
   /// [streamOutput] - Whether to stream stdout/stderr in real-time
+  /// [runInShell] - Whether to run the command in a shell (cmd.exe on Windows)
+  ///   Default is true for Windows for compatibility, but should be false for
+  ///   commands with complex argument patterns like `--` separators
   Future<ProcessResult> run(
     String command,
     List<String> args, {
     String? workingDirectory,
     bool streamOutput = true,
     Map<String, String>? environment,
+    bool? runInShell,
   }) async {
     final fullCommand = '$command ${args.join(' ')}';
+    final useShell = runInShell ?? Platform.isWindows;
 
     if (verbose) {
       _console.info('Running: $fullCommand');
+      _console.info('runInShell: $useShell');
     }
 
     try {
@@ -54,7 +60,7 @@ class ProcessRunner {
         args,
         workingDirectory: workingDirectory,
         environment: environment,
-        runInShell: Platform.isWindows,
+        runInShell: useShell,
       );
 
       final stdoutBuffer = StringBuffer();

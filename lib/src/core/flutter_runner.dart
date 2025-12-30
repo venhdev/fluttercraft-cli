@@ -152,7 +152,7 @@ class FlutterRunner {
       }
 
       // Everything else goes after -- (Flutter build arguments)
-      // Note: PowerShell -Command requires '--' to be quoted
+      // Note: PowerShell requires '--' to be quoted when typed manually (per Shorebird docs)
       sbArgs.add(Platform.isWindows ? "'--'" : '--');
       
       // Version flags for Flutter build
@@ -368,10 +368,13 @@ class FlutterRunner {
     // Custom args from config
     sbArgs.addAll(flutterArgs);
 
+    // Don't use shell execution for Shorebird on Windows
+    // The shell (cmd.exe) mangles the -- separator and arguments
     return _processRunner.run(
       'shorebird',
       sbArgs,
       workingDirectory: projectRoot,
+      runInShell: false,
     );
   }
 

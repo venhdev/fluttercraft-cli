@@ -1,3 +1,13 @@
+## 0.2.10 (2025-12-30)
+
+### 🐛 Critical Bug Fixes
+- **Shorebird Build Argument Parsing** - Fixed critical issue where Shorebird builds failed with "Missing argument for --build-name"
+  - Root cause: Using `runInShell: true` on Windows caused cmd.exe to mangle the `--` separator and arguments
+  - Solution: Disabled shell execution for Shorebird commands to pass arguments directly to the process
+  - Added `runInShell` parameter to ProcessRunner.run() with default for backward compatibility
+  - Kept `'--'` quoting in command display for Windows (per Shorebird docs), but execution uses unquoted array argument
+  - Shorebird commands now execute correctly on Windows without shell interference
+
 ## 0.2.4 (2025-12-30)
 
 ### 🐛 Critical Bug Fixes

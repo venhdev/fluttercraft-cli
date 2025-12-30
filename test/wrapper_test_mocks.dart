@@ -126,6 +126,7 @@ class MockProcessRunner implements ProcessRunner {
     String? workingDirectory,
     bool streamOutput = true,
     Map<String, String>? environment,
+    bool? runInShell,
   }) async {
     executedCommands.add([command, ...args]);
     
