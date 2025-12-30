@@ -4,9 +4,11 @@
 
 # Build output
 .fluttercraft/
+.local/
 
 # FVM Version Cache
 .fvm/
 
 build/*
 .dart_tool/
+_tmp

@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:io' hide ProcessResult;
 import 'dart:math';
 
 import 'package:args/command_runner.dart';
+import 'package:path/path.dart' as p;
 
 import '../core/build_config.dart';
 import '../core/build_record.dart';
@@ -11,6 +12,7 @@ import '../core/flutter_runner.dart';
 import '../core/artifact_mover.dart';
 import '../utils/console.dart';
 import '../utils/build_logger.dart';
+import '../utils/process_runner.dart';
 
 /// Build command - builds Flutter app with version management and JSONL logging
 class BuildCommand extends Command<int> {
@@ -116,6 +118,8 @@ class BuildCommand extends Command<int> {
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
       dartDefine: config.dartDefine,
+      globalDartDefineFromFile: config.globalDartDefineFromFile,
+      dartDefineFromFile: config.dartDefineFromFile,
       useFvm: config.useFvm,
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
@@ -209,6 +213,8 @@ class BuildCommand extends Command<int> {
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
       dartDefine: config.dartDefine,
+      globalDartDefineFromFile: config.globalDartDefineFromFile,
+      dartDefineFromFile: config.dartDefineFromFile,
       useFvm: config.useFvm,
       flutterVersion: config.flutterVersion,
       useShorebird: config.useShorebird,
@@ -221,6 +227,14 @@ class BuildCommand extends Command<int> {
       aliases: config.aliases,
       args: config.args,
     );
+
+    // Debug: Verify dart_define_from_file was preserved
+    console.info('[DEBUG] After BuildConfig construction:');
+    console.info('[DEBUG]   config.globalDartDefineFromFile = ${config.globalDartDefineFromFile}');
+    console.info('[DEBUG]   config.dartDefineFromFile = ${config.dartDefineFromFile}');
+    console.info('[DEBUG]   buildConfig.globalDartDefineFromFile = ${buildConfig.globalDartDefineFromFile}');
+    console.info('[DEBUG]   buildConfig.dartDefineFromFile = ${buildConfig.dartDefineFromFile}');
+    console.info('[DEBUG]   buildConfig.finalDartDefineFromFile = ${buildConfig.finalDartDefineFromFile}');
 
     // Determine if we should ask for review
     final shouldReview =
@@ -257,6 +271,26 @@ class BuildCommand extends Command<int> {
       }
     }
 
+    // Log dart define from file if configured
+    if (buildConfig.finalDartDefineFromFile != null) {
+      logger.section('Dart Define From File');
+      logger.info('Configured path: ${buildConfig.finalDartDefineFromFile}');
+      
+      // Validate file existence
+      final envFilePath = p.join(buildConfig.projectRoot, buildConfig.finalDartDefineFromFile!);
+      final envFile = File(envFilePath);
+      logger.info('Resolved path: $envFilePath');
+      
+      if (!envFile.existsSync()) {
+        logger.warning('⚠ File not found!');
+        logger.warning('This flag will NOT be included in the build command.');
+        logger.warning('Create the file or update fluttercraft.yaml to fix this.');
+      } else {
+        logger.info('File exists: ✓');
+        logger.info('This file will be passed to Flutter build.');
+      }
+    }
+
     logger.section('Integrations');
     logger.info('Use FVM: ${buildConfig.useFvm}');
     logger.info('Flutter Version: ${buildConfig.flutterVersion ?? "(auto)"}');
@@ -265,6 +299,12 @@ class BuildCommand extends Command<int> {
       'Shorebird Artifact: ${buildConfig.shorebirdArtifact ?? "(default)"}',
     );
     logger.info('Shorebird Auto Confirm: ${buildConfig.shorebirdNoConfirm}');
+
+    // Debug: Check dart_define_from_file value before command generation
+    logger.section('Debug: Command Generation');
+    logger.info('buildConfig.finalDartDefineFromFile = ${buildConfig.finalDartDefineFromFile}');
+    logger.info('buildConfig.dartDefineFromFile = ${buildConfig.dartDefineFromFile}');
+    logger.info('buildConfig.globalDartDefineFromFile = ${buildConfig.globalDartDefineFromFile}');
 
     // Get full build command for JSONL record
     var buildCmd = flutterRunner.getBuildCommand(buildConfig);
@@ -279,7 +319,33 @@ class BuildCommand extends Command<int> {
     console.keyValue('Output', buildConfig.absoluteOutputPath);
     console.keyValue('Use FVM', buildConfig.useFvm.toString());
     console.keyValue('Use Shorebird', buildConfig.useShorebird.toString());
+    if (buildConfig.finalDartDefineFromFile != null) {
+      final envFilePath = p.join(buildConfig.projectRoot, buildConfig.finalDartDefineFromFile!);
+      final envFile = File(envFilePath);
+      final fileStatus = envFile.existsSync() ? '✓' : '✗ NOT FOUND';
+      
+      // Show source: flavor override or default
+      String source = '';
+      if (buildConfig.flavor != null) {
+        // Check if flavor overrides it
+        final hasFlavorOverride = buildConfig.dartDefineFromFile != null;
+        source = hasFlavorOverride ? ' (from flavor)' : ' (from defaults)';
+      }
+      
+      console.keyValue('Dart Define From File', '${buildConfig.finalDartDefineFromFile}$source $fileStatus');
+      
+      if (!envFile.existsSync()) {
+        console.warning('Warning: File not found at $envFilePath');
+        console.info('The build may fail if Flutter expects this file.');
+      }
+    }
     console.keyValue('Build ID', buildId);
+    console.blank();
+
+    // Debug: Check command before display
+    console.info('[DEBUG] Before command display:');
+    console.info('[DEBUG]   buildConfig.finalDartDefineFromFile = ${buildConfig.finalDartDefineFromFile}');
+    console.info('[DEBUG]   buildCmd contains dart-define-from-file = ${buildCmd.contains('dart-define-from-file')}');
     console.blank();
 
     // Show the full command that will be executed
@@ -349,6 +415,26 @@ class BuildCommand extends Command<int> {
           );
           final edited = stdin.readLineSync()?.trim() ?? '';
           if (edited.isNotEmpty) {
+            // Validate required flags for Shorebird commands
+            if (buildConfig.useShorebird && edited.contains('shorebird')) {
+              final hasDoubleDash = edited.contains(' -- ');
+              if (hasDoubleDash) {
+                final parts = edited.split(' -- ');
+                final flutterArgs = parts.length > 1 ? parts[1] : '';
+                
+                // Warn if build-name or build-number are missing from Flutter args
+                if (!flutterArgs.contains('--build-name')) {
+                  console.warning('Warning: --build-name is missing from Flutter arguments (after --).');
+                  console.info('Shorebird requires --build-name for release commands.');
+                }
+                if (!flutterArgs.contains('--build-number')) {
+                  console.warning('Warning: --build-number is missing from Flutter arguments (after --).');
+                  console.info('Shorebird requires --build-number for release commands.');
+                }
+              } else {
+                console.warning('Warning: Missing -- separator for Flutter build arguments.');
+              }
+            }
             currentCmd = edited;
             console.success('Command updated.');
             console.info('New command:');
@@ -395,16 +481,56 @@ class BuildCommand extends Command<int> {
       // Clean existing artifacts before build to prevent stale results
       await artifactMover.cleanArtifacts(buildConfig);
 
-      final buildResult = await flutterRunner.build(buildConfig);
+      // Check if command was manually edited
+      final generatedCmd = flutterRunner.getBuildCommand(buildConfig);
+      final wasEdited = buildCmd != generatedCmd;
+
+      // Show final command before execution
+      console.blank();
+      console.section('Final Command');
+      console.info('Executing:');
+      console.info('  $buildCmd');
+      if (wasEdited) {
+        console.warning('(Custom edited command - not generated from config)');
+      }
+      console.blank();
+      
+      logger.section('Executing Build Command');
+      logger.info('Command: $buildCmd');
+      if (wasEdited) {
+        logger.info('Note: Command was manually edited by user');
+      }
+
+      // Execute: use edited command if modified, otherwise use config
+      final ProcessResult buildResult;
+      if (wasEdited) {
+        buildResult = await flutterRunner.buildFromCommand(buildCmd, buildConfig.projectRoot);
+      } else {
+        buildResult = await flutterRunner.build(buildConfig);
+      }
       logger.output(buildResult.stdout);
       if (buildResult.stderr.isNotEmpty) {
         logger.section('Build Errors/Warnings');
         logger.output(buildResult.stderr);
       }
 
-      if (!buildResult.success) {
-        console.error('Build failed!');
-        logger.error('Build failed with exit code: ${buildResult.exitCode}');
+      // Check for Shorebird-specific error patterns even when exit code is 0
+      final hasShorebirdError = buildConfig.useShorebird && (
+        buildResult.stdout.contains('Missing argument') ||
+        buildResult.stdout.contains('Usage: shorebird') ||
+        buildResult.stdout.contains('Run "shorebird help"') ||
+        buildResult.stderr.contains('error:') ||
+        buildResult.stderr.contains('Error:')
+      );
+
+      if (!buildResult.success || hasShorebirdError) {
+        if (hasShorebirdError && buildResult.success) {
+          console.error('Build failed: Shorebird command error detected');
+          logger.error('Build failed: Shorebird returned usage/error message');
+        } else {
+          console.error('Build failed!');
+          logger.error('Build failed with exit code: ${buildResult.exitCode}');
+        }
 
         final endTime = DateTime.now();
         final duration = endTime.difference(startTime);

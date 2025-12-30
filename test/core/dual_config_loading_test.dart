@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as p;
-import '../../lib/src/core/build_config.dart';
-import '../../lib/src/core/pubspec_parser.dart';
+import 'package:fluttercraft/src/core/build_config.dart';
 
 void main() {
   group('Dual Config Loading', () {

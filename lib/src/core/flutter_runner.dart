@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import '../utils/process_runner.dart';
 import '../utils/console.dart';
 import 'build_config.dart';
@@ -97,6 +98,36 @@ class FlutterRunner {
     }
   }
 
+  /// Execute a raw command string (for manually edited commands)
+  Future<ProcessResult> buildFromCommand(String command, String projectRoot) async {
+    if (command.trim().isEmpty) {
+      return ProcessResult(
+        exitCode: 1,
+        stdout: '',
+        stderr: 'Error: Empty command',
+      );
+    }
+
+    _console.info('Executing custom command via shell');
+    
+    // Execute via shell to properly handle complex commands with -- separators
+    // This avoids parsing issues and lets the OS handle the command correctly
+    String shellProgram;
+    List<String> shellArgs;
+    
+    if (Platform.isWindows) {
+      // Use PowerShell on Windows
+      shellProgram = 'powershell.exe';
+      shellArgs = ['-NoProfile', '-Command', command];
+    } else {
+      // Use sh on Unix-like systems
+      shellProgram = 'sh';
+      shellArgs = ['-c', command];
+    }
+
+    return _processRunner.run(shellProgram, shellArgs, workingDirectory: projectRoot);
+  }
+
   /// Get the full build command for logging
   String getBuildCommand(BuildConfig config) {
     final platform = _getPlatform(config.platform);
@@ -120,7 +151,11 @@ class FlutterRunner {
         sbArgs.add('--flutter-version=${config.flutterVersion}');
       }
 
-      // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
+      // Everything else goes after -- (Flutter build arguments)
+      // Note: PowerShell -Command requires '--' to be quoted
+      sbArgs.add(Platform.isWindows ? "'--'" : '--');
+      
+      // Version flags for Flutter build
       if (config.buildName != null && config.buildName!.isNotEmpty) {
         sbArgs.add('--build-name=${config.buildName}');
       }
@@ -136,8 +171,25 @@ class FlutterRunner {
         sbArgs.add('--target=${config.targetDart}');
       }
 
-      // Official Documentation: Pass arguments to the underlying flutter build after --
-      sbArgs.add('--');
+      // Dart-define flags (Flutter build arguments)
+      final dartDefines = config.finalDartDefine;
+      for (final entry in dartDefines.entries) {
+        sbArgs.add('--dart-define=${entry.key}=${entry.value}');
+      }
+
+      // Dart-define-from-file (Flutter build argument)
+      _console.info('[DEBUG] FlutterRunner.getBuildCommand:');
+      _console.info('[DEBUG]   config.globalDartDefineFromFile = ${config.globalDartDefineFromFile}');
+      _console.info('[DEBUG]   config.dartDefineFromFile = ${config.dartDefineFromFile}');
+      _console.info('[DEBUG]   config.finalDartDefineFromFile = ${config.finalDartDefineFromFile}');
+      if (config.finalDartDefineFromFile != null) {
+        _console.info('[DEBUG]   Adding flag: --dart-define-from-file=${config.finalDartDefineFromFile}');
+        sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      } else {
+        _console.info('[DEBUG]   Skipping: finalDartDefineFromFile is null');
+      }
+
+      // Custom args from config
       sbArgs.addAll(flutterArgs);
 
       return sbArgs.join(' ');
@@ -197,34 +249,44 @@ class FlutterRunner {
       args.add('--release');
     }
 
-    if (config.flavor != null && config.flavor!.isNotEmpty) {
-      args.add('--flavor=${config.flavor}');
+    // Flavor and target are also added before -- for Shorebird, so skip them
+    if (!forShorebird) {
+      if (config.flavor != null && config.flavor!.isNotEmpty) {
+        args.add('--flavor=${config.flavor}');
+      }
+
+      if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
+        args.add('--target=${config.targetDart}');
+      }
     }
 
-    if (config.targetDart.isNotEmpty && config.targetDart != 'lib/main.dart') {
-      args.add('--target=${config.targetDart}');
+    // Only add version flags if explicitly set AND not using Shorebird
+    // (Shorebird adds these flags before the -- separator)
+    if (!forShorebird) {
+      if (config.buildName != null && config.buildName!.isNotEmpty) {
+        args.add('--build-name=${config.buildName}');
+      }
+      if (config.buildNumber != null) {
+        args.add('--build-number=${config.buildNumber}');
+      }
     }
 
-    // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
-    if (config.buildName != null && config.buildName!.isNotEmpty) {
-      args.add('--build-name=${config.buildName}');
-    }
-    if (config.buildNumber != null) {
-      args.add('--build-number=${config.buildNumber}');
+    // When building for Shorebird, dart-define flags are Shorebird-specific
+    // and should be added before the -- separator, not after
+    if (!forShorebird) {
+      // Always add dart defines from config for regular Flutter builds
+      final dartDefines = config.finalDartDefine;
+      for (final entry in dartDefines.entries) {
+        args.add('--dart-define=${entry.key}=${entry.value}');
+      }
+
+      // Add dart-define-from-file if specified for regular Flutter builds
+      if (config.finalDartDefineFromFile != null) {
+        args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      }
     }
 
-    // Always add dart defines from config
-    final dartDefines = config.finalDartDefine;
-    for (final entry in dartDefines.entries) {
-      args.add('--dart-define=${entry.key}=${entry.value}');
-    }
-
-    // Add dart-define-from-file if specified
-    if (config.finalDartDefineFromFile != null) {
-      args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
-    }
-
-    // Add extra args from config
+    // Add extra args from config (these go after -- for Shorebird)
     args.addAll(config.args);
     
     return args;
@@ -273,7 +335,10 @@ class FlutterRunner {
       sbArgs.add('--flutter-version=${config.flutterVersion}');
     }
 
-    // Only add version flags if explicitly set (otherwise Flutter reads from pubspec.yaml)
+    // Everything else goes after -- (Flutter build arguments)
+    sbArgs.add('--');
+    
+    // Version flags for Flutter build
     if (config.buildName != null && config.buildName!.isNotEmpty) {
       sbArgs.add('--build-name=${config.buildName}');
     }
@@ -289,8 +354,18 @@ class FlutterRunner {
       sbArgs.add('--target=${config.targetDart}');
     }
 
-    // Official Documentation: Pass arguments to the underlying flutter build after --
-    sbArgs.add('--');
+    // Dart-define flags (Flutter build arguments)
+    final dartDefines = config.finalDartDefine;
+    for (final entry in dartDefines.entries) {
+      sbArgs.add('--dart-define=${entry.key}=${entry.value}');
+    }
+
+    // Dart-define-from-file (Flutter build argument)
+    if (config.finalDartDefineFromFile != null) {
+      sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+    }
+
+    // Custom args from config
     sbArgs.addAll(flutterArgs);
 
     return _processRunner.run(

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as p;
-import '../../lib/src/core/app_context.dart';
+import 'package:fluttercraft/src/core/app_context.dart';
 
 void main() {
   group('AppContext Config Source Tracking', () {

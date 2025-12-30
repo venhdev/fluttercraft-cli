@@ -1,3 +1,63 @@
+## 0.2.4 (2025-12-30)
+
+### 🐛 Critical Bug Fixes
+- **Edited Command Execution** - Fixed critical bug where manually edited build commands were never executed
+  - Commands edited via `(e)dit command` option were validated and displayed but ignored during execution
+  - Code was rebuilding commands from config instead of using the edited version
+  - Now properly detects edited commands and executes them as provided by user
+  - Added `buildFromCommand()` method in FlutterRunner for raw command execution
+  - Shows "Final Command" section before execution so users see exactly what will run
+
+### ✨ Enhancements
+- **Command Execution Transparency** - Show final command immediately before execution
+  - Displays "(Custom edited command - not generated from config)" when applicable
+  - Logs whether command was manually edited by user in build log
+  - Helps users verify the exact command being executed
+
+- **Improved dart_define_from_file Debugging** - Enhanced validation and logging
+  - Shows both configured path and resolved absolute path
+  - Displays clear warning if file not found: "⚠ File not found!"
+  - Explains that missing file will not be included in build command
+  - Provides actionable guidance: "Create the file or update fluttercraft.yaml to fix this"
+
+---
+
+## 0.2.3 (2025-12-30)
+
+### 🐛 Bug Fixes
+- **Shorebird Error Detection** - Fixed false success reporting when Shorebird commands fail
+  - Now detects Shorebird error patterns ("Missing argument", "Usage: shorebird") even when exit code is 0
+  - Prevents misleading "BUILD COMPLETE" message when build actually failed
+  - Shows appropriate error message: "Build failed: Shorebird command error detected"
+
+### ✨ Enhancements
+- **Command Edit Validation** - Added validation when manually editing build commands
+  - Warns if `--build-name` is missing from Flutter arguments (after `--`)
+  - Warns if `--build-number` is missing from Flutter arguments (after `--`)
+  - Validates presence of `--` separator for Shorebird commands
+  - Helps prevent accidental removal of required flags when adding custom arguments
+
+- **dart_define_from_file Visibility** - Enhanced logging and validation
+  - Now displays `dart_define_from_file` path in build log and console output
+  - Shows file existence status (✓ or ✗ NOT FOUND) in console
+  - Displays source: "(from flavor)" or "(from defaults)" when flavor is active
+  - Validates file existence and warns if configured file is missing
+  - Helps users verify configuration is loaded correctly and catch missing files early
+
+---
+
+## 0.2.2 (2025-12-22)
+
+### 🐛 Bug Fixes
+- **Shorebird Command Structure** - Fixed incorrect `--` separator placement in Shorebird commands
+  - Corrected per official Shorebird documentation: only management flags (`--artifact`, `--no-confirm`, `--flutter-version`) go before `--`
+  - All Flutter build flags (`--build-name`, `--build-number`, `--flavor`, `--target`, `--dart-define`, `--dart-define-from-file`) now correctly placed after `--` separator
+  - Removed duplicate flags that were appearing both before and after `--`
+  - **Before (incorrect)**: `shorebird release android --artifact=apk --build-name=1.0.0 -- --build-name=1.0.0 --dart-define=foo=bar`
+  - **After (correct)**: `shorebird release android --artifact=apk --no-confirm --flutter-version=3.35.3 -- --build-name=1.0.0 --build-number=1 --dart-define-from-file=.env`
+
+---
+
 ## 0.2.1 (2025-12-22)
 
 ### ✨ New Features
