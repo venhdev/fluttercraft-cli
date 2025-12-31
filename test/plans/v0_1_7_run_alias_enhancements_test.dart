@@ -30,12 +30,13 @@ void main() {
 
     test('Scenario 1: Mixed Substitution (Positional & Named)', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  commit_author:
-    cmds:
-      - git commit -m "{1}" --author="{0}"
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    commit_author:
+      cmds:
+        - git commit -m "{1}" --author="{0}"
 ''');
       final runCmd = RunCommand(
         context,
@@ -65,12 +66,13 @@ alias:
 
     test('Scenario 1b: Mixed Substitution (Named Key & Positional)', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  mixed:
-    cmds:
-      - echo {msg} {0}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    mixed:
+      cmds:
+        - echo {msg} {0}
 ''');
       final runCmd = RunCommand(
         context,
@@ -86,12 +88,13 @@ alias:
 
     test('Scenario 1c: Quoted Arguments Preservation', () async {
        final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  print_arg:
-    cmds:
-      - echo {0}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    print_arg:
+      cmds:
+        - echo {0}
 ''');
       final runCmd = RunCommand(
         context,
@@ -118,12 +121,13 @@ alias:
 
     test('Scenario 1d: Quoted Placeholder in Config', () async {
        final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  safe_print:
-    cmds:
-      - echo "{0}"
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    safe_print:
+      cmds:
+        - echo "{0}"
 ''');
       final runCmd = RunCommand(
         context,
@@ -142,12 +146,13 @@ alias:
 
     test('Scenario 2: Interactive Prompt for Missing Named', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  deploy:
-    cmds:
-      - deploy --env "{env}"
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    deploy:
+      cmds:
+        - deploy --env "{env}"
 ''');
       mockConsole.setPromptResponse('{env}', 'prod');
       
@@ -166,12 +171,13 @@ alias:
 
     test('Scenario 2b: Interactive Prompt for Missing Positional {0}', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  echo_pos:
-    cmds:
-      - echo {0}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    echo_pos:
+      cmds:
+        - echo {0}
 ''');
        mockConsole.setPromptResponse('argument {0}', 'manual_value');
        
@@ -189,12 +195,13 @@ alias:
 
     test('Scenario 4: Special Characters (Empty String)', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  check_empty:
-    cmds:
-      - process "{0}"
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    check_empty:
+      cmds:
+        - process "{0}"
 ''');
        final runCmd = RunCommand(
          context,

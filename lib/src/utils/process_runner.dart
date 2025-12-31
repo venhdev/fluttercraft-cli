@@ -51,7 +51,6 @@ class ProcessRunner {
 
     if (verbose) {
       _console.info('Running: $fullCommand');
-      _console.info('runInShell: $useShell');
     }
 
     try {

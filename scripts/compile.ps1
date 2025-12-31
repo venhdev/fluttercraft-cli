@@ -38,8 +38,9 @@ switch ($Target.ToLower()) {
     }
 }
 
-# Define output path
+# Define output paths
 $outputPath = Join-Path "bin" "$exeName$exeExt"
+$aliasPath = Join-Path "bin" "flc$exeExt"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
@@ -48,6 +49,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Target:   $Target"
 Write-Host "Output:   $outputPath"
+Write-Host "Alias:    $aliasPath"
 Write-Host ""
 
 # Ensure output directory exists
@@ -88,17 +90,24 @@ try {
     $fileInfo = Get-Item $outputPath
     $sizeMB = [math]::Round($fileInfo.Length / 1MB, 2)
     Write-Host "Size: $sizeMB MB"
+    
+    # Create alias copy
+    Write-Host ""
+    Write-Host "Creating alias executable..." -ForegroundColor Cyan
+    Copy-Item $outputPath $aliasPath -Force
+    Write-Host "Alias created: $aliasPath" -ForegroundColor Green
     Write-Host ""
     
     # Test the executable
-    Write-Host "Testing executable..." -ForegroundColor Cyan
+    Write-Host "Testing executables..." -ForegroundColor Cyan
     & $outputPath --version
     
     Write-Host ""
     Write-Host "Done! You can now run:" -ForegroundColor Green
     Write-Host "  $outputPath"
-    Write-Host "  $outputPath --help"
-    Write-Host "  $outputPath build --type apk"
+    Write-Host "  $aliasPath"
+    Write-Host "  $aliasPath --help"
+    Write-Host "  $aliasPath build --type apk"
     
 } catch {
     Write-Host "ERROR: $_" -ForegroundColor Red

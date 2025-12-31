@@ -30,12 +30,13 @@ void main() {
 
     test('shows available aliases when no args provided', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  test_alias:
-    cmds:
-      - echo test
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    test_alias:
+      cmds:
+        - echo test
 ''');
       final runCmd = RunCommand(
         context,
@@ -51,12 +52,13 @@ alias:
 
     test('replaces named parameters {key}', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  git_commit:
-    cmds:
-      - git commit -m "{message}"
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    git_commit:
+      cmds:
+        - git commit -m "{message}"
 ''');
       final runCmd = RunCommand(
         context, 
@@ -77,12 +79,13 @@ alias:
 
     test('replaces positional parameters {0}', () async {
        final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  echo_val:
-    cmds:
-      - echo {0}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    echo_val:
+      cmds:
+        - echo {0}
 ''');
       final runCmd = RunCommand(
         context,
@@ -98,12 +101,13 @@ alias:
 
     test('replaces {all} as named argument', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  wrapper:
-    cmds:
-      - wrapper {all}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    wrapper:
+      cmds:
+        - wrapper {all}
 ''');
       final runCmd = RunCommand(
         context,
@@ -122,12 +126,13 @@ alias:
 
     test('prompts for missing named parameter', () async {
       final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  greet:
-    cmds:
-      - echo {name}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    greet:
+      cmds:
+        - echo {name}
 ''');
       mockConsole.setPromptResponse('{name}', 'World');
       
@@ -148,12 +153,13 @@ alias:
     test('prompts for missing positional parameter {0} via placeholder detection', () async {
        // Note: Currently my impl detects int placeholders but prompts for them if args missing
        final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  echo_pos:
-    cmds:
-      - echo {0}
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    echo_pos:
+      cmds:
+        - echo {0}
 ''');
        mockConsole.setPromptResponse('argument {0}', 'test_value');
        

@@ -295,6 +295,9 @@ class BuildConfig {
         YamlHelpers.getStringOrNull(buildDefaults, 'target') ??
         YamlHelpers.getStringOrNull(buildDefaults, 'target') ??
         'lib/main.dart';
+    
+    // no_review: Skip fluttercraft's "Do you want to proceed?" prompt
+    // (separate from environments.shorebird.no_confirm which controls Shorebird's --no-confirm flag)
     final noReview = YamlHelpers.getBool(build, 'no_review', null) ??
         YamlHelpers.getBool(buildDefaults, 'no_review', null) ??
         false;
@@ -418,6 +421,9 @@ class BuildConfig {
     final useShorebird = YamlHelpers.getBool(shorebird, 'enabled', null) ?? false;
     var shorebirdAppId = YamlHelpers.getStringOrNull(shorebird, 'app_id');
     final shorebirdArtifact = YamlHelpers.getStringOrNull(shorebird, 'artifact');
+    
+    // no_confirm: Pass --no-confirm flag to Shorebird commands
+    // (separate from build.no_review which controls fluttercraft's confirmation prompt)
     final shorebirdNoConfirm = YamlHelpers.getBool(shorebird, 'no_confirm', null) ?? true;
     if (useShorebird && shorebirdAppId == null) {
       shorebirdAppId = EnvironmentDetectors.detectShorebirdAppId(projectRoot);

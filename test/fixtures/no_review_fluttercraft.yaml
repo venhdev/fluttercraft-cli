@@ -1,22 +1,23 @@
-build_defaults:
-  app_name: test_app
-  flags:
-    should_prompt_dart_define: false
-    should_clean: false
-    should_build_runner: false
+fluttercraft:
+  build_defaults:
+    app_name: test_app
+    flags:
+      should_prompt_dart_define: false
+      should_clean: false
+      should_build_runner: false
 
-build: &build_anchor
-  name: 1.0.0
-  number: 1
-  type: apk
-  target: lib/main.dart
-  no_review: true
+  build: &build_anchor
+    name: 1.0.0
+    number: 1
+    type: apk
+    target: lib/main.dart
+    no_review: true
 
-paths:
-  output: dist
+  paths:
+    output: dist
 
-environments:
-  fvm:
-    enabled: false
-  shorebird:
-    enabled: false
+  environments:
+    fvm:
+      enabled: false
+    shorebird:
+      enabled: false

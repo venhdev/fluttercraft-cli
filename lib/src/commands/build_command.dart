@@ -69,6 +69,15 @@ class BuildCommand extends Command<int> {
 
     console.header('fluttercraft CLI');
 
+    // Validate Flutter project (must have pubspec.yaml)
+    final pubspecParser = PubspecParser(projectRoot: projectRoot);
+    if (!await pubspecParser.exists()) {
+      console.error('This command must be run from a Flutter project root.');
+      console.info('Expected: pubspec.yaml in current directory');
+      console.info('Current directory: $projectRoot');
+      return 1;
+    }
+
     // Generate build ID for logging
     final buildId = _generateBuildId();
 
@@ -97,7 +106,6 @@ class BuildCommand extends Command<int> {
       return 1;
     }
 
-    final pubspecParser = PubspecParser(projectRoot: projectRoot);
     final versionManager = VersionManager();
     final flutterRunner = FlutterRunner(projectRoot: projectRoot);
     final artifactMover = ArtifactMover(projectRoot: projectRoot);
@@ -228,14 +236,6 @@ class BuildCommand extends Command<int> {
       args: config.args,
     );
 
-    // Debug: Verify dart_define_from_file was preserved
-    console.info('[DEBUG] After BuildConfig construction:');
-    console.info('[DEBUG]   config.globalDartDefineFromFile = ${config.globalDartDefineFromFile}');
-    console.info('[DEBUG]   config.dartDefineFromFile = ${config.dartDefineFromFile}');
-    console.info('[DEBUG]   buildConfig.globalDartDefineFromFile = ${buildConfig.globalDartDefineFromFile}');
-    console.info('[DEBUG]   buildConfig.dartDefineFromFile = ${buildConfig.dartDefineFromFile}');
-    console.info('[DEBUG]   buildConfig.finalDartDefineFromFile = ${buildConfig.finalDartDefineFromFile}');
-
     // Determine if we should ask for review
     final shouldReview =
         argResults?['review'] == true &&
@@ -340,12 +340,6 @@ class BuildCommand extends Command<int> {
       }
     }
     console.keyValue('Build ID', buildId);
-    console.blank();
-
-    // Debug: Check command before display
-    console.info('[DEBUG] Before command display:');
-    console.info('[DEBUG]   buildConfig.finalDartDefineFromFile = ${buildConfig.finalDartDefineFromFile}');
-    console.info('[DEBUG]   buildCmd contains dart-define-from-file = ${buildCmd.contains('dart-define-from-file')}');
     console.blank();
 
     // Show the full command that will be executed

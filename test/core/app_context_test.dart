@@ -35,8 +35,9 @@ name: myapp
 version: 1.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: apk
+fluttercraft:
+  build:
+    platform: apk
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
 
@@ -83,8 +84,9 @@ name: testapp
 version: 1.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.appName, 'testapp');
@@ -92,8 +94,9 @@ build:
 
       test('version is nullable when not in pubspec', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         // version is null when no pubspec and buildName/buildNumber are null
@@ -102,9 +105,10 @@ build:
 
       test('platform delegates to config', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-  platform: ipa
+fluttercraft:
+  build:
+    app_name: testapp
+    platform: ipa
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.platform, 'ipa');
@@ -112,8 +116,9 @@ build:
 
       test('flavor returns null when not set', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
+fluttercraft:
+  build:
+    app_name: testapp
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.flavor, isNull);
@@ -121,8 +126,9 @@ build:
 
       test('useFvm defaults to false', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
+fluttercraft:
+  build:
+    app_name: testapp
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.useFvm, false);
@@ -130,8 +136,9 @@ build:
 
       test('useShorebird defaults to false', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
+fluttercraft:
+  build:
+    app_name: testapp
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.useShorebird, false);
@@ -141,12 +148,13 @@ build:
     group('verbose getters', () {
       test('flutterVersion returns config value', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-environments:
-  fvm:
-    enabled: true
-    version: "3.24.0"
+fluttercraft:
+  build:
+    app_name: testapp
+  environments:
+    fvm:
+      enabled: true
+      version: "3.24.0"
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.flutterVersion, '3.24.0');
@@ -154,12 +162,13 @@ environments:
 
       test('shorebirdAppId returns config value', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-environments:
-  shorebird:
-    enabled: true
-    app_id: test_app_123
+fluttercraft:
+  build:
+    app_name: testapp
+  environments:
+    shorebird:
+      enabled: true
+      app_id: test_app_123
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.shorebirdAppId, 'test_app_123');
@@ -167,12 +176,13 @@ environments:
 
       test('flags getters return config values', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-  flags:
-    should_clean: true
-    should_build_runner: true
-    should_prompt_dart_define: true
+fluttercraft:
+  build:
+    app_name: testapp
+    flags:
+      should_clean: true
+      should_build_runner: true
+      should_prompt_dart_define: true
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.shouldClean, true);
@@ -182,10 +192,11 @@ build:
 
       test('finalDartDefine returns merged defines', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-  dart_define:
-    API_KEY: secret
+fluttercraft:
+  build:
+    app_name: testapp
+    dart_define:
+      API_KEY: secret
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.finalDartDefine['API_KEY'], 'secret');
@@ -229,8 +240,9 @@ name: original
 version: 1.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         expect(context.appName, 'original');
@@ -253,8 +265,9 @@ name: testapp
 version: 1.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
         final context = await AppContext.load(projectRoot: tempDir);
         final str = context.toString();

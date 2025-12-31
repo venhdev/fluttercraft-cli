@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:path/path.dart' as p;
 import '../utils/process_runner.dart';
 import '../utils/console.dart';
 import 'build_config.dart';
@@ -178,15 +179,8 @@ class FlutterRunner {
       }
 
       // Dart-define-from-file (Flutter build argument)
-      _console.info('[DEBUG] FlutterRunner.getBuildCommand:');
-      _console.info('[DEBUG]   config.globalDartDefineFromFile = ${config.globalDartDefineFromFile}');
-      _console.info('[DEBUG]   config.dartDefineFromFile = ${config.dartDefineFromFile}');
-      _console.info('[DEBUG]   config.finalDartDefineFromFile = ${config.finalDartDefineFromFile}');
       if (config.finalDartDefineFromFile != null) {
-        _console.info('[DEBUG]   Adding flag: --dart-define-from-file=${config.finalDartDefineFromFile}');
         sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
-      } else {
-        _console.info('[DEBUG]   Skipping: finalDartDefineFromFile is null');
       }
 
       // Custom args from config
@@ -282,7 +276,11 @@ class FlutterRunner {
 
       // Add dart-define-from-file if specified for regular Flutter builds
       if (config.finalDartDefineFromFile != null) {
-        args.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+        // Convert to absolute path for consistency
+        final dartDefineFilePath = p.isAbsolute(config.finalDartDefineFromFile!)
+            ? config.finalDartDefineFromFile!
+            : p.join(config.projectRoot, config.finalDartDefineFromFile!);
+        args.add('--dart-define-from-file=$dartDefineFilePath');
       }
     }
 
@@ -362,19 +360,23 @@ class FlutterRunner {
 
     // Dart-define-from-file (Flutter build argument)
     if (config.finalDartDefineFromFile != null) {
-      sbArgs.add('--dart-define-from-file=${config.finalDartDefineFromFile}');
+      // Convert to absolute path for Shorebird to ensure it can find the file
+      // regardless of its internal working directory
+      final dartDefineFilePath = p.isAbsolute(config.finalDartDefineFromFile!)
+          ? config.finalDartDefineFromFile!
+          : p.join(config.projectRoot, config.finalDartDefineFromFile!);
+      sbArgs.add('--dart-define-from-file=$dartDefineFilePath');
     }
 
     // Custom args from config
     sbArgs.addAll(flutterArgs);
 
-    // Don't use shell execution for Shorebird on Windows
-    // The shell (cmd.exe) mangles the -- separator and arguments
+    // On Windows, must use shell to find .bat files
+    // The -- separator works correctly when passed as array element
     return _processRunner.run(
       'shorebird',
       sbArgs,
       workingDirectory: projectRoot,
-      runInShell: false,
     );
   }
 

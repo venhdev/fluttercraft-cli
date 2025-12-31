@@ -1,0 +1,18 @@
+fluttercraft:
+  build_defaults: &defaults
+    platform: apk
+    target: lib/main.dart
+    no_review: false
+
+  build:
+    <<: *defaults
+
+  environments:
+    fvm:
+      enabled: false
+    shorebird:
+      enabled: true
+      no_confirm: false
+
+  paths:
+    output: dist

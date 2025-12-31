@@ -203,7 +203,9 @@ void main() {
       );
 
       final cmd = runner.getBuildCommand(config);
-      expect(cmd, contains('--dart-define-from-file=.env.prod'));
+      // Path will be converted to absolute, so just check the flag exists
+      expect(cmd, contains('--dart-define-from-file='));
+      expect(cmd, contains('.env.prod'));
     });
 
     test('getBuildCommand handles Shorebird iOS with correct flags', () {

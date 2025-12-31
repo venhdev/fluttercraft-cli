@@ -38,10 +38,11 @@ name: myapp
 version: 2.0.0+42
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: apk
-paths:
-  output: custom/output
+fluttercraft:
+  build:
+    platform: apk
+  paths:
+    output: custom/output
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -56,8 +57,9 @@ paths:
 
       test('uses default output path .fluttercraft/dist when not specified', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
+fluttercraft:
+  build:
+    app_name: myapp
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -70,8 +72,9 @@ name: pubspec_app
 version: 1.2.3+45
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: apk
+fluttercraft:
+  build:
+    platform: apk
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -87,8 +90,9 @@ name: pubspec_app
 version: 1.2.3+45
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -100,8 +104,9 @@ build:
 
       test('supports backward compatibility with "type" key', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  type: ios
+fluttercraft:
+  build:
+    type: ios
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.platform, 'ios');
@@ -115,11 +120,12 @@ name: defaultapp
 version: 2.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build_defaults:
-  target: lib/main.dart
-  platform: apk
+fluttercraft:
+  build_defaults:
+    target: lib/main.dart
+    platform: apk
 
-build:
+  build:
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -134,12 +140,13 @@ build:
     group('flags parsing', () {
       test('parses flags from build section', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  flags:
-    should_clean: true
-    should_build_runner: true
-    should_prompt_dart_define: true
+fluttercraft:
+  build:
+    app_name: myapp
+    flags:
+      should_clean: true
+      should_build_runner: true
+      should_prompt_dart_define: true
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -151,9 +158,10 @@ build:
 
       test('platform delegates to config', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: testapp
-  platform: ipa
+fluttercraft:
+  build:
+    app_name: testapp
+    platform: ipa
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.platform, 'ipa');
@@ -163,8 +171,9 @@ build:
 
       test('defaults all flags to false', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
+fluttercraft:
+  build:
+    app_name: myapp
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -178,12 +187,13 @@ build:
     group('dart_define parsing', () {
       test('parses dart_define from build section', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  dart_define:
-    API_KEY: secret123
-    DEBUG: true
-    VERSION: 1
+fluttercraft:
+  build:
+    app_name: myapp
+    dart_define:
+      API_KEY: secret123
+      DEBUG: true
+      VERSION: 1
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -196,12 +206,13 @@ build:
 
       test('merges global and flavor dart_define', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  global_dart_define:
-    GLOBAL_KEY: global_value
-  dart_define:
-    LOCAL_KEY: local_value
+fluttercraft:
+  build:
+    app_name: myapp
+    global_dart_define:
+      GLOBAL_KEY: global_value
+    dart_define:
+      LOCAL_KEY: local_value
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -215,12 +226,13 @@ build:
     group('flavors', () {
       test('throws error when flavor not found', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  flavor: nonexistent
-flavors:
-  dev:
-    name: 1.0.0-dev
+fluttercraft:
+  build:
+    app_name: myapp
+    flavor: nonexistent
+  flavors:
+    dev:
+      name: 1.0.0-dev
 ''');
 
         expect(
@@ -235,13 +247,14 @@ name: myapp
 version: 1.0.0+1
 ''');
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  flavor: dev
-flavors:
-  dev:
-    flags:
-      should_clean: true
-    platform: ios
+fluttercraft:
+  build:
+    flavor: dev
+  flavors:
+    dev:
+      flags:
+        should_clean: true
+      platform: ios
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -255,14 +268,15 @@ flavors:
 
       test('absoluteOutputPath includes flavor', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  flavor: dev
-flavors:
-  dev:
-    name: 1.0.0-dev
-paths:
-  output: .fluttercraft/dist
+fluttercraft:
+  build:
+    app_name: myapp
+    flavor: dev
+  flavors:
+    dev:
+      name: 1.0.0-dev
+  paths:
+    output: .fluttercraft/dist
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -274,12 +288,13 @@ paths:
     group('environments', () {
       test('parses FVM settings', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-environments:
-  fvm:
-    enabled: true
-    version: "3.24.0"
+fluttercraft:
+  build:
+    app_name: myapp
+  environments:
+    fvm:
+      enabled: true
+      version: "3.24.0"
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -290,13 +305,14 @@ environments:
 
       test('parses Shorebird settings', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-environments:
-  shorebird:
-    enabled: true
-    app_id: test_app_id
-    no_confirm: false
+fluttercraft:
+  build:
+    app_name: myapp
+  environments:
+    shorebird:
+      enabled: true
+      app_id: test_app_id
+      no_confirm: false
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -308,12 +324,13 @@ environments:
 
       test('parses bundletool settings', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-environments:
-  bundletool:
-    path: tools/bundletool.jar
-    keystore: android/key.properties
+fluttercraft:
+  build:
+    app_name: myapp
+  environments:
+    bundletool:
+      path: tools/bundletool.jar
+      keystore: android/key.properties
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -326,13 +343,14 @@ environments:
     group('aliases', () {
       test('parses command aliases', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-alias:
-  gen-icon:
-    cmds:
-      - flutter pub get
-      - flutter pub run flutter_launcher_icons
+fluttercraft:
+  build:
+    app_name: myapp
+  alias:
+    gen-icon:
+      cmds:
+        - flutter pub get
+        - flutter pub run flutter_launcher_icons
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -345,12 +363,13 @@ alias:
     group('args', () {
       test('parses args from build_defaults', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build_defaults:
-  args:
-    - --obfuscate
-    - --split-debug-info=symbols
-build:
-  app_name: myapp
+fluttercraft:
+  build_defaults:
+    args:
+      - --obfuscate
+      - --split-debug-info=symbols
+  build:
+    app_name: myapp
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -359,15 +378,16 @@ build:
 
       test('merges inherited and flavor-specific args', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build_defaults:
-  args:
-    - --def-arg
-build:
-  flavor: prod
-flavors:
-  prod:
+fluttercraft:
+  build_defaults:
     args:
-      - --flavor-arg
+      - --def-arg
+  build:
+    flavor: prod
+  flavors:
+    prod:
+      args:
+        - --flavor-arg
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -376,8 +396,9 @@ flavors:
 
       test('handles single string arg', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  args: --single-arg
+fluttercraft:
+  build:
+    args: --single-arg
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -388,8 +409,9 @@ build:
     group('computed properties', () {
       test('fullVersion is null when buildName/buildNumber are null', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: aab
+fluttercraft:
+  build:
+    platform: aab
 ''');
 
         final config = await BuildConfig.load(projectRoot: tempDir);
@@ -401,7 +423,8 @@ build:
     group('edge cases', () {
       test('empty build section uses defaults', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
+fluttercraft:
+  build:
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
@@ -413,8 +436,9 @@ build:
 
       test('null values in YAML use defaults', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  platform: null
+fluttercraft:
+  build:
+    platform: null
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
@@ -425,8 +449,9 @@ build:
 
       test('missing environments section uses defaults', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
+fluttercraft:
+  build:
+    app_name: myapp
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
@@ -437,12 +462,13 @@ build:
 
       test('alias with commands is created', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-alias:
-  test-alias:
-    cmds:
-      - echo test
+fluttercraft:
+  build:
+    app_name: myapp
+  alias:
+    test-alias:
+      cmds:
+        - echo test
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
 
@@ -452,11 +478,12 @@ alias:
 
       test('dart_define with null value is skipped', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  dart_define:
-    VALID_KEY: valid_value
-    NULL_KEY: null
+fluttercraft:
+  build:
+    app_name: myapp
+    dart_define:
+      VALID_KEY: valid_value
+      NULL_KEY: null
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         final defines = config.finalDartDefine;
@@ -467,11 +494,12 @@ build:
 
       test('flavor section with content is parsed', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-flavors:
-  dev:
-    name: 1.0.0-dev
+fluttercraft:
+  build:
+    app_name: myapp
+  flavors:
+    dev:
+      name: 1.0.0-dev
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.flavors.containsKey('dev'), true);
@@ -479,15 +507,16 @@ flavors:
 
       test('flavor dart_define overrides global dart_define', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  flavor: dev
-  global_dart_define:
-    KEY: global_value
-flavors:
-  dev:
-    dart_define:
-      KEY: dev_value
+fluttercraft:
+  build:
+    app_name: myapp
+    flavor: dev
+    global_dart_define:
+      KEY: global_value
+  flavors:
+    dev:
+      dart_define:
+        KEY: dev_value
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.finalDartDefine['KEY'], 'dev_value');
@@ -504,11 +533,12 @@ flavors:
 
       test('handles boolean values in dart_define', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  dart_define:
-    IS_DEBUG: true
-    IS_PROD: false
+fluttercraft:
+  build:
+    app_name: myapp
+    dart_define:
+      IS_DEBUG: true
+      IS_PROD: false
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.finalDartDefine['IS_DEBUG'], true);
@@ -517,11 +547,12 @@ build:
 
       test('handles numeric values in dart_define', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-build:
-  app_name: myapp
-  dart_define:
-    VERSION_CODE: 42
-    TIMEOUT: 30.5
+fluttercraft:
+  build:
+    app_name: myapp
+    dart_define:
+      VERSION_CODE: 42
+      TIMEOUT: 30.5
 ''');
         final config = await BuildConfig.load(projectRoot: tempDir);
         expect(config.finalDartDefine['VERSION_CODE'], 42);

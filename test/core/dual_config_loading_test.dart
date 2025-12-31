@@ -157,6 +157,10 @@ fluttercraft:
   build:
     <<: *defaults
     flavor: dev
+    
+  flavors:
+    dev:
+      platform: aab
 ''');
 
       final config = await BuildConfig.load(projectRoot: tempDir.path);

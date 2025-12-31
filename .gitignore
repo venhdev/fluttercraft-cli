@@ -5,6 +5,7 @@
 # Build output
 .fluttercraft/
 .local/
+.reports/
 
 # FVM Version Cache
 .fvm/

@@ -30,12 +30,13 @@ void main() {
     group('List Aliases', () {
       test('lists aliases when --list flag is provided', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  simple:
-    cmds:
-      - echo hello
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    simple:
+      cmds:
+        - echo hello
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['--list']), 0);
@@ -43,12 +44,13 @@ alias:
 
       test('lists aliases when -l flag is provided', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  test:
-    cmds:
-      - echo test
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    test:
+      cmds:
+        - echo test
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['-l']), 0);
@@ -56,12 +58,13 @@ alias:
 
       test('lists aliases when "list" subcommand is provided', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  test:
-    cmds:
-      - echo test
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    test:
+      cmds:
+        - echo test
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['list']), 0);
@@ -69,8 +72,9 @@ alias:
 
       test('shows message when no aliases are defined', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
+fluttercraft:
+  build:
+    app_name: testapp
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['--list']), 0);
@@ -80,12 +84,13 @@ build:
     group('Alias Execution', () {
       test('lists aliases when no alias name is provided', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  simple:
-    cmds:
-      - echo hello
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    simple:
+      cmds:
+        - echo hello
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute([]), 0);
@@ -93,12 +98,13 @@ alias:
 
       test('executes single simple command successfully', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  simple:
-    cmds:
-      - echo hello
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    simple:
+      cmds:
+        - echo hello
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['simple']), 0);
@@ -106,13 +112,14 @@ alias:
 
       test('executes multiple commands in sequence', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  multi:
-    cmds:
-      - echo first
-      - echo second
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    multi:
+      cmds:
+        - echo first
+        - echo second
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['multi']), 0);
@@ -122,12 +129,13 @@ alias:
     group('Error Handling', () {
       test('handles nonexistent alias gracefully', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  simple:
-    cmds:
-      - echo hello
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    simple:
+      cmds:
+        - echo hello
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['nonexistent']), 1);
@@ -135,12 +143,13 @@ alias:
 
       test('handles invalid command gracefully', () async {
         final context = await createTestContext('''
-build:
-  app_name: testapp
-alias:
-  invalid:
-    cmds:
-      - this-command-does-not-exist-xyz
+fluttercraft:
+  build:
+    app_name: testapp
+  alias:
+    invalid:
+      cmds:
+        - this-command-does-not-exist-xyz
 ''');
         final runCmd = RunCommand(context);
         expect(await runCmd.execute(['invalid']), 1);
