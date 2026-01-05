@@ -1,7 +1,9 @@
 import 'dart:io' show Platform;
+
 import 'package:path/path.dart' as p;
-import '../utils/process_runner.dart';
+
 import '../utils/console.dart';
+import '../utils/process_runner.dart';
 import 'build_config.dart';
 
 /// Handles execution of Flutter, FVM, and Shorebird commands
@@ -371,12 +373,14 @@ class FlutterRunner {
     // Custom args from config
     sbArgs.addAll(flutterArgs);
 
-    // On Windows, must use shell to find .bat files
-    // The -- separator works correctly when passed as array element
+    // On Windows, must NOT use shell to properly handle -- separator
+    // When runInShell: false, arguments are passed directly to the executable
+    // without cmd.exe interference, preserving the -- separator correctly
     return _processRunner.run(
       'shorebird',
       sbArgs,
       workingDirectory: projectRoot,
+      runInShell: false,
     );
   }
 
