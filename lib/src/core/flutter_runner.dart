@@ -373,9 +373,21 @@ class FlutterRunner {
     // Custom args from config
     sbArgs.addAll(flutterArgs);
 
-    // On Windows, must NOT use shell to properly handle -- separator
-    // When runInShell: false, arguments are passed directly to the executable
-    // without cmd.exe interference, preserving the -- separator correctly
+    // On Windows, use PowerShell to execute shorebird with proper argument handling
+    // PowerShell preserves arguments when passed as an array, unlike cmd.exe which
+    // splits arguments at = signs when passed as a string
+    if (Platform.isWindows) {
+      // PowerShell -Command properly handles -- separator and preserves argument values
+      final psArgs = ['-NoProfile', '-Command', 'shorebird', ...sbArgs];
+      return _processRunner.run(
+        'powershell.exe',
+        psArgs,
+        workingDirectory: projectRoot,
+        runInShell: false,
+      );
+    }
+    
+    // On Unix-like systems, use shorebird directly
     return _processRunner.run(
       'shorebird',
       sbArgs,
