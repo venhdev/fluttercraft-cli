@@ -1,6 +1,9 @@
 import 'dart:io';
-import 'package:test/test.dart';
+
+import 'package:args/command_runner.dart';
 import 'package:fluttercraft/src/commands/build_command.dart';
+import 'package:test/test.dart';
+
 import '../test_helper.dart';
 
 /// Tests for BuildCommand
@@ -97,9 +100,11 @@ void main() {
         Directory.current = tempDir;
 
         final buildCmd = BuildCommand();
-        final exitCode = await buildCmd.run();
+        final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
+        // Use --no-confirm to skip interactive version/build-number prompts in tests
+        final exitCode = await runner.run(['build', '--no-confirm']);
 
-        expect(exitCode, 1); // Should fail
+        expect(exitCode, 1); // Should fail due to missing fluttercraft.yaml after pubspec check
       });
 
       test('proceeds when pubspec.yaml exists', () async {
@@ -114,7 +119,9 @@ version: 1.0.0+1
         Directory.current = tempDir;
 
         final buildCmd = BuildCommand();
-        final exitCode = await buildCmd.run();
+        final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
+        // Use --no-confirm to skip interactive version/build-number prompts in tests
+        final exitCode = await runner.run(['build', '--no-confirm']);
 
         // Will fail at later stage (no fluttercraft.yaml), but different error
         expect(exitCode, 1);

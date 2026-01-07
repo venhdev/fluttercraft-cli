@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 import '../core/helpers/environment_detectors.dart';
 import '../core/pubspec_parser.dart';
+import '../utils/command_logger.dart';
 import '../utils/console.dart';
 
 /// Command to generate fluttercraft.yaml configuration file
@@ -33,13 +34,22 @@ class GenCommand extends Command<int> {
     final configPath = p.join(projectRoot, 'fluttercraft.yaml');
     final configFile = File(configPath);
 
+    final logger = CommandLogger(projectRoot: projectRoot, commandName: 'gen');
+    await logger.startSession();
+    logger.info('Starting config generation');
+    logger.info('Project root: $projectRoot');
+    logger.info('Config path: $configPath');
+
     // Check if file exists
     if (await configFile.exists()) {
       if (!force) {
         console.warning('fluttercraft.yaml already exists.');
         console.info('Use --force to overwrite.');
+        logger.warning('fluttercraft.yaml already exists. Force not enabled.');
+        await logger.endSession(success: false);
         return 1;
       }
+      logger.info('Overwriting existing fluttercraft.yaml');
     }
 
     // Load pubspec to get app name (for reference only)
@@ -62,23 +72,18 @@ class GenCommand extends Command<int> {
     await configFile.writeAsString(content);
 
     // Update .gitignore to include .fluttercraft/
-    await _updateGitignore(projectRoot);
+    await _updateGitignore(projectRoot, logger);
 
     console.success('Generated fluttercraft.yaml');
     console.info('Location: $configPath');
-    console.info('App metadata (name, version) will be read from pubspec.yaml');
-    if (fvmVersion != null) {
-      console.info('FVM version: $fvmVersion (auto-detected)');
-    }
-    if (shorebirdAppId != null) {
-      console.info('Shorebird app_id: $shorebirdAppId (auto-detected)');
-    }
-
+    console.info('Log: ${logger.logFilePath}');
+    
+    await logger.endSession(success: true);
     return 0;
   }
 
   /// Update .gitignore to include .fluttercraft/ if not already present
-  Future<void> _updateGitignore(String projectRoot) async {
+  Future<void> _updateGitignore(String projectRoot, CommandLogger logger) async {
     final gitignorePath = p.join(projectRoot, '.gitignore');
     final gitignoreFile = File(gitignorePath);
 
@@ -95,6 +100,7 @@ class GenCommand extends Command<int> {
             : '$content\n\n# FlutterCraft build output\n$fluttercraftEntry\n';
         await gitignoreFile.writeAsString(newContent);
         console.info('Updated .gitignore with $fluttercraftEntry');
+        logger.info('Updated .gitignore with $fluttercraftEntry');
       }
     } else {
       // Create new .gitignore with .fluttercraft/ entry
@@ -102,6 +108,7 @@ class GenCommand extends Command<int> {
         '# FlutterCraft build output\n$fluttercraftEntry\n',
       );
       console.info('Created .gitignore with $fluttercraftEntry');
+      logger.info('Created .gitignore with $fluttercraftEntry');
     }
   }
 

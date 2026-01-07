@@ -1,4 +1,5 @@
 import '../core/app_context.dart';
+import '../utils/command_logger.dart';
 import '../utils/console.dart';
 import '../utils/process_runner.dart';
 
@@ -11,6 +12,8 @@ class RunCommand {
   RunCommand(this.context, {Console? console, ProcessRunner? runner})
       : _console = console ?? Console(),
         _runner = runner ?? ProcessRunner();
+
+  late final CommandLogger _logger;
 
   Future<int> execute(List<String> args) async {
     // Parse flags
@@ -37,7 +40,20 @@ class RunCommand {
 
     final aliasName = args[0];
     final runArgs = args.sublist(1);
-    return _runAlias(aliasName, runArgs);
+    
+    _logger = CommandLogger(projectRoot: context.projectRoot, commandName: 'run');
+    await _logger.startSession();
+    _logger.info('Running alias: $aliasName');
+    
+    try {
+      final exitCode = await _runAlias(aliasName, runArgs);
+      await _logger.endSession(success: exitCode == 0);
+      return exitCode;
+    } catch (e) {
+      _logger.error('Alias execution failed: $e');
+      await _logger.endSession(success: false);
+      rethrow;
+    }
   }
 
   void _printHelp() {
@@ -193,16 +209,19 @@ class RunCommand {
         workingDirectory: context.projectRoot,
         streamOutput: true,
       );
+      _logger.output(result.stdout);
 
       if (!result.success) {
         _console.blank();
         _console.error('Command failed with exit code ${result.exitCode}');
+        _logger.error('Command failed with exit code ${result.exitCode}');
         return result.exitCode;
       }
     }
 
     _console.blank();
     _console.success('✓ Alias "$name" execution complete');
+    _console.info('Log: ${_logger.logFilePath}');
     return 0;
   }
 

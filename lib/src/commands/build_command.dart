@@ -4,14 +4,14 @@ import 'dart:math';
 import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
+import '../core/artifact_mover.dart';
 import '../core/build_config.dart';
 import '../core/build_record.dart';
+import '../core/flutter_runner.dart';
 import '../core/pubspec_parser.dart';
 import '../core/version_manager.dart';
-import '../core/flutter_runner.dart';
-import '../core/artifact_mover.dart';
+import '../utils/command_logger.dart';
 import '../utils/console.dart';
-import '../utils/build_logger.dart';
 import '../utils/process_runner.dart';
 
 /// Build command - builds Flutter app with version management and JSONL logging
@@ -109,7 +109,7 @@ class BuildCommand extends Command<int> {
     final versionManager = VersionManager();
     final flutterRunner = FlutterRunner(projectRoot: projectRoot);
     final artifactMover = ArtifactMover(projectRoot: projectRoot);
-    final logger = BuildLogger(projectRoot: projectRoot, buildId: buildId);
+    final logger = CommandLogger(projectRoot: projectRoot, commandName: 'build', buildId: buildId);
     final history = BuildHistory(projectRoot: projectRoot);
 
     // Update config with overridden build platform
@@ -577,8 +577,7 @@ class BuildCommand extends Command<int> {
         outputPath: artifactResult.outputPath,
       );
 
-      console.info('Log: ${logger.latestLogPath}');
-      console.info('Build Log: ${logger.buildLogPath}');
+      console.info('Log: ${logger.logFilePath}');
       console.info('History: ${history.historyPath}');
 
       return 0;

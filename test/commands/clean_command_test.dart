@@ -1,6 +1,8 @@
 import 'dart:io';
-import 'package:test/test.dart';
+
 import 'package:fluttercraft/src/commands/clean_command.dart';
+import 'package:test/test.dart';
+
 import '../test_helper.dart';
 
 /// Tests for CleanCommand
@@ -32,10 +34,10 @@ void main() {
       expect(cleanCmd.description, contains('build folder'));
     });
 
-    test('argParser includes dist-only flag', () {
+    test('argParser includes all flag', () {
       final cleanCmd = CleanCommand();
       final options = cleanCmd.argParser.options;
-      expect(options.containsKey('dist-only'), true);
+      expect(options.containsKey('all'), true);
     });
 
     test('argParser includes yes flag with negation disabled', () {

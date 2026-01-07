@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
+import '../core/apk_converter.dart';
 import '../core/build_config.dart';
 import '../core/build_flags.dart';
-import '../core/apk_converter.dart';
+import '../utils/command_logger.dart';
 import '../utils/console.dart';
 
 /// Convert command - converts AAB to universal APK
@@ -58,6 +59,9 @@ class ConvertCommand extends Command<int> {
     }
 
     final converter = ApkConverter(projectRoot: projectRoot, console: console);
+    final logger = CommandLogger(projectRoot: projectRoot, commandName: 'convert');
+    await logger.startSession();
+    logger.info('Starting AAB to APK conversion');
 
     // Find or prompt for AAB file
     String? aabPath = argResults?['aab'] as String?;
@@ -187,9 +191,14 @@ class ConvertCommand extends Command<int> {
       console.blank();
       console.success('Conversion complete!');
       console.keyValue('Output', result.outputPath ?? outputPath);
+      console.info('Log: ${logger.logFilePath}');
+      
+      await logger.endSession(success: true, outputPath: result.outputPath);
       return 0;
     } else {
       console.error('Conversion failed: ${result.error}');
+      logger.error('Conversion failed: ${result.error}');
+      await logger.endSession(success: false);
       return 1;
     }
   }
