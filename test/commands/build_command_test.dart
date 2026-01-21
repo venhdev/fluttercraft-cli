@@ -120,8 +120,8 @@ version: 1.0.0+1
 
         final buildCmd = BuildCommand();
         final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
-        // Use -y to skip FlutterCraft confirmation prompt, --version to skip version prompt
-        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0']);
+        // Use -y to skip FlutterCraft confirmation prompt, --version and --build-number to skip prompts
+        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0', '--build-number', '1']);
 
         // Will fail at later stage (no fluttercraft.yaml), but different error
         expect(exitCode, 1);
