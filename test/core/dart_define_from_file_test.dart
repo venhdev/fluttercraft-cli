@@ -1,6 +1,7 @@
-import 'package:test/test.dart';
 import 'package:fluttercraft/src/core/build_config.dart';
 import 'package:fluttercraft/src/core/build_flags.dart';
+import 'package:test/test.dart';
+
 import '../test_helper.dart';
 
 /// Tests for dart_define_from_file configuration loading
@@ -247,7 +248,6 @@ fluttercraft:
         platform: config.platform,
         flavor: config.flavor,
         targetDart: config.targetDart,
-        noReview: config.noReview,
         outputPath: config.outputPath,
         flags: config.flags,
         globalDartDefine: config.globalDartDefine,
@@ -300,7 +300,6 @@ fluttercraft:
         platform: config.platform,
         flavor: config.flavor,
         targetDart: config.targetDart,
-        noReview: config.noReview,
         outputPath: config.outputPath,
         flags: config.flags,
         globalDartDefine: config.globalDartDefine,
@@ -349,7 +348,6 @@ fluttercraft:
         platform: 'aab', // platform changed
         flavor: config.flavor,
         targetDart: config.targetDart,
-        noReview: config.noReview,
         outputPath: config.outputPath,
         flags: config.flags,
         globalDartDefine: config.globalDartDefine,

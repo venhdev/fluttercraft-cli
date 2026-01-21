@@ -14,7 +14,6 @@ fluttercraft:
   build:
     platform: apk
     target: lib/main.dart
-    no_review: false
     
     flags:
       should_clean: false

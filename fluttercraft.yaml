@@ -16,8 +16,6 @@ fluttercraft:
     platform: aab
     # Main entry point
     target: lib/main.dart
-    # Skip code review checklist
-    no_review: false
 
     # Extra arguments to pass to the build command (e.g., --obfuscate, --split-debug-info=...)
     args: []

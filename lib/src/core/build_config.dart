@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
 
-import 'pubspec_parser.dart';
 import 'build_flags.dart';
 import 'flavor_config.dart';
-import 'helpers/yaml_helpers.dart';
-import 'helpers/dart_define_parser.dart';
 import 'helpers/alias_parser.dart';
+import 'helpers/dart_define_parser.dart';
 import 'helpers/environment_detectors.dart';
+import 'helpers/yaml_helpers.dart';
+import 'pubspec_parser.dart';
 
 /// Custom command alias definition
 class CommandAlias {
@@ -40,7 +40,6 @@ class BuildConfig {
   final String platform;
   final String? flavor;
   final String targetDart;
-  final bool noReview;
   final List<String> args;
 
   // Paths
@@ -89,7 +88,6 @@ class BuildConfig {
     required this.platform,
     this.flavor,
     required this.targetDart,
-    this.noReview = false,
     required this.outputPath,
     required this.flags,
     this.globalDartDefine = const {},
@@ -244,7 +242,6 @@ class BuildConfig {
       buildNumber: null,
       platform: 'aab',
       targetDart: 'lib/main.dart',
-      noReview: false,
       outputPath: '.fluttercraft/dist',
       flags: BuildFlags.defaults,
       useFvm: false,
@@ -296,11 +293,7 @@ class BuildConfig {
         YamlHelpers.getStringOrNull(buildDefaults, 'target') ??
         'lib/main.dart';
     
-    // no_review: Skip fluttercraft's "Do you want to proceed?" prompt
-    // (separate from environments.shorebird.no_confirm which controls Shorebird's --no-confirm flag)
-    final noReview = YamlHelpers.getBool(build, 'no_review', null) ??
-        YamlHelpers.getBool(buildDefaults, 'no_review', null) ??
-        false;
+    // no_review has been removed - use CLI flags (--review, -y) instead
     
     final args = YamlHelpers.getList(build, 'args') ?? 
         YamlHelpers.getList(buildDefaults, 'args') ?? 
@@ -461,7 +454,6 @@ class BuildConfig {
       platform: platform,
       flavor: flavor,
       targetDart: targetDart,
-      noReview: noReview,
       outputPath: outputPath,
       flags: BuildFlags(
         shouldPromptDartDefine: shouldPromptDartDefine,
@@ -531,7 +523,6 @@ class BuildConfig {
   platform: $platform
   flavor: $flavor
   targetDart: $targetDart
-  noReview: $noReview
   outputPath: $outputPath
   flags: $flags
   dartDefine: $finalDartDefine

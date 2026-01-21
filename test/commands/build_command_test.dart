@@ -101,8 +101,8 @@ void main() {
 
         final buildCmd = BuildCommand();
         final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
-        // Use --no-confirm to skip interactive version/build-number prompts in tests
-        final exitCode = await runner.run(['build', '--no-confirm']);
+        // Use -y to skip FlutterCraft confirmation prompt, --version to skip version prompt
+        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0']);
 
         expect(exitCode, 1); // Should fail due to missing fluttercraft.yaml after pubspec check
       });
@@ -120,8 +120,8 @@ version: 1.0.0+1
 
         final buildCmd = BuildCommand();
         final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
-        // Use --no-confirm to skip interactive version/build-number prompts in tests
-        final exitCode = await runner.run(['build', '--no-confirm']);
+        // Use -y to skip FlutterCraft confirmation prompt, --version to skip version prompt
+        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0']);
 
         // Will fail at later stage (no fluttercraft.yaml), but different error
         expect(exitCode, 1);

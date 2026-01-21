@@ -1,7 +1,10 @@
 import 'dart:io';
-import 'package:test/test.dart';
+
 import 'package:fluttercraft/src/commands/gen_command.dart';
+import 'package:test/test.dart';
+
 import '../test_helper.dart';
+import '../wrapper_test_mocks.dart';
 
 /// Tests for GenCommand
 ///
@@ -34,7 +37,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         final result = await genCmd.run();
 
         expect(result, 0);
@@ -49,7 +52,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         await genCmd.run();
 
         expect(await TestHelper.fileExists(tempDir, '.gitignore'), true);
@@ -68,7 +71,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         await genCmd.run();
 
         final content = await TestHelper.readFile(tempDir, '.gitignore');
@@ -87,7 +90,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         await genCmd.run();
 
         final content = await TestHelper.readFile(tempDir, '.gitignore');
@@ -107,7 +110,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         final result = await genCmd.run();
 
         expect(result, 1); // Should fail without --force
@@ -121,7 +124,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         await genCmd.run();
 
         final content = await TestHelper.readFile(tempDir, 'fluttercraft.yaml');
@@ -136,7 +139,7 @@ environment:
       Directory.current = Directory(tempDir);
 
       try {
-        final genCmd = GenCommand();
+        final genCmd = GenCommand(console: MockConsole());
         await genCmd.run();
 
         final content = await TestHelper.readFile(tempDir, 'fluttercraft.yaml');

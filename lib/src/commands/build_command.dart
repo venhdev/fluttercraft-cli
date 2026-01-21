@@ -121,7 +121,6 @@ class BuildCommand extends Command<int> {
       platform: platform,
       flavor: config.flavor,
       targetDart: config.targetDart,
-      noReview: config.noReview,
       outputPath: config.outputPath,
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
@@ -216,7 +215,6 @@ class BuildCommand extends Command<int> {
       platform: config.platform,
       flavor: config.flavor,
       targetDart: config.targetDart,
-      noReview: config.noReview,
       outputPath: config.outputPath,
       flags: config.flags,
       globalDartDefine: config.globalDartDefine,
@@ -239,9 +237,7 @@ class BuildCommand extends Command<int> {
     // Determine if we should ask for review
     final shouldReview =
         argResults?['review'] == true &&
-        argResults?['yes'] != true &&
-        argResults?['no-confirm'] != true &&
-        !buildConfig.noReview;
+        argResults?['yes'] != true;
 
     // Start logging
     await logger.startSession(version: currentVersion.fullVersion);

@@ -94,21 +94,43 @@ class GenCommand extends Command<int> {
       
       // Check if .fluttercraft/ is already in .gitignore
       if (!content.contains(fluttercraftEntry)) {
-        // Append to existing .gitignore
-        final newContent = content.endsWith('\n') 
-            ? '$content\n# FlutterCraft build output\n$fluttercraftEntry\n'
-            : '$content\n\n# FlutterCraft build output\n$fluttercraftEntry\n';
-        await gitignoreFile.writeAsString(newContent);
-        console.info('Updated .gitignore with $fluttercraftEntry');
-        logger.info('Updated .gitignore with $fluttercraftEntry');
+        // Ask user if they want to add it
+        final shouldAdd = console.confirm(
+          'Should I add $fluttercraftEntry to .gitignore?',
+          defaultValue: true,
+        );
+
+        if (shouldAdd) {
+          // Append to existing .gitignore
+          final newContent = content.endsWith('\n') 
+              ? '$content\n# FlutterCraft build output\n$fluttercraftEntry\n'
+              : '$content\n\n# FlutterCraft build output\n$fluttercraftEntry\n';
+          await gitignoreFile.writeAsString(newContent);
+          console.info('Updated .gitignore with $fluttercraftEntry');
+          logger.info('Updated .gitignore with $fluttercraftEntry');
+        } else {
+          console.warning('Skipped updating .gitignore. Please add $fluttercraftEntry manually to avoid committing build artifacts.');
+          logger.info('User skipped .gitignore update');
+        }
       }
     } else {
-      // Create new .gitignore with .fluttercraft/ entry
-      await gitignoreFile.writeAsString(
-        '# FlutterCraft build output\n$fluttercraftEntry\n',
+      // Ask user if they want to create .gitignore
+      final shouldCreate = console.confirm(
+        '.gitignore not found. Create it with $fluttercraftEntry?',
+        defaultValue: true,
       );
-      console.info('Created .gitignore with $fluttercraftEntry');
-      logger.info('Created .gitignore with $fluttercraftEntry');
+
+      if (shouldCreate) {
+        // Create new .gitignore with .fluttercraft/ entry
+        await gitignoreFile.writeAsString(
+          '# FlutterCraft build output\n$fluttercraftEntry\n',
+        );
+        console.info('Created .gitignore with $fluttercraftEntry');
+        logger.info('Created .gitignore with $fluttercraftEntry');
+      } else {
+        console.warning('Skipped creating .gitignore. Please add $fluttercraftEntry manually to avoid committing build artifacts.');
+        logger.info('User skipped .gitignore creation');
+      }
     }
   }
 
@@ -134,8 +156,6 @@ fluttercraft:
     platform: aab
     # Main entry point
     target: lib/main.dart
-    # Skip code review checklist
-    no_review: false
 
     # Extra arguments to pass to the build command (e.g., --obfuscate, --split-debug-info=...)
     args: []
@@ -177,36 +197,36 @@ fluttercraft:
   # ════════════════════════════════════════════════════════════════════════════
   # FLAVOR OVERRIDES (NO VERSION OVERRIDES - use dart_define to detect flavor)
   # ════════════════════════════════════════════════════════════════════════════
-  flavors:
-    dev:
-      platform: apk
-      flags:
-        should_prompt_dart_define: false
-      dart_define:
-        FLAVOR: dev
-        IS_DEV: true
-        LOG_LEVEL: debug
-      # Override with flavor-specific env file (optional)
-      # dart_define_from_file: .env.dev
-
-    staging:
-      platform: aab
-      flags:
-        should_prompt_dart_define: false
-        should_clean: true
-      dart_define:
-        FLAVOR: staging
-        IS_STAGING: true
-
-    prod:
-      platform: aab
-      flags:
-        should_prompt_dart_define: false
-        should_clean: true
-        should_build_runner: true
-      dart_define:
-        FLAVOR: prod
-        IS_PROD: true
+  # flavors:
+  #   dev:
+  #     platform: apk
+  #     flags:
+  #       should_prompt_dart_define: false
+  #     dart_define:
+  #       FLAVOR: dev
+  #       IS_DEV: true
+  #       LOG_LEVEL: debug
+  #     # Override with flavor-specific env file (optional)
+  #     # dart_define_from_file: .env.dev
+  #
+  #   staging:
+  #     platform: aab
+  #     flags:
+  #       should_prompt_dart_define: false
+  #       should_clean: true
+  #     dart_define:
+  #       FLAVOR: staging
+  #       IS_STAGING: true
+  #
+  #   prod:
+  #     platform: aab
+  #     flags:
+  #       should_prompt_dart_define: false
+  #       should_clean: true
+  #       should_build_runner: true
+  #     dart_define:
+  #       FLAVOR: prod
+  #       IS_PROD: true
 
   # ════════════════════════════════════════════════════════════════════════════
   # ENVIRONMENT TOOLS (global only - not overridable by flavors)
@@ -248,15 +268,15 @@ fluttercraft:
   # ════════════════════════════════════════════════════════════════════════════
   # CUSTOM COMMAND ALIASES
   # ════════════════════════════════════════════════════════════════════════════
-  alias:
-    gen-icon:
-      cmds:
-        - fvm flutter pub get
-        - fvm flutter pub run flutter_launcher_icons
-    brn:
-      cmds:
-        - fvm flutter pub get
-        - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
+  # alias:
+  #   gen-icon:
+  #     cmds:
+  #       - fvm flutter pub get
+  #       - fvm flutter pub run flutter_launcher_icons
+  #   brn:
+  #     cmds:
+  #       - fvm flutter pub get
+  #       - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
 ''';
   }
 }
