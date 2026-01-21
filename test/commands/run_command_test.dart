@@ -1,6 +1,7 @@
-import 'package:test/test.dart';
-import 'package:fluttercraft/src/core/app_context.dart';
 import 'package:fluttercraft/src/commands/run_command.dart';
+import 'package:fluttercraft/src/core/app_context.dart';
+import 'package:test/test.dart';
+
 import '../test_helper.dart';
 
 /// Tests for RunCommand
@@ -152,7 +153,8 @@ fluttercraft:
         - this-command-does-not-exist-xyz
 ''');
         final runCmd = RunCommand(context);
-        expect(await runCmd.execute(['invalid']), 1);
+        final exitCode = await runCmd.execute(['invalid']);
+        expect(exitCode, isNot(0)); // Non-zero exit code (platform-dependent: 1 on Windows, -1 on Linux)
       });
     });
   });
