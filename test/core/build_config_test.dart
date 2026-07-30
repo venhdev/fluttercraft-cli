@@ -340,8 +340,8 @@ fluttercraft:
       });
     });
 
-    group('aliases', () {
-      test('parses command aliases', () async {
+    group('removed config keys', () {
+      test('throws when alias key is present', () async {
         await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
 fluttercraft:
   build:
@@ -353,10 +353,10 @@ fluttercraft:
         - flutter pub run flutter_launcher_icons
 ''');
 
-        final config = await BuildConfig.load(projectRoot: tempDir);
-
-        expect(config.aliases.containsKey('gen-icon'), true);
-        expect(config.aliases['gen-icon']?.commands.length, 2);
+        expect(
+          () async => await BuildConfig.load(projectRoot: tempDir),
+          throwsA(isA<ConfigParseException>()),
+        );
       });
     });
 
@@ -458,22 +458,6 @@ fluttercraft:
         expect(config.useFvm, false);
         expect(config.useShorebird, false);
         expect(config.noColor, false);
-      });
-
-      test('alias with commands is created', () async {
-        await TestHelper.writeFile(tempDir, 'fluttercraft.yaml', '''
-fluttercraft:
-  build:
-    app_name: myapp
-  alias:
-    test-alias:
-      cmds:
-        - echo test
-''');
-        final config = await BuildConfig.load(projectRoot: tempDir);
-
-        expect(config.aliases.containsKey('test-alias'), true);
-        expect(config.aliases['test-alias']?.commands.isNotEmpty, true);
       });
 
       test('dart_define with null value is skipped', () async {

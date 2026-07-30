@@ -136,7 +136,6 @@ class BuildCommand extends Command<int> {
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
       flavors: config.flavors,
-      aliases: config.aliases,
       args: config.args,
     );
 
@@ -230,7 +229,6 @@ class BuildCommand extends Command<int> {
       bundletoolPath: config.bundletoolPath,
       keystorePath: config.keystorePath,
       flavors: config.flavors,
-      aliases: config.aliases,
       args: config.args,
     );
 

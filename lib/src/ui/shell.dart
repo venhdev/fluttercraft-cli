@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import '../core/app_context.dart';
-import '../commands/run_command.dart';
 import '../utils/console.dart';
 import '../version.dart';
 
@@ -100,14 +99,6 @@ class Shell {
     if (_commands.containsKey(command)) {
       final handler = _commands[command]!;
       await handler(args);
-      return;
-    }
-
-    // Check aliases
-    if (_appContext != null &&
-        _appContext!.config.aliases.containsKey(command)) {
-      final runCmd = RunCommand(_appContext!, console: console);
-      await runCmd.execute([command, ...args]);
       return;
     }
 
@@ -269,12 +260,6 @@ class Shell {
       if (ctx.flavors.isNotEmpty) {
         console.section('Flavors');
         console.keyValue('Available', ctx.flavors.keys.join(', '), keyWidth: kw);
-      }
-
-      // Aliases (only if defined)
-      if (ctx.aliases.isNotEmpty) {
-        console.section('Aliases');
-        console.keyValue('Defined', ctx.aliases.keys.join(', '), keyWidth: kw);
       }
 
       // Console settings

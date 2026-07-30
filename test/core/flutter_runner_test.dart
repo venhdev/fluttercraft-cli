@@ -454,7 +454,6 @@ void main() {
         bundletoolPath: originalConfig.bundletoolPath,
         keystorePath: originalConfig.keystorePath,
         flavors: originalConfig.flavors,
-        aliases: originalConfig.aliases,
         args: originalConfig.args,
       );
 
@@ -507,7 +506,6 @@ void main() {
         bundletoolPath: originalConfig.bundletoolPath,
         keystorePath: originalConfig.keystorePath,
         flavors: originalConfig.flavors,
-        aliases: originalConfig.aliases,
         args: originalConfig.args,
       );
 

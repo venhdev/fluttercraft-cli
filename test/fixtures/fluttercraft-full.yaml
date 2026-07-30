@@ -62,12 +62,3 @@ fluttercraft:
 
   paths:
     output: .fluttercraft/dist
-
-  alias:
-    simple:
-      cmds:
-        - echo hello
-    multi:
-      cmds:
-        - echo first
-        - echo second

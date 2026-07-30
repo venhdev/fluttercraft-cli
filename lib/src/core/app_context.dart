@@ -154,9 +154,6 @@ class AppContext {
   /// Available flavors
   Map<String, dynamic> get flavors => config.flavors;
 
-  /// Command aliases
-  Map<String, dynamic> get aliases => config.aliases;
-
   /// No color setting
   bool get noColor => config.noColor;
 

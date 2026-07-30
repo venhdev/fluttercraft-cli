@@ -8,7 +8,7 @@ A cross-platform Dart CLI tool for building Flutter apps. Replaces PowerShell bu
 
 - **Interactive Shell**: Continuous REPL for rapid development.
 - **Streamlined Workflow**: Build, version, and deploy in one flow.
-- **Advanced Config**: Supports Build Flavors, FVM, Shorebird, and custom Aliases.
+- **Advanced Config**: Supports Build Flavors, FVM, and Shorebird.
 - **Zero Setup**: Works out-of-the-box or with a generated config.
 
 ## 🚀 Quick Start
@@ -65,7 +65,6 @@ dart pub global deactivate fluttercraft
 | `build` | Build Flutter app (APK/AAB/IPA) | `flc build --platform apk` |
 | `clean` | Clean project and dist folder | `flc clean` |
 | `gen` | Generate configuration file | `flc gen` |
-| `run` | Run custom command alias | `flc run gen-icon` |
 | `info` | Show loaded context/config | `flc info` |
 | `help` | Show available commands | `flc help` |
 
@@ -99,24 +98,7 @@ flavors:
 environments:
   fvm:
     enabled: true # Auto-detects version from .fvmrc
-
-alias:
-  gen-assets:
-    cmds:
-      - fvm flutter pub run build_runner build
-
-## 🏃 Run Aliases
-
-Run aliases from `fluttercraft.yaml` with parameter substitution.
-
-```yaml
-alias:
-  commit:
-    cmds: ["git commit -m '{0}'"]
 ```
-
-**Usage:** `> commit "fix"` or `flc run commit "fix"`
-**Syntax:** `{0}` (pos), `{key}` (named).
 
 ## 📂 Output
 

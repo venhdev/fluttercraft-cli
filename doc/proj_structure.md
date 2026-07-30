@@ -27,7 +27,6 @@ fluttercraft/
 | `clean_command.dart` | Clean project and build folder |
 | `convert_command.dart` | Convert AAB → universal APK |
 | `gen_command.dart` | Generate `fluttercraft.yaml` |
-| `run_command.dart` | Execute custom command aliases |
 
 ### Core (`core/`)
 | File | Description |
@@ -70,8 +69,7 @@ test/
 │   ├── clean_command_test.dart
 │   ├── convert_command_test.dart
 │   ├── gen_command_test.dart
-│   ├── run_command_enhanced_test.dart
-│   └── run_command_test.dart
+│   └── build_command_review_flags_test.dart
 ├── core/                  # Core module tests
 │   ├── app_context_test.dart
 │   ├── build_config_test.dart

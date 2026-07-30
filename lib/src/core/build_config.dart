@@ -5,19 +5,10 @@ import 'package:yaml/yaml.dart';
 
 import 'build_flags.dart';
 import 'flavor_config.dart';
-import 'helpers/alias_parser.dart';
 import 'helpers/dart_define_parser.dart';
 import 'helpers/environment_detectors.dart';
 import 'helpers/yaml_helpers.dart';
 import 'pubspec_parser.dart';
-
-/// Custom command alias definition
-class CommandAlias {
-  final String name;
-  final List<String> commands;
-
-  CommandAlias({required this.name, required this.commands});
-}
 
 /// Configuration loaded from fluttercraft.yaml
 ///
@@ -27,7 +18,6 @@ class CommandAlias {
 /// - flavors: override layer by flavor
 /// - environments: global tools (fvm, shorebird, bundletool)
 /// - paths: output directory
-/// - alias: custom commands
 class BuildConfig {
   final String projectRoot;
 
@@ -77,9 +67,6 @@ class BuildConfig {
   // Flavors (parsed but stored for reference)
   final Map<String, FlavorConfig> flavors;
 
-  // Custom command aliases
-  final Map<String, CommandAlias> aliases;
-
   BuildConfig({
     required this.projectRoot,
     required this.appName,
@@ -104,7 +91,6 @@ class BuildConfig {
     required this.keystorePath,
     this.noColor = false,
     this.flavors = const {},
-    this.aliases = const {},
     this.args = const [],
   });
 
@@ -258,6 +244,13 @@ class BuildConfig {
     String projectRoot, {
     PubspecInfo? pubspecInfo,
   }) {
+    if (yaml.containsKey('alias')) {
+      throw ConfigParseException(
+        'Unsupported configuration key "alias".\n'
+        'Run aliases have been removed and are no longer supported.',
+      );
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // Parse build_defaults (base configuration)
     // ─────────────────────────────────────────────────────────────────
@@ -440,12 +433,6 @@ class BuildConfig {
     final paths = yaml['paths'] as YamlMap?;
     final outputPath = YamlHelpers.getString(paths, 'output', '.fluttercraft/dist');
 
-    // ─────────────────────────────────────────────────────────────────
-    // Parse alias section
-    // ─────────────────────────────────────────────────────────────────
-    final aliasMap = yaml['alias'] as YamlMap?;
-    final aliases = AliasParser.parse(aliasMap);
-
     return BuildConfig(
       projectRoot: projectRoot,
       appName: appName,
@@ -474,7 +461,6 @@ class BuildConfig {
       keystorePath: keystorePath,
       noColor: noColor,
       flavors: flavors,
-      aliases: aliases,
       args: args,
     );
   }
