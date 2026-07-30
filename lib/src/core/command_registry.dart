@@ -28,8 +28,7 @@ class CommandRegistry {
             '  build     Build Flutter app (APK/AAB/IPA)\n'
             '  clean     Clean project and build folder\n'
             '  convert   Convert AAB to universal APK\n'
-            '  gen       Generate fluttercraft.yaml\n'
-            '  run       Run custom command alias',
+            '  gen       Generate fluttercraft.yaml',
       )
       ..addCommand(BuildCommand())
       ..addCommand(CleanCommand())
@@ -51,7 +50,7 @@ class CommandRegistry {
   }
 
   /// List of available command names
-  List<String> get commandNames => ['build', 'clean', 'convert', 'gen', 'run'];
+  List<String> get commandNames => ['build', 'clean', 'convert', 'gen'];
 
   /// Get command descriptions for help display
   Map<String, String> get commandDescriptions => {
@@ -59,6 +58,5 @@ class CommandRegistry {
     'clean': 'Clean project and build folder',
     'convert': 'Convert AAB to universal APK',
     'gen': 'Generate fluttercraft.yaml',
-    'run': 'Run custom command alias',
   };
 }

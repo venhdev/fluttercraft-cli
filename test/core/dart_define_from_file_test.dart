@@ -263,7 +263,6 @@ fluttercraft:
         bundletoolPath: config.bundletoolPath,
         keystorePath: config.keystorePath,
         flavors: config.flavors,
-        aliases: config.aliases,
         args: config.args,
       );
 
@@ -315,7 +314,6 @@ fluttercraft:
         bundletoolPath: config.bundletoolPath,
         keystorePath: config.keystorePath,
         flavors: config.flavors,
-        aliases: config.aliases,
         args: config.args,
       );
 
@@ -363,7 +361,6 @@ fluttercraft:
         bundletoolPath: config.bundletoolPath,
         keystorePath: config.keystorePath,
         flavors: config.flavors,
-        aliases: config.aliases,
         args: config.args,
       );
 

@@ -261,19 +261,6 @@ environments:
 # ══════════════════════════════════════════════════════════════════════════════
 paths:
   output: .fluttercraft/dist
-
-# ══════════════════════════════════════════════════════════════════════════════
-# CUSTOM COMMAND ALIASES
-# ══════════════════════════════════════════════════════════════════════════════
-alias:
-  gen-icon:
-    cmds:
-      - fvm flutter pub get
-      - fvm flutter pub run flutter_launcher_icons
-  brn:
-    cmds:
-      - fvm flutter pub get
-      - fvm flutter packages pub run build_runner build --delete-conflicting-outputs
 ''';
 
   // Write file
