@@ -11,8 +11,9 @@ import '../utils/console.dart';
 /// Command to generate fluttercraft.yaml configuration file
 class GenCommand extends Command<int> {
   final Console console;
+  final String? cwd;
 
-  GenCommand({Console? console}) : console = console ?? Console() {
+  GenCommand({Console? console, this.cwd}) : console = console ?? Console() {
     argParser.addFlag(
       'force',
       abbr: 'f',
@@ -30,7 +31,7 @@ class GenCommand extends Command<int> {
   @override
   Future<int> run() async {
     final force = argResults?['force'] == true;
-    final projectRoot = Directory.current.path;
+    final projectRoot = cwd ?? Directory.current.path;
     final configPath = p.join(projectRoot, 'fluttercraft.yaml');
     final configFile = File(configPath);
 

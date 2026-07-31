@@ -68,17 +68,10 @@ paths:
 
       expect(await buildDir.exists(), true);
 
-      final originalDir = Directory.current;
-      Directory.current = Directory(tempDir);
-
-      try {
-        final cleanCmd = CleanCommand();
-        // We'd need to mock the FlutterRunner for a proper test
-        // For now, just verify the command initializes correctly
-        expect(cleanCmd.name, 'clean');
-      } finally {
-        Directory.current = originalDir;
-      }
+      final cleanCmd = CleanCommand(cwd: tempDir);
+      // We'd need to mock the FlutterRunner for a proper test
+      // For now, just verify the command initializes correctly
+      expect(cleanCmd.name, 'clean');
     });
   });
 }

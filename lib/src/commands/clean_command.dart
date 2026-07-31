@@ -11,13 +11,15 @@ import '../utils/console.dart';
 
 /// Clean command - cleans project and build folder
 class CleanCommand extends Command<int> {
+  final String? cwd;
+
   @override
   final String name = 'clean';
 
   @override
   final String description = 'Clean project and build folder';
 
-  CleanCommand() {
+  CleanCommand({this.cwd}) {
     argParser
       ..addFlag(
         'all',
@@ -36,14 +38,14 @@ class CleanCommand extends Command<int> {
   @override
   Future<int> run() async {
     final console = Console();
-    final projectRoot = Directory.current.path;
+    final projectRoot = cwd ?? Directory.current.path;
 
     console.header('CLEAN PROJECT');
 
     // Load config
     BuildConfig config;
     try {
-      config = await BuildConfig.load();
+      config = await BuildConfig.load(projectRoot: projectRoot);
     } on ConfigNotFoundException {
       // Use default output path if no config
       config = BuildConfig(

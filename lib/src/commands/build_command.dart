@@ -16,6 +16,8 @@ import '../utils/process_runner.dart';
 
 /// Build command - builds Flutter app with version management and JSONL logging
 class BuildCommand extends Command<int> {
+  final String? cwd;
+
   @override
   final String name = 'build';
 
@@ -23,7 +25,7 @@ class BuildCommand extends Command<int> {
   final String description =
       'Build Flutter app (APK/AAB/IPA) with version management';
 
-  BuildCommand() {
+  BuildCommand({this.cwd}) {
     argParser
       ..addOption(
         'platform',
@@ -65,7 +67,7 @@ class BuildCommand extends Command<int> {
   @override
   Future<int> run() async {
     final console = Console();
-    final projectRoot = Directory.current.path;
+    final projectRoot = cwd ?? Directory.current.path;
 
     console.header('fluttercraft CLI');
 
@@ -84,7 +86,7 @@ class BuildCommand extends Command<int> {
     // Load config from fluttercraft.yaml
     BuildConfig config;
     try {
-      config = await BuildConfig.load();
+      config = await BuildConfig.load(projectRoot: projectRoot);
     } on ConfigNotFoundException catch (e) {
       console.error(e.message);
       console.info('Create a fluttercraft.yaml file in your project root.');

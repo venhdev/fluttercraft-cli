@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:fluttercraft/src/commands/build_command.dart';
 import 'package:test/test.dart';
@@ -81,28 +79,22 @@ void main() {
     group('validation', () {
       late String tempDir;
       late Future<void> Function() cleanup;
-      late String originalDir;
 
       setUp(() async {
         (tempDir, cleanup) = TestHelper.createTempDirWithCleanup(
           'build_validation_test_',
         );
-        originalDir = Directory.current.path;
       });
 
       tearDown(() async {
-        Directory.current = originalDir;
         await cleanup();
       });
 
       test('fails when pubspec.yaml does not exist', () async {
-        // Change to temp directory without pubspec.yaml
-        Directory.current = tempDir;
-
-        final buildCmd = BuildCommand();
+        final buildCmd = BuildCommand(cwd: tempDir);
         final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
-        // Use -y to skip FlutterCraft confirmation prompt, --version to skip version prompt
-        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0']);
+        // Use -y to skip FlutterCraft confirmation prompt, --version and --build-number to skip prompts
+        final exitCode = await runner.run(['build', '-y', '--version', '1.0.0', '--build-number', '1']);
 
         expect(exitCode, 1); // Should fail due to missing fluttercraft.yaml after pubspec check
       });
@@ -116,9 +108,7 @@ version: 1.0.0+1
         
         // Note: This test will still fail at config loading stage,
         // but it validates that pubspec.yaml check passes
-        Directory.current = tempDir;
-
-        final buildCmd = BuildCommand();
+        final buildCmd = BuildCommand(cwd: tempDir);
         final runner = CommandRunner<int>('test', 'test')..addCommand(buildCmd);
         // Use -y to skip FlutterCraft confirmation prompt, --version and --build-number to skip prompts
         final exitCode = await runner.run(['build', '-y', '--version', '1.0.0', '--build-number', '1']);
