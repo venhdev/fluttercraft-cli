@@ -1,3 +1,15 @@
+## 0.4.0 (2026-07-31)
+
+### ⚠️ BREAKING CHANGES
+
+- **Removed `run` Command & Alias Support** - Hard-dropped `run` command and `fluttercraft.yaml.alias` configuration.
+
+### 🧹 Cleanup
+
+- Removed `run` command implementation, `AliasParser` helper, and obsolete tests.
+
+---
+
 ## 0.3.3 (2026-01-14)
 
 ### 🧹 Cleanup
